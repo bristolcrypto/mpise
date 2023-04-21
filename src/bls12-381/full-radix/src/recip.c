@@ -1,7 +1,7 @@
 #include "fields.h"
 
 
-static void reciprocal_fp(vec384 out, const vec384 inp)
+void reciprocal_fp(vec384 out, const vec384 inp)
 {
     static const vec384 Px8 = {    /* left-aligned value of the modulus */
         TO_LIMB_T(0xcff7fffffffd5558), TO_LIMB_T(0xf55ffff58a9ffffd),
@@ -24,7 +24,7 @@ static void reciprocal_fp(vec384 out, const vec384 inp)
     vec_copy(out, temp.r[0], sizeof(vec384));
 }
 
-static void reciprocal_fp2(vec384x out, const vec384x inp)
+void reciprocal_fp2(vec384x out, const vec384x inp)
 {
     vec384 t0, t1;
 

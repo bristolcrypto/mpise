@@ -56,21 +56,21 @@ static inline void cneg_fp2(vec384x ret, const vec384x a, bool_t flag)
     cneg_mod_384(ret[1], a[1], flag, BLS12_381_P);
 }
 
-static void reciprocal_fp2(vec384x out, const vec384x inp);
+ void reciprocal_fp2(vec384x out, const vec384x inp);
 
 typedef vec384x   vec384fp2;
 typedef vec384fp2 vec384fp6[3];
 typedef vec384fp6 vec384fp12[2];
 
-static void sqr_fp12(vec384fp12 ret, const vec384fp12 a);
-static void cyclotomic_sqr_fp12(vec384fp12 ret, const vec384fp12 a);
-static void mul_fp12(vec384fp12 ret, const vec384fp12 a, const vec384fp12 b);
-static void mul_by_xy00z0_fp12(vec384fp12 ret, const vec384fp12 a,
+void sqr_fp12(vec384fp12 ret, const vec384fp12 a);
+void cyclotomic_sqr_fp12(vec384fp12 ret, const vec384fp12 a);
+void mul_fp12(vec384fp12 ret, const vec384fp12 a, const vec384fp12 b);
+void mul_by_xy00z0_fp12(vec384fp12 ret, const vec384fp12 a,
                                                const vec384fp6 xy00z0);
-static void conjugate_fp12(vec384fp12 a);
-static void inverse_fp12(vec384fp12 ret, const vec384fp12 a);
+void conjugate_fp12(vec384fp12 a);
+void inverse_fp12(vec384fp12 ret, const vec384fp12 a);
 /* caveat lector! |n| has to be non-zero and not more than 3! */
-static void frobenius_map_fp12(vec384fp12 ret, const vec384fp12 a, size_t n);
+void frobenius_map_fp12(vec384fp12 ret, const vec384fp12 a, size_t n);
 
 #define neg_fp(r,a) cneg_fp((r),(a),1)
 #define neg_fp2(r,a) cneg_fp2((r),(a),1)

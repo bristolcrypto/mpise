@@ -7,7 +7,7 @@
  * Fp12 = Fp6[w] / (w^2 - v)
  */
 
-static inline void mul_by_u_plus_1_fp2(vec384x ret, const vec384x a)
+void mul_by_u_plus_1_fp2(vec384x ret, const vec384x a)
 {   mul_by_1_plus_i_mod_384x(ret, a, BLS12_381_P);   }
 
 /*
@@ -22,32 +22,32 @@ static inline void mul_by_u_plus_1_fp2(vec384x ret, const vec384x a)
 #if defined(__FP2x2__) 
 typedef vec768 vec768x[2];
 
-static inline void add_fp2x2(vec768x ret, const vec768x a, const vec768x b)
+void add_fp2x2(vec768x ret, const vec768x a, const vec768x b)
 {
     add_mod_384x384(ret[0], a[0], b[0], BLS12_381_P);
     add_mod_384x384(ret[1], a[1], b[1], BLS12_381_P);
 }
 
-static inline void sub_fp2x2(vec768x ret, const vec768x a, const vec768x b)
+void sub_fp2x2(vec768x ret, const vec768x a, const vec768x b)
 {
     sub_mod_384x384(ret[0], a[0], b[0], BLS12_381_P);
     sub_mod_384x384(ret[1], a[1], b[1], BLS12_381_P);
 }
 
-static inline void mul_by_u_plus_1_fp2x2(vec768x ret, const vec768x a)
+void mul_by_u_plus_1_fp2x2(vec768x ret, const vec768x a)
 {
     /* caveat lector! |ret| may not be same as |a| */
     sub_mod_384x384(ret[0], a[0], a[1], BLS12_381_P);
     add_mod_384x384(ret[1], a[0], a[1], BLS12_381_P);
 }
 
-static inline void redc_fp2x2(vec384x ret, const vec768x a)
+void redc_fp2x2(vec384x ret, const vec768x a)
 {
     redc_mont_384(ret[0], a[0], BLS12_381_P, p0);
     redc_mont_384(ret[1], a[1], BLS12_381_P, p0);
 }
 
-static void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b)
+void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b)
 {
 #if 1
     mul_382x(ret, a, b, BLS12_381_P);   /* +~6% in Miller loop */
@@ -68,7 +68,7 @@ static void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b)
 #endif
 }
 
-static void sqr_fp2x2(vec768x ret, const vec384x a)
+void sqr_fp2x2(vec768x ret, const vec384x a)
 {
 #if 1
     sqr_382x(ret, a, BLS12_381_P);      /* +~5% in final exponentiation */
@@ -92,7 +92,7 @@ static void sqr_fp2x2(vec768x ret, const vec384x a)
 #if defined(__FP2x2__) 
 typedef vec768x vec768fp6[3];
 
-static inline void sub_fp6x2(vec768fp6 ret, const vec768fp6 a,
+void sub_fp6x2(vec768fp6 ret, const vec768fp6 a,
                                             const vec768fp6 b)
 {
     sub_fp2x2(ret[0], a[0], b[0]);
@@ -100,7 +100,7 @@ static inline void sub_fp6x2(vec768fp6 ret, const vec768fp6 a,
     sub_fp2x2(ret[2], a[2], b[2]);
 }
 
-static void mul_fp6x2(vec768fp6 ret, const vec384fp6 a, const vec384fp6 b)
+void mul_fp6x2(vec768fp6 ret, const vec384fp6 a, const vec384fp6 b)
 {
     vec768x t0, t1, t2;
     vec384x aa, bb;
@@ -139,14 +139,14 @@ static void mul_fp6x2(vec768fp6 ret, const vec384fp6 a, const vec384fp6 b)
     add_fp2x2(ret[2], ret[2], t1);
 }
 
-static inline void redc_fp6x2(vec384fp6 ret, const vec768fp6 a)
+void redc_fp6x2(vec384fp6 ret, const vec768fp6 a)
 {
     redc_fp2x2(ret[0], a[0]);
     redc_fp2x2(ret[1], a[1]);
     redc_fp2x2(ret[2], a[2]);
 }
 
-static void mul_fp6(vec384fp6 ret, const vec384fp6 a, const vec384fp6 b)
+void mul_fp6(vec384fp6 ret, const vec384fp6 a, const vec384fp6 b)
 {
     vec768fp6 r;
 
@@ -154,7 +154,7 @@ static void mul_fp6(vec384fp6 ret, const vec384fp6 a, const vec384fp6 b)
     redc_fp6x2(ret, r); /* narrow to normal width */
 }
 
-static void sqr_fp6(vec384fp6 ret, const vec384fp6 a)
+void sqr_fp6(vec384fp6 ret, const vec384fp6 a)
 {
     vec768x s0, m01, m12, s2, rx;
 
@@ -191,21 +191,21 @@ static void sqr_fp6(vec384fp6 ret, const vec384fp6 a)
 }
 #endif
 
-static void add_fp6(vec384fp6 ret, const vec384fp6 a, const vec384fp6 b)
+void add_fp6(vec384fp6 ret, const vec384fp6 a, const vec384fp6 b)
 {
     add_fp2(ret[0], a[0], b[0]);
     add_fp2(ret[1], a[1], b[1]);
     add_fp2(ret[2], a[2], b[2]);
 }
 
-static void sub_fp6(vec384fp6 ret, const vec384fp6 a, const vec384fp6 b)
+void sub_fp6(vec384fp6 ret, const vec384fp6 a, const vec384fp6 b)
 {
     sub_fp2(ret[0], a[0], b[0]);
     sub_fp2(ret[1], a[1], b[1]);
     sub_fp2(ret[2], a[2], b[2]);
 }
 
-static void neg_fp6(vec384fp6 ret, const vec384fp6 a)
+void neg_fp6(vec384fp6 ret, const vec384fp6 a)
 {
     neg_fp2(ret[0], a[0]);
     neg_fp2(ret[1], a[1]);
@@ -216,7 +216,7 @@ static void neg_fp6(vec384fp6 ret, const vec384fp6 a)
  * Fp12 extension
  */
 #if defined(__FP2x2__)
-static void mul_fp12(vec384fp12 ret, const vec384fp12 a, const vec384fp12 b)
+void mul_fp12(vec384fp12 ret, const vec384fp12 a, const vec384fp12 b)
 {
     vec768fp6 t0, t1, rx;
     vec384fp6 t2;
@@ -241,8 +241,7 @@ static void mul_fp12(vec384fp12 ret, const vec384fp12 a, const vec384fp12 b)
     redc_fp6x2(ret[0], rx);
 }
 
-static inline void mul_by_0y0_fp6x2(vec768fp6 ret, const vec384fp6 a,
-                                                   const vec384fp2 b)
+void mul_by_0y0_fp6x2(vec768fp6 ret, const vec384fp6 a, const vec384fp2 b)
 {
     mul_fp2x2(ret[1], a[2], b);     /* borrow ret[1] for a moment */
     mul_by_u_plus_1_fp2x2(ret[0], ret[1]);
@@ -250,8 +249,7 @@ static inline void mul_by_0y0_fp6x2(vec768fp6 ret, const vec384fp6 a,
     mul_fp2x2(ret[2], a[1], b);
 }
 
-static void mul_by_xy0_fp6x2(vec768fp6 ret, const vec384fp6 a,
-                                            const vec384fp6 b)
+void mul_by_xy0_fp6x2(vec768fp6 ret, const vec384fp6 a, const vec384fp6 b)
 {
     vec768x t0, t1;
     vec384x aa, bb;
@@ -279,8 +277,7 @@ static void mul_by_xy0_fp6x2(vec768fp6 ret, const vec384fp6 a,
     add_fp2x2(ret[2], ret[2], t1);
 }
 
-static void mul_by_xy00z0_fp12(vec384fp12 ret, const vec384fp12 a,
-                                               const vec384fp6 xy00z0)
+void mul_by_xy00z0_fp12(vec384fp12 ret, const vec384fp12 a, const vec384fp6 xy00z0)
 {
     vec768fp6 t0, t1, rr;
     vec384fp6 t2;
@@ -307,7 +304,7 @@ static void mul_by_xy00z0_fp12(vec384fp12 ret, const vec384fp12 a,
 }
 #endif
 
-static void sqr_fp12(vec384fp12 ret, const vec384fp12 a)
+void sqr_fp12(vec384fp12 ret, const vec384fp12 a)
 {
     vec384fp6 t0, t1;
 
@@ -331,10 +328,10 @@ static void sqr_fp12(vec384fp12 ret, const vec384fp12 a)
     sub_fp2(ret[0][2], ret[0][2], t1[1]);
 }
 
-static void conjugate_fp12(vec384fp12 a)
+void conjugate_fp12(vec384fp12 a)
 {   neg_fp6(a[1], a[1]);   }
 
-static void inverse_fp6(vec384fp6 ret, const vec384fp6 a)
+void inverse_fp6(vec384fp6 ret, const vec384fp6 a)
 {
     vec384x c0, c1, c2, t0, t1;
 
@@ -370,7 +367,7 @@ static void inverse_fp6(vec384fp6 ret, const vec384fp6 a)
     mul_fp2(ret[2], c2, t1);
 }
 
-static void inverse_fp12(vec384fp12 ret, const vec384fp12 a)
+void inverse_fp12(vec384fp12 ret, const vec384fp12 a)
 {
     vec384fp6 t0, t1;
 
@@ -391,7 +388,7 @@ static void inverse_fp12(vec384fp12 ret, const vec384fp12 a)
 typedef vec384x vec384fp4[2];
 
 #if defined(__FP2x2__)
-static void sqr_fp4(vec384fp4 ret, const vec384x a0, const vec384x a1)
+void sqr_fp4(vec384fp4 ret, const vec384x a0, const vec384x a1)
 {
     vec768x t0, t1, t2;
 
@@ -410,7 +407,7 @@ static void sqr_fp4(vec384fp4 ret, const vec384x a0, const vec384x a1)
 }
 #endif
 
-static void cyclotomic_sqr_fp12(vec384fp12 ret, const vec384fp12 a)
+void cyclotomic_sqr_fp12(vec384fp12 ret, const vec384fp12 a)
 {
     vec384fp4 t0, t1, t2;
 
@@ -448,13 +445,13 @@ static void cyclotomic_sqr_fp12(vec384fp12 ret, const vec384fp12 a)
 /*
  * caveat lector! |n| has to be non-zero and not more than 3!
  */
-static inline void frobenius_map_fp2(vec384x ret, const vec384x a, size_t n)
+void frobenius_map_fp2(vec384x ret, const vec384x a, size_t n)
 {
     vec_copy(ret[0], a[0], sizeof(ret[0]));
     cneg_fp(ret[1], a[1], n & 1);
 }
 
-static void frobenius_map_fp6(vec384fp6 ret, const vec384fp6 a, size_t n)
+void frobenius_map_fp6(vec384fp6 ret, const vec384fp6 a, size_t n)
 {
     static const vec384x coeffs1[] = {  /* (u + 1)^((P^n - 1) / 3) */
       { { 0 },
@@ -487,7 +484,7 @@ static void frobenius_map_fp6(vec384fp6 ret, const vec384fp6 a, size_t n)
     mul_fp(ret[2][1], ret[2][1], coeffs2[n]);
 }
 
-static void frobenius_map_fp12(vec384fp12 ret, const vec384fp12 a, size_t n)
+void frobenius_map_fp12(vec384fp12 ret, const vec384fp12 a, size_t n)
 {
     static const vec384x coeffs[] = {  /* (u + 1)^((P^n - 1) / 6) */
       { { TO_LIMB_T(0x07089552b319d465), TO_LIMB_T(0xc6695f92b50a8313),

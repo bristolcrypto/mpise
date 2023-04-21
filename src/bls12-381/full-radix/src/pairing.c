@@ -1,6 +1,4 @@
-#include "fields.h"
-#include "point.h"
-#include "consts.h"
+#include "pairing.h"
 
 /*
  * Line evaluations from  https://eprint.iacr.org/2010/354.pdf
@@ -265,3 +263,11 @@ static void final_exp(vec384fp12 ret, const vec384fp12 f)
 
 // optimal ate pairing 
 
+void optimal_ate_pairing(vec384fp12 ret, POINTonE2_affine Q[], 
+                                         POINTonE1_affine P[], size_t n)
+{
+  vec384fp12 f;
+
+  miller_loop_n(f, Q, P, n);
+  final_exp(ret, f);
+}
