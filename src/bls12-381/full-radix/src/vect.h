@@ -37,7 +37,6 @@ void mul_by_8_mod_384(vec384 ret, const vec384 a, const vec384 p);
 void mul_by_3_mod_384(vec384 ret, const vec384 a, const vec384 p);
 void cneg_mod_384(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
 void lshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p);
-void cneg_mod_384(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
 
 void mul_mont_384(vec384 ret, const vec384 a, const vec384 b,
                   const vec384 p, limb_t n0);
