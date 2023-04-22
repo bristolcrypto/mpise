@@ -11,6 +11,15 @@
 static inline void add_fp(vec384 ret, const vec384 a, const vec384 b)
 {   add_mod_384(ret, a, b, BLS12_381_P);   }
 
+static inline void sub_fp(vec384 ret, const vec384 a, const vec384 b)
+{   sub_mod_384(ret, a, b, BLS12_381_P);   }
+
+static inline void mul_by_3_fp(vec384 ret, const vec384 a)
+{   mul_by_3_mod_384(ret, a, BLS12_381_P);   }
+
+static inline void mul_by_8_fp(vec384 ret, const vec384 a)
+{   mul_by_8_mod_384(ret, a, BLS12_381_P);   }
+
 static inline void mul_fp(vec384 ret, const vec384 a, const vec384 b)
 {   mul_mont_384(ret, a, b, BLS12_381_P, p0);   }
 
@@ -22,6 +31,8 @@ static inline void cneg_fp(vec384 ret, const vec384 a, bool_t flag)
 
 static inline void redc_fp(vec384 ret, const vec768 a)
 {   redc_mont_384(ret, a, BLS12_381_P, p0);   }
+
+void reciprocal_fp(vec384 out, const vec384 inp);
 
 /*
  * BLS12-381-specific Fp2 shortcuts to assembly.
@@ -56,7 +67,7 @@ static inline void cneg_fp2(vec384x ret, const vec384x a, bool_t flag)
     cneg_mod_384(ret[1], a[1], flag, BLS12_381_P);
 }
 
- void reciprocal_fp2(vec384x out, const vec384x inp);
+void reciprocal_fp2(vec384x out, const vec384x inp);
 
 typedef vec384x   vec384fp2;
 typedef vec384fp2 vec384fp6[3];

@@ -32,6 +32,9 @@ typedef limb_t bool_t;
  * Assembly subroutines...
  */
 void add_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
+void sub_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
+void mul_by_8_mod_384(vec384 ret, const vec384 a, const vec384 p);
+void mul_by_3_mod_384(vec384 ret, const vec384 a, const vec384 p);
 void cneg_mod_384(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
 void lshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p);
 void cneg_mod_384(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
@@ -119,6 +122,21 @@ static inline bool_t vec_is_zero(const void *a, size_t num)
 
     for (acc = 0, i = 0; i < num; i++)
         acc |= ap[i];
+
+    return is_zero(acc);
+}
+
+static inline bool_t vec_is_equal(const void *a, const void *b, size_t num)
+{
+    const limb_t *ap = (const limb_t *)a;
+    const limb_t *bp = (const limb_t *)b;
+    limb_t acc;
+    size_t i;
+
+    num /= sizeof(limb_t);
+
+    for (acc = 0, i = 0; i < num; i++)
+        acc |= ap[i] ^ bp[i];
 
     return is_zero(acc);
 }

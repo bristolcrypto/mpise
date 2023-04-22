@@ -3,6 +3,8 @@
 
 
 #include "vect.h"
+#include "fields.h"
+#include "ec_ops.h"
 
 
 #define DECLARE_POINT(ptype, bits) \
@@ -20,7 +22,7 @@ static void ptype##_double(ptype *out, const ptype *p1);		\
 static void ptype##_mult_w5(ptype *out, const ptype *point,		\
                             const byte *scalar, size_t nbits);		\
 static void ptype##_cneg(ptype *p, limb_t cbit);			\
-static void ptype##_to_affine(ptype##_affine *out, const ptype *in);	\
+void ptype##_to_affine(ptype##_affine *out, const ptype *in);	\
 static void ptype##_from_Jacobian(ptype *out, const ptype *in);		\
 \
 static inline void ptype##_cswap(ptype *restrict a,			\
@@ -33,7 +35,13 @@ static inline void ptype##_ccopy(ptype *restrict a,			\
 }
 
 DECLARE_POINT(POINTonE1, 384)
-
 DECLARE_POINT(POINTonE2, 384x)
+
+extern const POINTonE1 BLS12_381_G1;
+extern const POINTonE2 BLS12_381_G2;
+
+POINT_DOUBLE_IMPL_A0(POINTonE1, 384, fp)
+POINT_DOUBLE_IMPL_A0(POINTonE2, 384x, fp2)
+
 
 #endif
