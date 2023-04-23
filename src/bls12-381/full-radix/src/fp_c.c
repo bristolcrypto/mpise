@@ -510,6 +510,45 @@ void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
 
 // fp2 arithmetic 
 
+// schoolbook
+// todo: Karatsuba + Longa's method
+void mul_mont_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p, limb_t n0)
+{
+  vec384 t0, t1, t2, t3;
+
+  // t3 = -b1
+  cneg_mod_384(t3, b[1], 1, p);
+  // t0 = a0 * b0
+  mul_mont_384(t0, a[0], b[0], p, n0);
+  // t1 = a0 * b1
+  mul_mont_384(t1, a[0], b[1], p, n0);
+  // t2 = a1 * b0
+  mul_mont_384(t2, a[1], b[0], p, n0);
+  // t3 = a1 * -b1
+  mul_mont_384(t3, a[1],   t3, p, n0);
+  // r0 = a0*b0 - a1*b1
+  add_mod_384(ret[0], t0, t3, p);
+  // r1 = a0*b1 + a1*b0
+  add_mod_384(ret[1], t1, t2, p);
+}
+
+// Karatsuba
+void sqr_mont_384x(vec384x ret, const vec384x a, const vec384 p, limb_t n0)
+{
+  vec384 t0, t1, t2, t3;
+
+  // t0 = a0 + a1
+  add_mod_384(t0, a[0], a[1], p);
+  // t1 = a0 - a1 
+  sub_mod_384(t1, a[0], a[1], p);
+  // t2 = 2 * a0
+  add_mod_384(t2, a[0], a[0], p);
+  // r0 = (a0+a1) * (a0-a1)
+  mul_mont_384(ret[0], t0, t1, p, n0);
+  // r1 = 2*a0 * a1
+  mul_mont_384(ret[1], t2, a[1], p, n0);
+}
+
 void add_mod_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p)
 {
   add_mod_384(ret[0], a[0], b[0], p);
@@ -534,7 +573,7 @@ void mul_by_3_mod_384x(vec384x ret, const vec384x a, const vec384 p)
   mul_by_3_mod_384(ret[1], a[1], p);
 }
 
-// double-length ret = a + b mod p
+// double-length ret = a + b mod (p * 2^384)
 void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
 {
   uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4  = a[4],  a5  = a[5];
@@ -593,7 +632,7 @@ void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
   ret[9] = r9; ret[10] = r10; ret[11] = r11;
 }
 
-// double-length ret = a - b mod p
+// double-length ret = a - b mod (p * 2^384)
 void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
 {
   uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4  = a[4],  a5  = a[5];
@@ -643,3 +682,4 @@ void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
   ret[6] = r6; ret[7]  = r7;  ret[8]  = r8;
   ret[9] = r9; ret[10] = r10; ret[11] = r11;
 }
+
