@@ -1250,126 +1250,126 @@ __sqrq_384:
 .cfi_endproc
 .size	__sqrq_384,.-__sqrq_384
 
-.globl	sqr_mont_384
-.hidden	sqr_mont_384
-.type	sqr_mont_384,@function
-.align	32
-sqr_mont_384:
-.cfi_startproc
-	.byte	0xf3,0x0f,0x1e,0xfa
+# .globl	sqr_mont_384
+# .hidden	sqr_mont_384
+# .type	sqr_mont_384,@function
+# .align	32
+# sqr_mont_384:
+# .cfi_startproc
+# 	.byte	0xf3,0x0f,0x1e,0xfa
 
 
-	pushq	%rbp
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%rbp,-16
-	pushq	%rbx
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%rbx,-24
-	pushq	%r12
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r12,-32
-	pushq	%r13
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r13,-40
-	pushq	%r14
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r14,-48
-	pushq	%r15
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r15,-56
-	subq	$120,%rsp
-.cfi_adjust_cfa_offset	8*15
+# 	pushq	%rbp
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%rbp,-16
+# 	pushq	%rbx
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%rbx,-24
+# 	pushq	%r12
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r12,-32
+# 	pushq	%r13
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r13,-40
+# 	pushq	%r14
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r14,-48
+# 	pushq	%r15
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r15,-56
+# 	subq	$120,%rsp
+# .cfi_adjust_cfa_offset	8*15
 
 
-	movq	%rcx,96(%rsp)
-	movq	%rdx,104(%rsp)
-	movq	%rdi,112(%rsp)
+# 	movq	%rcx,96(%rsp)
+# 	movq	%rdx,104(%rsp)
+# 	movq	%rdi,112(%rsp)
 
-	movq	%rsp,%rdi
-	call	__sqrq_384
+# 	movq	%rsp,%rdi
+# 	call	__sqrq_384
 
-	leaq	0(%rsp),%rsi
-	movq	96(%rsp),%rcx
-	movq	104(%rsp),%rbx
-	movq	112(%rsp),%rdi
-	call	__mulq_by_1_mont_384
-	call	__redc_tail_mont_384
+# 	leaq	0(%rsp),%rsi
+# 	movq	96(%rsp),%rcx
+# 	movq	104(%rsp),%rbx
+# 	movq	112(%rsp),%rdi
+# 	call	__mulq_by_1_mont_384
+# 	call	__redc_tail_mont_384
 
-	leaq	120(%rsp),%r8
-	movq	120(%rsp),%r15
-.cfi_restore	%r15
-	movq	8(%r8),%r14
-.cfi_restore	%r14
-	movq	16(%r8),%r13
-.cfi_restore	%r13
-	movq	24(%r8),%r12
-.cfi_restore	%r12
-	movq	32(%r8),%rbx
-.cfi_restore	%rbx
-	movq	40(%r8),%rbp
-.cfi_restore	%rbp
-	leaq	48(%r8),%rsp
-.cfi_adjust_cfa_offset	-8*21
+# 	leaq	120(%rsp),%r8
+# 	movq	120(%rsp),%r15
+# .cfi_restore	%r15
+# 	movq	8(%r8),%r14
+# .cfi_restore	%r14
+# 	movq	16(%r8),%r13
+# .cfi_restore	%r13
+# 	movq	24(%r8),%r12
+# .cfi_restore	%r12
+# 	movq	32(%r8),%rbx
+# .cfi_restore	%rbx
+# 	movq	40(%r8),%rbp
+# .cfi_restore	%rbp
+# 	leaq	48(%r8),%rsp
+# .cfi_adjust_cfa_offset	-8*21
 
-	.byte	0xf3,0xc3
-.cfi_endproc	
-.size	sqr_mont_384,.-sqr_mont_384
-
-
-
-.globl	redc_mont_384
-.hidden	redc_mont_384
-.type	redc_mont_384,@function
-.align	32
-redc_mont_384:
-.cfi_startproc
-	.byte	0xf3,0x0f,0x1e,0xfa
+# 	.byte	0xf3,0xc3
+# .cfi_endproc	
+# .size	sqr_mont_384,.-sqr_mont_384
 
 
-	pushq	%rbp
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%rbp,-16
-	pushq	%rbx
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%rbx,-24
-	pushq	%r12
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r12,-32
-	pushq	%r13
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r13,-40
-	pushq	%r14
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r14,-48
-	pushq	%r15
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r15,-56
-	subq	$8,%rsp
-.cfi_adjust_cfa_offset	8
+
+# .globl	redc_mont_384
+# .hidden	redc_mont_384
+# .type	redc_mont_384,@function
+# .align	32
+# redc_mont_384:
+# .cfi_startproc
+# 	.byte	0xf3,0x0f,0x1e,0xfa
 
 
-	movq	%rdx,%rbx
-	call	__mulq_by_1_mont_384
-	call	__redc_tail_mont_384
+# 	pushq	%rbp
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%rbp,-16
+# 	pushq	%rbx
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%rbx,-24
+# 	pushq	%r12
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r12,-32
+# 	pushq	%r13
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r13,-40
+# 	pushq	%r14
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r14,-48
+# 	pushq	%r15
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r15,-56
+# 	subq	$8,%rsp
+# .cfi_adjust_cfa_offset	8
 
-	movq	8(%rsp),%r15
-.cfi_restore	%r15
-	movq	16(%rsp),%r14
-.cfi_restore	%r14
-	movq	24(%rsp),%r13
-.cfi_restore	%r13
-	movq	32(%rsp),%r12
-.cfi_restore	%r12
-	movq	40(%rsp),%rbx
-.cfi_restore	%rbx
-	movq	48(%rsp),%rbp
-.cfi_restore	%rbp
-	leaq	56(%rsp),%rsp
-.cfi_adjust_cfa_offset	-56
 
-	.byte	0xf3,0xc3
-.cfi_endproc	
-.size	redc_mont_384,.-redc_mont_384
+# 	movq	%rdx,%rbx
+# 	call	__mulq_by_1_mont_384
+# 	call	__redc_tail_mont_384
+
+# 	movq	8(%rsp),%r15
+# .cfi_restore	%r15
+# 	movq	16(%rsp),%r14
+# .cfi_restore	%r14
+# 	movq	24(%rsp),%r13
+# .cfi_restore	%r13
+# 	movq	32(%rsp),%r12
+# .cfi_restore	%r12
+# 	movq	40(%rsp),%rbx
+# .cfi_restore	%rbx
+# 	movq	48(%rsp),%rbp
+# .cfi_restore	%rbp
+# 	leaq	56(%rsp),%rsp
+# .cfi_adjust_cfa_offset	-56
+
+# 	.byte	0xf3,0xc3
+# .cfi_endproc	
+# .size	redc_mont_384,.-redc_mont_384
 
 
 
