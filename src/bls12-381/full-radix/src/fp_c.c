@@ -1,15 +1,47 @@
 #include "vect.h"
 #include "consts.h"
 
-#include <immintrin.h>
 #include <stdint.h>
 
+#define INTRINSICS 0
 
-// macros of intel intrinsics (to facilitate the translation to risc-v asm)
+#if INTRINSICS
 
-#define MULX(a, b, hi)        _mulx_u64(a, b, (unsigned long long *)hi)
-#define ADCX(c_in, a, b, out) _addcarryx_u64(c_in, a, b, (unsigned long long *)out)
-#define SUBB(c_in, a, b, out) _subborrow_u64(c_in, a, b, (unsigned long long *)out)
+#include <immintrin.h>
+
+#define MULX(hi, lo, a, b)                    \
+{ lo = _mulx_u64(a, b, (unsigned long long *)hi); }
+
+#define ADCX(c_out, out, c_in, a, b)          \
+{ c_out = _addcarryx_u64(c_in, a, b, (unsigned long long *)out); }
+
+#define SUBB(c_out, out, c_in, a, b)          \
+{ c_out = _subborrow_u64(c_in, a, b, (unsigned long long *)out); }
+
+#else
+
+#define MULX(hi, lo, a, b)                    \
+{                                             \
+  __uint128_t t = (__uint128_t)a * b;         \
+  *hi = t >> 64;                              \
+  lo  = (uint64_t)t;                          \
+}
+
+#define ADCX(c_out, out, c_in, a, b)          \
+{                                             \
+  __uint128_t t = (__uint128_t)a + b + c_in;  \
+  *out  = (uint64_t)t;                        \
+  c_out = (t >> 64) & 1;                      \
+}
+
+#define SUBB(c_out, out, c_in, a, b)          \
+{                                             \
+  __uint128_t t = (__uint128_t)a - b - c_in;  \
+  *out  = (uint64_t)t;                        \
+  c_out = (t >> 64) & 1;                      \
+}
+
+#endif
 
 
 // fp arithmetic 
@@ -25,20 +57,20 @@ void add_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p)
   uint8_t c;
 
   // r = a + b
-  c = ADCX(0, a0, b0, &r0);
-  c = ADCX(c, a1, b1, &r1);
-  c = ADCX(c, a2, b2, &r2);
-  c = ADCX(c, a3, b3, &r3);
-  c = ADCX(c, a4, b4, &r4);
-  c = ADCX(c, a5, b5, &r5);
+  ADCX(c, &r0, 0, a0, b0);
+  ADCX(c, &r1, c, a1, b1);
+  ADCX(c, &r2, c, a2, b2);
+  ADCX(c, &r3, c, a3, b3);
+  ADCX(c, &r4, c, a4, b4);
+  ADCX(c, &r5, c, a5, b5);
 
   // r = r - p
-  c = SUBB(0, r0, p0, &r0);
-  c = SUBB(c, r1, p1, &r1);
-  c = SUBB(c, r2, p2, &r2);
-  c = SUBB(c, r3, p3, &r3);
-  c = SUBB(c, r4, p4, &r4);
-  c = SUBB(c, r5, p5, &r5);
+  SUBB(c, &r0, 0, r0, p0);
+  SUBB(c, &r1, c, r1, p1);
+  SUBB(c, &r2, c, r2, p2);
+  SUBB(c, &r3, c, r3, p3);
+  SUBB(c, &r4, c, r4, p4);
+  SUBB(c, &r5, c, r5, p5);
 
   // m = 0 - c
   m = 0 - (uint64_t)c;
@@ -52,12 +84,12 @@ void add_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p)
   p5 &= m;
 
   // r = r + p
-  c = ADCX(0, r0, p0, &r0);
-  c = ADCX(c, r1, p1, &r1);
-  c = ADCX(c, r2, p2, &r2);
-  c = ADCX(c, r3, p3, &r3);
-  c = ADCX(c, r4, p4, &r4);
-  c = ADCX(c, r5, p5, &r5);
+  ADCX(c, &r0, 0, r0, p0);
+  ADCX(c, &r1, c, r1, p1);
+  ADCX(c, &r2, c, r2, p2);
+  ADCX(c, &r3, c, r3, p3);
+  ADCX(c, &r4, c, r4, p4);
+  ADCX(c, &r5, c, r5, p5);
 
   ret[0] = r0; ret[1] = r1; ret[2] = r2;
   ret[3] = r3; ret[4] = r4; ret[5] = r5;
@@ -74,12 +106,12 @@ void sub_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p)
   uint8_t c;
 
   // r = a - b
-  c = SUBB(0, a0, b0, &r0);
-  c = SUBB(c, a1, b1, &r1);
-  c = SUBB(c, a2, b2, &r2);
-  c = SUBB(c, a3, b3, &r3);
-  c = SUBB(c, a4, b4, &r4);
-  c = SUBB(c, a5, b5, &r5);
+  SUBB(c, &r0, 0, a0, b0);
+  SUBB(c, &r1, c, a1, b1);
+  SUBB(c, &r2, c, a2, b2);
+  SUBB(c, &r3, c, a3, b3);
+  SUBB(c, &r4, c, a4, b4);
+  SUBB(c, &r5, c, a5, b5);
 
   // m = 0 - c
   m = 0 - (uint64_t)c;
@@ -93,12 +125,12 @@ void sub_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p)
   p5 &= m;
 
   // r = r + p
-  c = ADCX(0, r0, p0, &r0);
-  c = ADCX(c, r1, p1, &r1);
-  c = ADCX(c, r2, p2, &r2);
-  c = ADCX(c, r3, p3, &r3);
-  c = ADCX(c, r4, p4, &r4);
-  c = ADCX(c, r5, p5, &r5);
+  ADCX(c, &r0, 0, r0, p0);
+  ADCX(c, &r1, c, r1, p1);
+  ADCX(c, &r2, c, r2, p2);
+  ADCX(c, &r3, c, r3, p3);
+  ADCX(c, &r4, c, r4, p4);
+  ADCX(c, &r5, c, r5, p5);
 
   ret[0] = r0; ret[1] = r1; ret[2] = r2;
   ret[3] = r3; ret[4] = r4; ret[5] = r5;
@@ -115,12 +147,12 @@ void cneg_mod_384(vec384 ret, const vec384 a, bool_t flag, const vec384 p)
   uint8_t c;
 
   // r = p - a
-  c = SUBB(0, p0, a0, &r0);
-  c = SUBB(c, p1, a1, &r1);
-  c = SUBB(c, p2, a2, &r2);
-  c = SUBB(c, p3, a3, &r3);
-  c = SUBB(c, p4, a4, &r4);
-  c = SUBB(c, p5, a5, &r5);
+  SUBB(c, &r0, 0, p0, a0);
+  SUBB(c, &r1, c, p1, a1);
+  SUBB(c, &r2, c, p2, a2);
+  SUBB(c, &r3, c, p3, a3);
+  SUBB(c, &r4, c, p4, a4);
+  SUBB(c, &r5, c, p5, a5);
 
   // r = r ^ a
   r0 ^= a0;
@@ -195,138 +227,138 @@ void mul_mont_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p, li
   uint8_t c0, c1;
 
   // z = a0 * b
-  z0 = MULX(a0, b0, &z1);
-  t0 = MULX(a0, b1, &z2); c0 = ADCX( 0, z1, t0, &z1);
-  t0 = MULX(a0, b2, &z3); c0 = ADCX(c0, z2, t0, &z2);
-  t0 = MULX(a0, b3, &z4); c0 = ADCX(c0, z3, t0, &z3);
-  t0 = MULX(a0, b4, &z5); c0 = ADCX(c0, z4, t0, &z4);
-  t0 = MULX(a0, b5, &z6); c0 = ADCX(c0, z5, t0, &z5);
-                          z6 = z6 + c0;
+  MULX(&z1, z0, a0, b0);
+  MULX(&z2, t0, a0, b1); ADCX(c0, &z1,  0, z1, t0);
+  MULX(&z3, t0, a0, b2); ADCX(c0, &z2, c0, z2, t0);
+  MULX(&z4, t0, a0, b3); ADCX(c0, &z3, c0, z3, t0);
+  MULX(&z5, t0, a0, b4); ADCX(c0, &z4, c0, z4, t0);
+  MULX(&z6, t0, a0, b5); ADCX(c0, &z5, c0, z5, t0);
+                         z6 = z6 + c0;
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; z6 = 0;
 
   // z = a1 * b + z
-  t0 = MULX(a1, b0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);  
-  t0 = MULX(a1, b1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX(a1, b2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX(a1, b3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX(a1, b4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX(a1, b5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0, a1, b0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0, a1, b1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0, a1, b2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0, a1, b3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0, a1, b4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0, a1, b5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z 
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; z6 = 0;
 
   // z = a2 * b + z
-  t0 = MULX(a2, b0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);  
-  t0 = MULX(a2, b1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX(a2, b2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX(a2, b3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX(a2, b4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX(a2, b5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0, a2, b0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0, a2, b1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0, a2, b2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0, a2, b3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0, a2, b4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0, a2, b5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z 
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; z6 = 0;
 
   // z = a3 * b + z
-  t0 = MULX(a3, b0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);  
-  t0 = MULX(a3, b1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX(a3, b2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX(a3, b3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX(a3, b4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX(a3, b5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0, a3, b0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0, a3, b1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0, a3, b2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0, a3, b3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0, a3, b4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0, a3, b5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z 
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; z6 = 0;
 
   // z = a4 * b + z
-  t0 = MULX(a4, b0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);  
-  t0 = MULX(a4, b1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX(a4, b2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX(a4, b3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX(a4, b4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX(a4, b5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0, a4, b0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0, a4, b1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0, a4, b2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0, a4, b3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0, a4, b4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0, a4, b5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z 
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; z6 = 0;
 
   // z = a5 * b + z
-  t0 = MULX(a5, b0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);  
-  t0 = MULX(a5, b1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX(a5, b2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX(a5, b3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX(a5, b4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX(a5, b5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0, a5, b0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0, a5, b1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0, a5, b2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0, a5, b3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0, a5, b4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0, a5, b5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z 
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0); c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1); c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2); c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3); c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4); c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5); c1 = ADCX(c1, z6, t1, &z6);
-                          z6 = z6 + c0;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         z6 = z6 + c0;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; z6 = 0;
 
   // final correction
-  c0 = SUBB( 0, z0, p0, &z0);
-  c0 = SUBB(c0, z1, p1, &z1);
-  c0 = SUBB(c0, z2, p2, &z2);
-  c0 = SUBB(c0, z3, p3, &z3);
-  c0 = SUBB(c0, z4, p4, &z4);
-  c0 = SUBB(c0, z5, p5, &z5);
+  SUBB(c0, &z0,  0, z0, p0);
+  SUBB(c0, &z1, c0, z1, p1);
+  SUBB(c0, &z2, c0, z2, p2);
+  SUBB(c0, &z3, c0, z3, p3);
+  SUBB(c0, &z4, c0, z4, p4);
+  SUBB(c0, &z5, c0, z5, p5);
   t0 = 0 - (uint64_t)c0;
   p0 &= t0; 
   p1 &= t0; 
@@ -334,12 +366,12 @@ void mul_mont_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p, li
   p3 &= t0;
   p4 &= t0;
   p5 &= t0;
-  c0 = ADCX( 0, z0, p0, &z0);
-  c0 = ADCX(c0, z1, p1, &z1);
-  c0 = ADCX(c0, z2, p2, &z2);
-  c0 = ADCX(c0, z3, p3, &z3);
-  c0 = ADCX(c0, z4, p4, &z4);
-  c0 = ADCX(c0, z5, p5, &z5);
+  ADCX(c0, &z0,  0, z0, p0);
+  ADCX(c0, &z1, c0, z1, p1);
+  ADCX(c0, &z2, c0, z2, p2);
+  ADCX(c0, &z3, c0, z3, p3);
+  ADCX(c0, &z4, c0, z4, p4);
+  ADCX(c0, &z5, c0, z5, p5);
 
   ret[0] = z0; ret[1] = z1; ret[2] = z2;
   ret[3] = z3; ret[4] = z4; ret[5] = z5; 
@@ -363,100 +395,100 @@ void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
   uint8_t c0, c1, c2, c3;
 
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0,  t0, &z0);  c1 = ADCX( 0, z1,  t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1,  t0, &z1);  c1 = ADCX(c1, z2,  t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2,  t0, &z2);  c1 = ADCX(c1, z3,  t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3,  t0, &z3);  c1 = ADCX(c1, z4,  t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4,  t0, &z4);  c1 = ADCX(c1, z5,  t1, &z5);
-  t0 = MULX( u, p5, &t1); c2 = ADCX(c0, z5,  t0, &z5);  c3 = ADCX(c1, z6,  t1, &z6);
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c2, &z5, c0, z5, t0); ADCX(c3, &z6, c1, z6, t1);
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4;  z4  = z5;  z5 = z6; 
   z6 = z7; z7 = z8; z8 = z9; z9 = z10; z10 = z11; 
 
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0,  t0, &z0);  c1 = ADCX( 0, z1,  t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1,  t0, &z1);  c1 = ADCX(c1, z2,  t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2,  t0, &z2);  c1 = ADCX(c1, z3,  t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3,  t0, &z3);  c1 = ADCX(c1, z4,  t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4,  t0, &z4);  c1 = ADCX(c1, z5,  t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5,  t0, &z5);  c1 = ADCX(c1, z6,  t1, &z6);
-                          c2 = ADCX(c2, z5,   0, &z5);  c3 = ADCX(c3, z6,   0, &z6);
-                          c2 = c0 | c2;                 c3 = c1 | c3;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         ADCX(c2, &z5, c2, z5,  0); ADCX(c3, &z6, c3, z6,  0);
+                         c2 = c0 | c2;              c3 = c1 | c3;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4;  z4  = z5; z5 = z6; 
   z6 = z7; z7 = z8; z8 = z9; z9 = z10; 
 
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0);  c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1);  c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2);  c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3);  c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4);  c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5);  c1 = ADCX(c1, z6, t1, &z6);
-                          c2 = ADCX(c2, z5,  0, &z5);  c3 = ADCX(c3, z6,  0, &z6);
-                          c2 = c0 | c2;                c3 = c1 | c3;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         ADCX(c2, &z5, c2, z5,  0); ADCX(c3, &z6, c3, z6,  0);
+                         c2 = c0 | c2;              c3 = c1 | c3;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; 
   z6 = z7; z7 = z8; z8 = z9; 
 
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0);  c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1);  c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2);  c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3);  c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4);  c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5);  c1 = ADCX(c1, z6, t1, &z6);
-                          c2 = ADCX(c2, z5,  0, &z5);  c3 = ADCX(c3, z6,  0, &z6);
-                          c2 = c0 | c2;                c3 = c1 | c3;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         ADCX(c2, &z5, c2, z5,  0); ADCX(c3, &z6, c3, z6,  0);
+                         c2 = c0 | c2;              c3 = c1 | c3;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; 
   z6 = z7; z7 = z8; 
 
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0);  c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1);  c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2);  c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3);  c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4);  c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5);  c1 = ADCX(c1, z6, t1, &z6);
-                          c2 = ADCX(c2, z5,  0, &z5);  c3 = ADCX(c3, z6,  0, &z6);
-                          c2 = c0 | c2;                c3 = c1 | c3;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         ADCX(c2, &z5, c2, z5,  0); ADCX(c3, &z6, c3, z6,  0);
+                         c2 = c0 | c2;              c3 = c1 | c3;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; 
   z6 = z7;
 
   // u = (z0 * n0) mod 2^64
-  u  = MULX(z0, n0, &t1);
+  MULX(&t1,  u, z0, n0);
   // z = u * p + z
-  t0 = MULX( u, p0, &t1); c0 = ADCX( 0, z0, t0, &z0);  c1 = ADCX( 0, z1, t1, &z1);
-  t0 = MULX( u, p1, &t1); c0 = ADCX(c0, z1, t0, &z1);  c1 = ADCX(c1, z2, t1, &z2);
-  t0 = MULX( u, p2, &t1); c0 = ADCX(c0, z2, t0, &z2);  c1 = ADCX(c1, z3, t1, &z3);
-  t0 = MULX( u, p3, &t1); c0 = ADCX(c0, z3, t0, &z3);  c1 = ADCX(c1, z4, t1, &z4);
-  t0 = MULX( u, p4, &t1); c0 = ADCX(c0, z4, t0, &z4);  c1 = ADCX(c1, z5, t1, &z5);
-  t0 = MULX( u, p5, &t1); c0 = ADCX(c0, z5, t0, &z5);  c1 = ADCX(c1, z6, t1, &z6);
-                          c2 = ADCX(c2, z5,  0, &z5);  c3 = ADCX(c3, z6,  0, &z6);
-                          c2 = c2 | c0;
-                          z6 = z6 + c2;
+  MULX(&t1, t0,  u, p0); ADCX(c0, &z0,  0, z0, t0); ADCX(c1, &z1,  0, z1, t1);
+  MULX(&t1, t0,  u, p1); ADCX(c0, &z1, c0, z1, t0); ADCX(c1, &z2, c1, z2, t1);
+  MULX(&t1, t0,  u, p2); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0,  u, p3); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0,  u, p4); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0,  u, p5); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+                         ADCX(c2, &z5, c2, z5,  0); ADCX(c3, &z6, c3, z6,  0);
+                         c2 = c2 | c0;
+                         z6 = z6 + c2;
   // z = z / 2^64
   z0 = z1; z1 = z2; z2 = z3; z3 = z4; z4 = z5; z5 = z6; 
 
   // final correction
-  c0 = SUBB( 0, z0, p0, &z0);
-  c0 = SUBB(c0, z1, p1, &z1);
-  c0 = SUBB(c0, z2, p2, &z2);
-  c0 = SUBB(c0, z3, p3, &z3);
-  c0 = SUBB(c0, z4, p4, &z4);
-  c0 = SUBB(c0, z5, p5, &z5);
+  SUBB(c0, &z0,  0, z0, p0);
+  SUBB(c0, &z1, c0, z1, p1);
+  SUBB(c0, &z2, c0, z2, p2);
+  SUBB(c0, &z3, c0, z3, p3);
+  SUBB(c0, &z4, c0, z4, p4);
+  SUBB(c0, &z5, c0, z5, p5);
   t0 = 0 - (uint64_t)c0;
   p0 &= t0; 
   p1 &= t0; 
@@ -464,12 +496,12 @@ void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
   p3 &= t0;
   p4 &= t0;
   p5 &= t0;
-  c0 = ADCX( 0, z0, p0, &z0);
-  c0 = ADCX(c0, z1, p1, &z1);
-  c0 = ADCX(c0, z2, p2, &z2);
-  c0 = ADCX(c0, z3, p3, &z3);
-  c0 = ADCX(c0, z4, p4, &z4);
-  c0 = ADCX(c0, z5, p5, &z5);
+  ADCX(c0, &z0,  0, z0, p0);
+  ADCX(c0, &z1, c0, z1, p1);
+  ADCX(c0, &z2, c0, z2, p2);
+  ADCX(c0, &z3, c0, z3, p3);
+  ADCX(c0, &z4, c0, z4, p4);
+  ADCX(c0, &z5, c0, z5, p5);
 
   ret[0] = z0; ret[1] = z1; ret[2] = z2;
   ret[3] = z3; ret[4] = z4; ret[5] = z5; 
