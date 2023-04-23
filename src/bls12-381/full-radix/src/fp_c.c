@@ -14,144 +14,173 @@
 
 // fp arithmetic 
 
+// ret = a + b mod p 
 void add_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p)
 {
-  vec384 z, _p;
+  uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+  uint64_t b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5];
+  uint64_t p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3], p4 = p[4], p5 = p[5];
+  uint64_t r0, r1, r2, r3, r4, r5;
   uint64_t m;
   uint8_t c;
 
-  // z = a + b
-  c = ADCX(0, a[0], b[0], &z[0]);
-  c = ADCX(c, a[1], b[1], &z[1]);
-  c = ADCX(c, a[2], b[2], &z[2]);
-  c = ADCX(c, a[3], b[3], &z[3]);
-  c = ADCX(c, a[4], b[4], &z[4]);
-  c = ADCX(c, a[5], b[5], &z[5]);
+  // r = a + b
+  c = ADCX(0, a0, b0, &r0);
+  c = ADCX(c, a1, b1, &r1);
+  c = ADCX(c, a2, b2, &r2);
+  c = ADCX(c, a3, b3, &r3);
+  c = ADCX(c, a4, b4, &r4);
+  c = ADCX(c, a5, b5, &r5);
 
-  // z = z - p
-  c = SUBB(0, z[0], p[0], &z[0]);
-  c = SUBB(c, z[1], p[1], &z[1]);
-  c = SUBB(c, z[2], p[2], &z[2]);
-  c = SUBB(c, z[3], p[3], &z[3]);
-  c = SUBB(c, z[4], p[4], &z[4]);
-  c = SUBB(c, z[5], p[5], &z[5]);
+  // r = r - p
+  c = SUBB(0, r0, p0, &r0);
+  c = SUBB(c, r1, p1, &r1);
+  c = SUBB(c, r2, p2, &r2);
+  c = SUBB(c, r3, p3, &r3);
+  c = SUBB(c, r4, p4, &r4);
+  c = SUBB(c, r5, p5, &r5);
 
   // m = 0 - c
   m = 0 - (uint64_t)c;
 
-  // _p = p & m
-  _p[0] = p[0] & m;
-  _p[1] = p[1] & m;
-  _p[2] = p[2] & m;
-  _p[3] = p[3] & m;
-  _p[4] = p[4] & m;
-  _p[5] = p[5] & m;
+  // p = p & m
+  p0 &= m;
+  p1 &= m;
+  p2 &= m;
+  p3 &= m;
+  p4 &= m;
+  p5 &= m;
 
-  // ret = z + _p
-  c = ADCX(0, z[0], _p[0], &ret[0]);
-  c = ADCX(c, z[1], _p[1], &ret[1]);
-  c = ADCX(c, z[2], _p[2], &ret[2]);
-  c = ADCX(c, z[3], _p[3], &ret[3]);
-  c = ADCX(c, z[4], _p[4], &ret[4]);
-  c = ADCX(c, z[5], _p[5], &ret[5]);
+  // ret = r + p
+  c = ADCX(0, r0, p0, &r0);
+  c = ADCX(c, r1, p1, &r1);
+  c = ADCX(c, r2, p2, &r2);
+  c = ADCX(c, r3, p3, &r3);
+  c = ADCX(c, r4, p4, &r4);
+  c = ADCX(c, r5, p5, &r5);
+
+  ret[0] = r0; ret[1] = r1; ret[2] = r2;
+  ret[3] = r3; ret[4] = r4; ret[5] = r5;
 }
 
+// ret = a - b mod p 
 void sub_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p)
 {
-  vec384 z, _p;
+  uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+  uint64_t b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5];
+  uint64_t p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3], p4 = p[4], p5 = p[5];
+  uint64_t r0, r1, r2, r3, r4, r5;
   uint64_t m;
   uint8_t c;
 
-  // z = a - b
-  c = SUBB(0, a[0], b[0], &z[0]);
-  c = SUBB(c, a[1], b[1], &z[1]);
-  c = SUBB(c, a[2], b[2], &z[2]);
-  c = SUBB(c, a[3], b[3], &z[3]);
-  c = SUBB(c, a[4], b[4], &z[4]);
-  c = SUBB(c, a[5], b[5], &z[5]);
+  // r = a - b
+  c = SUBB(0, a0, b0, &r0);
+  c = SUBB(c, a1, b1, &r1);
+  c = SUBB(c, a2, b2, &r2);
+  c = SUBB(c, a3, b3, &r3);
+  c = SUBB(c, a4, b4, &r4);
+  c = SUBB(c, a5, b5, &r5);
 
   // m = 0 - c
   m = 0 - (uint64_t)c;
 
-  // _p = p & m
-  _p[0] = p[0] & m;
-  _p[1] = p[1] & m;
-  _p[2] = p[2] & m;
-  _p[3] = p[3] & m;
-  _p[4] = p[4] & m;
-  _p[5] = p[5] & m;
+  // p = p & m
+  p0 &= m;
+  p1 &= m;
+  p2 &= m;
+  p3 &= m;
+  p4 &= m;
+  p5 &= m;
 
-  // ret = z + _p
-  c = ADCX(0, z[0], _p[0], &ret[0]);
-  c = ADCX(c, z[1], _p[1], &ret[1]);
-  c = ADCX(c, z[2], _p[2], &ret[2]);
-  c = ADCX(c, z[3], _p[3], &ret[3]);
-  c = ADCX(c, z[4], _p[4], &ret[4]);
-  c = ADCX(c, z[5], _p[5], &ret[5]);
+  // ret = r + _p
+  c = ADCX(0, r0, p0, &r0);
+  c = ADCX(c, r1, p1, &r1);
+  c = ADCX(c, r2, p2, &r2);
+  c = ADCX(c, r3, p3, &r3);
+  c = ADCX(c, r4, p4, &r4);
+  c = ADCX(c, r5, p5, &r5);
+
+  ret[0] = r0; ret[1] = r1; ret[2] = r2;
+  ret[3] = r3; ret[4] = r4; ret[5] = r5;
 }
 
+// if flag == 1: ret = p - a
+// if flag == 0: ret = a 
 void cneg_mod_384(vec384 ret, const vec384 a, bool_t flag, const vec384 p)
 {
-  vec384 t;
+  uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+  uint64_t p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3], p4 = p[4], p5 = p[5];
+  uint64_t r0, r1, r2, r3, r4, r5;
+  const uint64_t m = 0 - (uint64_t)(flag & 1);
   uint8_t c;
-  uint64_t m = 0 - (uint64_t)(flag & 1);
 
-  // if flag == 1: ret = p - a
-  // if flag == 0: ret = a 
+  // r = p - a
+  c = SUBB(0, p0, a0, &r0);
+  c = SUBB(c, p1, a1, &r1);
+  c = SUBB(c, p2, a2, &r2);
+  c = SUBB(c, p3, a3, &r3);
+  c = SUBB(c, p4, a4, &r4);
+  c = SUBB(c, p5, a5, &r5);
 
-  // t = p - a
-  c = SUBB(0, p[0], a[0], &t[0]);
-  c = SUBB(c, p[1], a[1], &t[1]);
-  c = SUBB(c, p[2], a[2], &t[2]);
-  c = SUBB(c, p[3], a[3], &t[3]);
-  c = SUBB(c, p[4], a[4], &t[4]);
-  c = SUBB(c, p[5], a[5], &t[5]);
+  // r = r ^ a
+  r0 ^= a0;
+  r1 ^= a1;
+  r2 ^= a2;
+  r3 ^= a3;
+  r4 ^= a4;
+  r5 ^= a5;
 
-  // t = t ^ a
-  t[0] ^= a[0];
-  t[1] ^= a[1];
-  t[2] ^= a[2];
-  t[3] ^= a[3];
-  t[4] ^= a[4];
-  t[5] ^= a[5];
+  // r = r & m
+  r0 &= m;
+  r1 &= m;
+  r2 &= m;
+  r3 &= m;
+  r4 &= m;
+  r5 &= m;
 
-  // t = t & m
-  t[0] &= m;
-  t[1] &= m;
-  t[2] &= m;
-  t[3] &= m;
-  t[4] &= m;
-  t[5] &= m;
+  // r = r ^ a
+  r0 ^= a0;
+  r1 ^= a1;
+  r2 ^= a2;
+  r3 ^= a3;
+  r4 ^= a4;
+  r5 ^= a5;
 
-  // ret = t ^ a
-  ret[0] = t[0] ^ a[0];
-  ret[1] = t[1] ^ a[1];
-  ret[2] = t[2] ^ a[2];
-  ret[3] = t[3] ^ a[3];
-  ret[4] = t[4] ^ a[4];
-  ret[5] = t[5] ^ a[5];
+  ret[0] = r0; ret[1] = r1; ret[2] = r2;
+  ret[3] = r3; ret[4] = r4; ret[5] = r5;
 }
 
+// ret = (a << count) mod p
 void lshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p)
 {
   vec384 t; 
 
+  vec_copy(t, a, sizeof(vec384));
+
   while (count--) {
-    add_mod_384(ret, a, a, p);
+    add_mod_384(t, t, t, p);
   }
+
+  vec_copy(ret, t, sizeof(vec384));
 }
 
+// ret = a * 3 mod p
 void mul_by_3_mod_384(vec384 ret, const vec384 a, const vec384 p)
 {
   vec384 t;
 
-  lshift_mod_384(t, a, 1, p);
+  add_mod_384(t, a, a, p);
   add_mod_384(ret, t, a, p);
 }
 
+// ret = a * 8 mod p
 void mul_by_8_mod_384(vec384 ret, const vec384 a, const vec384 p)
 {
-  lshift_mod_384(ret, a, 3, p);
+  vec384 t;
+
+  add_mod_384(t, a, a, p);
+  add_mod_384(t, t, t, p);
+  add_mod_384(ret, t, t, p);
 }
 
 // fp2 arithmetic 
