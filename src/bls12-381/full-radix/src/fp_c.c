@@ -196,15 +196,6 @@ void lshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p)
   vec_copy(ret, t, sizeof(vec384));
 }
 
-// ret = a * 3 mod p
-void mul_by_3_mod_384(vec384 ret, const vec384 a, const vec384 p)
-{
-  vec384 t;
-
-  add_mod_384(t, a, a, p);
-  add_mod_384(ret, t, a, p);
-}
-
 // ret = a * 8 mod p
 void mul_by_8_mod_384(vec384 ret, const vec384 a, const vec384 p)
 {
@@ -213,6 +204,15 @@ void mul_by_8_mod_384(vec384 ret, const vec384 a, const vec384 p)
   add_mod_384(t, a, a, p);
   add_mod_384(t, t, t, p);
   add_mod_384(ret, t, t, p);
+}
+
+// ret = a * 3 mod p
+void mul_by_3_mod_384(vec384 ret, const vec384 a, const vec384 p)
+{
+  vec384 t;
+
+  add_mod_384(t, a, a, p);
+  add_mod_384(ret, t, a, p);
 }
 
 // ret = a * b * 2^-384 mod p
@@ -522,3 +522,124 @@ void sub_mod_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p)
   sub_mod_384(ret[1], a[1], b[1], p);
 }
 
+void mul_by_8_mod_384x(vec384x ret, const vec384x a, const vec384 p)
+{
+  mul_by_8_mod_384(ret[0], a[0], p);
+  mul_by_8_mod_384(ret[1], a[1], p);
+}
+
+void mul_by_3_mod_384x(vec384x ret, const vec384x a, const vec384 p)
+{
+  mul_by_3_mod_384(ret[0], a[0], p);
+  mul_by_3_mod_384(ret[1], a[1], p);
+}
+
+// double-length ret = a + b mod p
+void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
+{
+  uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4  = a[4],  a5  = a[5];
+  uint64_t a6 = a[6], a7 = a[7], a8 = a[8], a9 = a[9], a10 = a[10], a11 = a[11];
+  uint64_t b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4  = b[4],  b5  = b[5];
+  uint64_t b6 = b[6], b7 = b[7], b8 = b[8], b9 = b[9], b10 = b[10], b11 = b[11];
+  uint64_t p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3], p4  = p[4],  p5  = p[5];
+  uint64_t r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11;
+  uint64_t m;
+  uint8_t c;
+
+  // r = a + b
+  ADCX(c, &r0,  0, a0,  b0);
+  ADCX(c, &r1,  c, a1,  b1);
+  ADCX(c, &r2,  c, a2,  b2);
+  ADCX(c, &r3,  c, a3,  b3);
+  ADCX(c, &r4,  c, a4,  b4);
+  ADCX(c, &r5,  c, a5,  b5);
+  ADCX(c, &r6,  c, a6,  b6);
+  ADCX(c, &r7,  c, a7,  b7);
+  ADCX(c, &r8,  c, a8,  b8);
+  ADCX(c, &r9,  c, a9,  b9);
+  ADCX(c, &r10, c, a10, b10);
+  ADCX(c, &r11, c, a11, b11);
+
+  // r = r - p * 2^384
+  SUBB(c, &r6,  0, r6,  p0);
+  SUBB(c, &r7,  c, r7,  p1);
+  SUBB(c, &r8,  c, r8,  p2);
+  SUBB(c, &r9,  c, r9,  p3);
+  SUBB(c, &r10, c, r10, p4);
+  SUBB(c, &r11, c, r11, p5);
+
+  // m = 0 - c
+  m = 0 - (uint64_t)c;
+
+  // p = p & m
+  p0 &= m;
+  p1 &= m;
+  p2 &= m;
+  p3 &= m;
+  p4 &= m;
+  p5 &= m;
+
+  // r = r + p * 2^384
+  ADCX(c, &r6,  0, r6,  p0);
+  ADCX(c, &r7,  c, r7,  p1);
+  ADCX(c, &r8,  c, r8,  p2);
+  ADCX(c, &r9,  c, r9,  p3);
+  ADCX(c, &r10, c, r10, p4);
+  ADCX(c, &r11, c, r11, p5);
+
+  ret[0] = r0; ret[1]  = r1;  ret[2]  = r2;
+  ret[3] = r3; ret[4]  = r4;  ret[5]  = r5;
+  ret[6] = r6; ret[7]  = r7;  ret[8]  = r8;
+  ret[9] = r9; ret[10] = r10; ret[11] = r11;
+}
+
+// double-length ret = a - b mod p
+void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
+{
+  uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4  = a[4],  a5  = a[5];
+  uint64_t a6 = a[6], a7 = a[7], a8 = a[8], a9 = a[9], a10 = a[10], a11 = a[11];
+  uint64_t b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4  = b[4],  b5  = b[5];
+  uint64_t b6 = b[6], b7 = b[7], b8 = b[8], b9 = b[9], b10 = b[10], b11 = b[11];
+  uint64_t p0 = p[0], p1 = p[1], p2 = p[2], p3 = p[3], p4  = p[4],  p5  = p[5];
+  uint64_t r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11;
+  uint64_t m;
+  uint8_t c;
+
+  // r = a - b
+  SUBB(c, &r0,  0, a0,  b0);
+  SUBB(c, &r1,  c, a1,  b1);
+  SUBB(c, &r2,  c, a2,  b2);
+  SUBB(c, &r3,  c, a3,  b3);
+  SUBB(c, &r4,  c, a4,  b4);
+  SUBB(c, &r5,  c, a5,  b5);
+  SUBB(c, &r6,  c, a6,  b6);
+  SUBB(c, &r7,  c, a7,  b7);
+  SUBB(c, &r8,  c, a8,  b8);
+  SUBB(c, &r9,  c, a9,  b9);
+  SUBB(c, &r10, c, a10, b10);
+  SUBB(c, &r11, c, a11, b11);
+
+  // m = 0 - c
+  m = 0 - (uint64_t)c;
+
+  // p = p & m
+  p0 &= m;
+  p1 &= m;
+  p2 &= m;
+  p3 &= m;
+  p4 &= m;
+  p5 &= m;
+
+  // r = r + p * 2^384
+  ADCX(c, &r6,  0, r6,  p0);
+  ADCX(c, &r7,  c, r7,  p1);
+  ADCX(c, &r8,  c, r8,  p2);
+  ADCX(c, &r9,  c, r9,  p3);
+  ADCX(c, &r10, c, r10, p4);
+  ADCX(c, &r11, c, r11, p5);
+
+  ret[0] = r0; ret[1]  = r1;  ret[2]  = r2;
+  ret[3] = r3; ret[4]  = r4;  ret[5]  = r5;
+  ret[6] = r6; ret[7]  = r7;  ret[8]  = r8;
+  ret[9] = r9; ret[10] = r10; ret[11] = r11;
+}
