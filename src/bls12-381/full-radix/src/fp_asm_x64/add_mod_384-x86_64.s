@@ -1067,152 +1067,152 @@ __sub_mod_384:
 # 	.byte	0xf3,0xc3
 # .cfi_endproc	
 # .size	sub_mod_384x,.-sub_mod_384x
-.globl	mul_by_1_plus_i_mod_384x
-.hidden	mul_by_1_plus_i_mod_384x
-.type	mul_by_1_plus_i_mod_384x,@function
-.align	32
-mul_by_1_plus_i_mod_384x:
-.cfi_startproc
-	.byte	0xf3,0x0f,0x1e,0xfa
+# .globl	mul_by_1_plus_i_mod_384x
+# .hidden	mul_by_1_plus_i_mod_384x
+# .type	mul_by_1_plus_i_mod_384x,@function
+# .align	32
+# mul_by_1_plus_i_mod_384x:
+# .cfi_startproc
+# 	.byte	0xf3,0x0f,0x1e,0xfa
 
 
-	pushq	%rbp
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%rbp,-16
-	pushq	%rbx
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%rbx,-24
-	pushq	%r12
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r12,-32
-	pushq	%r13
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r13,-40
-	pushq	%r14
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r14,-48
-	pushq	%r15
-.cfi_adjust_cfa_offset	8
-.cfi_offset	%r15,-56
-	subq	$56,%rsp
-.cfi_adjust_cfa_offset	56
+# 	pushq	%rbp
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%rbp,-16
+# 	pushq	%rbx
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%rbx,-24
+# 	pushq	%r12
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r12,-32
+# 	pushq	%r13
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r13,-40
+# 	pushq	%r14
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r14,-48
+# 	pushq	%r15
+# .cfi_adjust_cfa_offset	8
+# .cfi_offset	%r15,-56
+# 	subq	$56,%rsp
+# .cfi_adjust_cfa_offset	56
 
 
-	movq	0(%rsi),%r8
-	movq	8(%rsi),%r9
-	movq	16(%rsi),%r10
-	movq	24(%rsi),%r11
-	movq	32(%rsi),%r12
-	movq	40(%rsi),%r13
+# 	movq	0(%rsi),%r8
+# 	movq	8(%rsi),%r9
+# 	movq	16(%rsi),%r10
+# 	movq	24(%rsi),%r11
+# 	movq	32(%rsi),%r12
+# 	movq	40(%rsi),%r13
 
-	movq	%r8,%r14
-	addq	48(%rsi),%r8
-	movq	%r9,%r15
-	adcq	56(%rsi),%r9
-	movq	%r10,%rax
-	adcq	64(%rsi),%r10
-	movq	%r11,%rbx
-	adcq	72(%rsi),%r11
-	movq	%r12,%rcx
-	adcq	80(%rsi),%r12
-	movq	%r13,%rbp
-	adcq	88(%rsi),%r13
-	movq	%rdi,48(%rsp)
-	sbbq	%rdi,%rdi
+# 	movq	%r8,%r14
+# 	addq	48(%rsi),%r8
+# 	movq	%r9,%r15
+# 	adcq	56(%rsi),%r9
+# 	movq	%r10,%rax
+# 	adcq	64(%rsi),%r10
+# 	movq	%r11,%rbx
+# 	adcq	72(%rsi),%r11
+# 	movq	%r12,%rcx
+# 	adcq	80(%rsi),%r12
+# 	movq	%r13,%rbp
+# 	adcq	88(%rsi),%r13
+# 	movq	%rdi,48(%rsp)
+# 	sbbq	%rdi,%rdi
 
-	subq	48(%rsi),%r14
-	sbbq	56(%rsi),%r15
-	sbbq	64(%rsi),%rax
-	sbbq	72(%rsi),%rbx
-	sbbq	80(%rsi),%rcx
-	sbbq	88(%rsi),%rbp
-	sbbq	%rsi,%rsi
+# 	subq	48(%rsi),%r14
+# 	sbbq	56(%rsi),%r15
+# 	sbbq	64(%rsi),%rax
+# 	sbbq	72(%rsi),%rbx
+# 	sbbq	80(%rsi),%rcx
+# 	sbbq	88(%rsi),%rbp
+# 	sbbq	%rsi,%rsi
 
-	movq	%r8,0(%rsp)
-	movq	0(%rdx),%r8
-	movq	%r9,8(%rsp)
-	movq	8(%rdx),%r9
-	movq	%r10,16(%rsp)
-	movq	16(%rdx),%r10
-	movq	%r11,24(%rsp)
-	movq	24(%rdx),%r11
-	movq	%r12,32(%rsp)
-	andq	%rsi,%r8
-	movq	32(%rdx),%r12
-	movq	%r13,40(%rsp)
-	andq	%rsi,%r9
-	movq	40(%rdx),%r13
-	andq	%rsi,%r10
-	andq	%rsi,%r11
-	andq	%rsi,%r12
-	andq	%rsi,%r13
-	movq	48(%rsp),%rsi
+# 	movq	%r8,0(%rsp)
+# 	movq	0(%rdx),%r8
+# 	movq	%r9,8(%rsp)
+# 	movq	8(%rdx),%r9
+# 	movq	%r10,16(%rsp)
+# 	movq	16(%rdx),%r10
+# 	movq	%r11,24(%rsp)
+# 	movq	24(%rdx),%r11
+# 	movq	%r12,32(%rsp)
+# 	andq	%rsi,%r8
+# 	movq	32(%rdx),%r12
+# 	movq	%r13,40(%rsp)
+# 	andq	%rsi,%r9
+# 	movq	40(%rdx),%r13
+# 	andq	%rsi,%r10
+# 	andq	%rsi,%r11
+# 	andq	%rsi,%r12
+# 	andq	%rsi,%r13
+# 	movq	48(%rsp),%rsi
 
-	addq	%r8,%r14
-	movq	0(%rsp),%r8
-	adcq	%r9,%r15
-	movq	8(%rsp),%r9
-	adcq	%r10,%rax
-	movq	16(%rsp),%r10
-	adcq	%r11,%rbx
-	movq	24(%rsp),%r11
-	adcq	%r12,%rcx
-	movq	32(%rsp),%r12
-	adcq	%r13,%rbp
-	movq	40(%rsp),%r13
+# 	addq	%r8,%r14
+# 	movq	0(%rsp),%r8
+# 	adcq	%r9,%r15
+# 	movq	8(%rsp),%r9
+# 	adcq	%r10,%rax
+# 	movq	16(%rsp),%r10
+# 	adcq	%r11,%rbx
+# 	movq	24(%rsp),%r11
+# 	adcq	%r12,%rcx
+# 	movq	32(%rsp),%r12
+# 	adcq	%r13,%rbp
+# 	movq	40(%rsp),%r13
 
-	movq	%r14,0(%rsi)
-	movq	%r8,%r14
-	movq	%r15,8(%rsi)
-	movq	%rax,16(%rsi)
-	movq	%r9,%r15
-	movq	%rbx,24(%rsi)
-	movq	%rcx,32(%rsi)
-	movq	%r10,%rax
-	movq	%rbp,40(%rsi)
+# 	movq	%r14,0(%rsi)
+# 	movq	%r8,%r14
+# 	movq	%r15,8(%rsi)
+# 	movq	%rax,16(%rsi)
+# 	movq	%r9,%r15
+# 	movq	%rbx,24(%rsi)
+# 	movq	%rcx,32(%rsi)
+# 	movq	%r10,%rax
+# 	movq	%rbp,40(%rsi)
 
-	subq	0(%rdx),%r8
-	movq	%r11,%rbx
-	sbbq	8(%rdx),%r9
-	sbbq	16(%rdx),%r10
-	movq	%r12,%rcx
-	sbbq	24(%rdx),%r11
-	sbbq	32(%rdx),%r12
-	movq	%r13,%rbp
-	sbbq	40(%rdx),%r13
-	sbbq	$0,%rdi
+# 	subq	0(%rdx),%r8
+# 	movq	%r11,%rbx
+# 	sbbq	8(%rdx),%r9
+# 	sbbq	16(%rdx),%r10
+# 	movq	%r12,%rcx
+# 	sbbq	24(%rdx),%r11
+# 	sbbq	32(%rdx),%r12
+# 	movq	%r13,%rbp
+# 	sbbq	40(%rdx),%r13
+# 	sbbq	$0,%rdi
 
-	cmovcq	%r14,%r8
-	cmovcq	%r15,%r9
-	cmovcq	%rax,%r10
-	movq	%r8,48(%rsi)
-	cmovcq	%rbx,%r11
-	movq	%r9,56(%rsi)
-	cmovcq	%rcx,%r12
-	movq	%r10,64(%rsi)
-	cmovcq	%rbp,%r13
-	movq	%r11,72(%rsi)
-	movq	%r12,80(%rsi)
-	movq	%r13,88(%rsi)
+# 	cmovcq	%r14,%r8
+# 	cmovcq	%r15,%r9
+# 	cmovcq	%rax,%r10
+# 	movq	%r8,48(%rsi)
+# 	cmovcq	%rbx,%r11
+# 	movq	%r9,56(%rsi)
+# 	cmovcq	%rcx,%r12
+# 	movq	%r10,64(%rsi)
+# 	cmovcq	%rbp,%r13
+# 	movq	%r11,72(%rsi)
+# 	movq	%r12,80(%rsi)
+# 	movq	%r13,88(%rsi)
 
-	movq	56+0(%rsp),%r15
-.cfi_restore	%r15
-	movq	56+8(%rsp),%r14
-.cfi_restore	%r14
-	movq	56+16(%rsp),%r13
-.cfi_restore	%r13
-	movq	56+24(%rsp),%r12
-.cfi_restore	%r12
-	movq	56+32(%rsp),%rbx
-.cfi_restore	%rbx
-	movq	56+40(%rsp),%rbp
-.cfi_restore	%rbp
-	leaq	56+48(%rsp),%rsp
-.cfi_adjust_cfa_offset	-56-8*6
+# 	movq	56+0(%rsp),%r15
+# .cfi_restore	%r15
+# 	movq	56+8(%rsp),%r14
+# .cfi_restore	%r14
+# 	movq	56+16(%rsp),%r13
+# .cfi_restore	%r13
+# 	movq	56+24(%rsp),%r12
+# .cfi_restore	%r12
+# 	movq	56+32(%rsp),%rbx
+# .cfi_restore	%rbx
+# 	movq	56+40(%rsp),%rbp
+# .cfi_restore	%rbp
+# 	leaq	56+48(%rsp),%rsp
+# .cfi_adjust_cfa_offset	-56-8*6
 
-	.byte	0xf3,0xc3
-.cfi_endproc	
-.size	mul_by_1_plus_i_mod_384x,.-mul_by_1_plus_i_mod_384x
+# 	.byte	0xf3,0xc3
+# .cfi_endproc	
+# .size	mul_by_1_plus_i_mod_384x,.-mul_by_1_plus_i_mod_384x
 .globl	sgn0_pty_mod_384
 .hidden	sgn0_pty_mod_384
 .type	sgn0_pty_mod_384,@function

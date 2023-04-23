@@ -507,6 +507,74 @@ void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
   ret[3] = z3; ret[4] = z4; ret[5] = z5; 
 }
 
+void mul_384(vec768 ret, const vec384 a, const vec384 b)
+{
+  uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
+  uint64_t b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5];
+  uint64_t z0, z1, z2, z3, z4, z5, z6, z7, z8, z9, z10, z11;
+  uint64_t t0, t1;
+  uint8_t c0, c1;
+
+  // z = a0 * b
+  MULX(&z1, z0, a0, b0);
+  MULX(&z2, t0, a0, b1); ADCX(c0, &z1,  0, z1, t0);
+  MULX(&z3, t0, a0, b2); ADCX(c0, &z2, c0, z2, t0);
+  MULX(&z4, t0, a0, b3); ADCX(c0, &z3, c0, z3, t0);
+  MULX(&z5, t0, a0, b4); ADCX(c0, &z4, c0, z4, t0);
+  MULX(&z6, t0, a0, b5); ADCX(c0, &z5, c0, z5, t0);
+                         z6 = z6 + c0;
+
+  // z = a1 * b + z
+  MULX(&t1, t0, a1, b0); ADCX(c0, &z1,  0, z1, t0); ADCX(c1, &z2,  0, z2, t1);
+  MULX(&t1, t0, a1, b1); ADCX(c0, &z2, c0, z2, t0); ADCX(c1, &z3, c1, z3, t1);
+  MULX(&t1, t0, a1, b2); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0, a1, b3); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0, a1, b4); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+  MULX(&t1, t0, a1, b5); ADCX(c0, &z6, c0, z6, t0); ADCX(c1, &z7, c1, z7, t1);
+                         z7 = z7 + c0;
+  
+  // z = a2 * b + z
+  MULX(&t1, t0, a2, b0); ADCX(c0, &z2,  0, z2, t0); ADCX(c1, &z3,  0, z3, t1);
+  MULX(&t1, t0, a2, b1); ADCX(c0, &z3, c0, z3, t0); ADCX(c1, &z4, c1, z4, t1);
+  MULX(&t1, t0, a2, b2); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0, a2, b3); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+  MULX(&t1, t0, a2, b4); ADCX(c0, &z6, c0, z6, t0); ADCX(c1, &z7, c1, z7, t1);
+  MULX(&t1, t0, a2, b5); ADCX(c0, &z7, c0, z7, t0); ADCX(c1, &z8, c1, z8, t1);
+                         z8 = z8 + c0;
+  
+  // z = a3 * b + z
+  MULX(&t1, t0, a3, b0); ADCX(c0, &z3,  0, z3, t0); ADCX(c1, &z4,  0, z4, t1);
+  MULX(&t1, t0, a3, b1); ADCX(c0, &z4, c0, z4, t0); ADCX(c1, &z5, c1, z5, t1);
+  MULX(&t1, t0, a3, b2); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6, c1, z6, t1);
+  MULX(&t1, t0, a3, b3); ADCX(c0, &z6, c0, z6, t0); ADCX(c1, &z7, c1, z7, t1);
+  MULX(&t1, t0, a3, b4); ADCX(c0, &z7, c0, z7, t0); ADCX(c1, &z8, c1, z8, t1);
+  MULX(&t1, t0, a3, b5); ADCX(c0, &z8, c0, z8, t0); ADCX(c1, &z9, c1, z9, t1);
+                         z9 = z9 + c0;
+
+  // z = a4 * b + z
+  MULX(&t1, t0, a4, b0); ADCX(c0, &z4,  0, z4, t0); ADCX(c1, &z5,   0, z5,  t1);
+  MULX(&t1, t0, a4, b1); ADCX(c0, &z5, c0, z5, t0); ADCX(c1, &z6,  c1, z6,  t1);
+  MULX(&t1, t0, a4, b2); ADCX(c0, &z6, c0, z6, t0); ADCX(c1, &z7,  c1, z7,  t1);
+  MULX(&t1, t0, a4, b3); ADCX(c0, &z7, c0, z7, t0); ADCX(c1, &z8,  c1, z8,  t1);
+  MULX(&t1, t0, a4, b4); ADCX(c0, &z8, c0, z8, t0); ADCX(c1, &z9,  c1, z9,  t1);
+  MULX(&t1, t0, a4, b5); ADCX(c0, &z9, c0, z9, t0); ADCX(c1, &z10, c1, z10, t1);
+                         z10 = z10 + c0;
+
+  // z = a5 * b + z
+  MULX(&t1, t0, a5, b0); ADCX(c0, &z5,   0, z5,  t0); ADCX(c1, &z6,   0, z6,  t1);
+  MULX(&t1, t0, a5, b1); ADCX(c0, &z6,  c0, z6,  t0); ADCX(c1, &z7,  c1, z7,  t1);
+  MULX(&t1, t0, a5, b2); ADCX(c0, &z7,  c0, z7,  t0); ADCX(c1, &z8,  c1, z8,  t1);
+  MULX(&t1, t0, a5, b3); ADCX(c0, &z8,  c0, z8,  t0); ADCX(c1, &z9,  c1, z9,  t1);
+  MULX(&t1, t0, a5, b4); ADCX(c0, &z9,  c0, z9,  t0); ADCX(c1, &z10, c1, z10, t1);
+  MULX(&t1, t0, a5, b5); ADCX(c0, &z10, c0, z10, t0); ADCX(c1, &z11, c1, z11, t1);
+                         z11 = z11 + c0;
+
+  ret[0] = z0; ret[1]  = z1;  ret[2]  = z2;
+  ret[3] = z3; ret[4]  = z4;  ret[5]  = z5;
+  ret[6] = z6; ret[7]  = z7;  ret[8]  = z8;
+  ret[9] = z9; ret[10] = z10; ret[11] = z11;
+} 
+
 
 // fp2 arithmetic 
 
@@ -515,27 +583,30 @@ void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
 void mul_mont_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p, limb_t n0)
 {
   vec384 t0, t1, t2, t3;
+  vec384 r0, r1;
 
-  // t3 = -b1
-  cneg_mod_384(t3, b[1], 1, p);
   // t0 = a0 * b0
   mul_mont_384(t0, a[0], b[0], p, n0);
   // t1 = a0 * b1
   mul_mont_384(t1, a[0], b[1], p, n0);
   // t2 = a1 * b0
   mul_mont_384(t2, a[1], b[0], p, n0);
-  // t3 = a1 * -b1
-  mul_mont_384(t3, a[1],   t3, p, n0);
+  // t3 = a1 * b1
+  mul_mont_384(t3, a[1], b[1], p, n0);
   // r0 = a0*b0 - a1*b1
-  add_mod_384(ret[0], t0, t3, p);
+  sub_mod_384(r0, t0, t3, p);
   // r1 = a0*b1 + a1*b0
-  add_mod_384(ret[1], t1, t2, p);
+  add_mod_384(r1, t1, t2, p);
+
+  vec_copy(ret[0], r0, sizeof(vec384));
+  vec_copy(ret[1], r1, sizeof(vec384));
 }
 
 // Karatsuba
 void sqr_mont_384x(vec384x ret, const vec384x a, const vec384 p, limb_t n0)
 {
   vec384 t0, t1, t2, t3;
+  vec384 r0, r1;
 
   // t0 = a0 + a1
   add_mod_384(t0, a[0], a[1], p);
@@ -544,33 +615,67 @@ void sqr_mont_384x(vec384x ret, const vec384x a, const vec384 p, limb_t n0)
   // t2 = 2 * a0
   add_mod_384(t2, a[0], a[0], p);
   // r0 = (a0+a1) * (a0-a1)
-  mul_mont_384(ret[0], t0, t1, p, n0);
+  mul_mont_384(r0, t0, t1, p, n0);
   // r1 = 2*a0 * a1
-  mul_mont_384(ret[1], t2, a[1], p, n0);
+  mul_mont_384(r1, t2, a[1], p, n0);
+
+  vec_copy(ret[0], r0, sizeof(vec384));
+  vec_copy(ret[1], r1, sizeof(vec384));
 }
 
 void add_mod_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p)
 {
-  add_mod_384(ret[0], a[0], b[0], p);
-  add_mod_384(ret[1], a[1], b[1], p);
+  vec384 r0, r1;
+
+  add_mod_384(r0, a[0], b[0], p);
+  add_mod_384(r1, a[1], b[1], p);
+
+  vec_copy(ret[0], r0, sizeof(vec384));
+  vec_copy(ret[1], r1, sizeof(vec384));
 }
 
 void sub_mod_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p)
-{
-  sub_mod_384(ret[0], a[0], b[0], p);
-  sub_mod_384(ret[1], a[1], b[1], p);
+{  
+  vec384 r0, r1;
+
+  sub_mod_384(r0, a[0], b[0], p);
+  sub_mod_384(r1, a[1], b[1], p);
+
+  vec_copy(ret[0], r0, sizeof(vec384));
+  vec_copy(ret[1], r1, sizeof(vec384));
 }
 
 void mul_by_8_mod_384x(vec384x ret, const vec384x a, const vec384 p)
 {
-  mul_by_8_mod_384(ret[0], a[0], p);
-  mul_by_8_mod_384(ret[1], a[1], p);
+  vec384 r0, r1;
+
+  mul_by_8_mod_384(r0, a[0], p);
+  mul_by_8_mod_384(r1, a[1], p);
+
+  vec_copy(ret[0], r0, sizeof(vec384));
+  vec_copy(ret[1], r1, sizeof(vec384));
 }
 
 void mul_by_3_mod_384x(vec384x ret, const vec384x a, const vec384 p)
 {
-  mul_by_3_mod_384(ret[0], a[0], p);
-  mul_by_3_mod_384(ret[1], a[1], p);
+  vec384 r0, r1;
+
+  mul_by_3_mod_384(r0, a[0], p);
+  mul_by_3_mod_384(r1, a[1], p);
+
+  vec_copy(ret[0], r0, sizeof(vec384));
+  vec_copy(ret[1], r1, sizeof(vec384));
+}
+
+void mul_by_1_plus_i_mod_384x(vec384x ret, const vec384x a, const vec384 p)
+{
+  vec384 r0, r1;
+
+  sub_mod_384(r0, a[0], a[1], p);
+  add_mod_384(r1, a[0], a[1], p);
+
+  vec_copy(ret[0], r0, sizeof(vec384));
+  vec_copy(ret[1], r1, sizeof(vec384));
 }
 
 // double-length ret = a + b mod (p * 2^384)

@@ -51,6 +51,8 @@ void mul_mont_384(vec384 ret, const vec384 a, const vec384 b,
 void sqr_mont_384(vec384 ret, const vec384 a, const vec384 p, limb_t n0);
 // done
 void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0);
+// done
+void mul_384(vec768 ret, const vec384 a, const vec384 b);
 
 void ct_inverse_mod_383(vec768 ret, const vec384 inp, const vec384 mod,
                                                       const vec384 modx);
@@ -60,8 +62,6 @@ void mul_mont_384x(vec384x ret, const vec384x a, const vec384x b,
                    const vec384 p, limb_t n0);
 // done
 void sqr_mont_384x(vec384x ret, const vec384x a, const vec384 p, limb_t n0);
-void mul_382x(vec768 ret[2], const vec384x a, const vec384x b, const vec384 p);
-void sqr_382x(vec768 ret[2], const vec384x a, const vec384 p);
 
 // done
 void add_mod_384x(vec384x ret, const vec384x a, const vec384x b,
@@ -73,11 +73,12 @@ void sub_mod_384x(vec384x ret, const vec384x a, const vec384x b,
 void mul_by_8_mod_384x(vec384x ret, const vec384x a, const vec384 p);
 // done
 void mul_by_3_mod_384x(vec384x ret, const vec384x a, const vec384 p);
+// done
 void mul_by_1_plus_i_mod_384x(vec384x ret, const vec384x a, const vec384 p);
 // done
 void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
                      const vec384 p);
-//done
+// done
 void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
                      const vec384 p);
 
