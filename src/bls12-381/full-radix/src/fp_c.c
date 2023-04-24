@@ -575,6 +575,25 @@ void mul_384(vec768 ret, const vec384 a, const vec384 b)
   ret[9] = z9; ret[10] = z10; ret[11] = z11;
 } 
 
+void flt_inverse_mont_384(vec384 ret, const vec384 inp, const vec384 p, limb_t n0)
+{
+  vec384 r = { ONE_MONT_P }, a, p_minus_2, two = { 2 };
+  uint64_t t;
+  size_t i, j;
+
+  vec_copy(a, inp, sizeof(vec384));
+  sub_mod_384(p_minus_2, p, two, p);
+
+  for (i = 0; i < NLIMBS(384); i++) {
+    t = p_minus_2[i];
+    for (j = 0; j < LIMB_T_BITS; j++, t >>= 1) {
+      if (t & 1) mul_mont_384(r, r, a, p, n0);
+      sqr_mont_384(a, a, p, n0);
+    }
+  }
+
+  vec_copy(ret, r, sizeof(vec384));
+}
 
 // fp2 arithmetic 
 

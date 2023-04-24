@@ -1,5 +1,5 @@
 CC = gcc-9
-FILES = $(wildcard src/*.c) $(wildcard src/fp_asm_x64/*.s)
+FILES = $(wildcard src/*.c)
 OUTPUT = bls12-381
 FLAGS = -O3 -fomit-frame-pointer -mbmi2 -madx -mtune=native
 

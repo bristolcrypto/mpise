@@ -3,6 +3,7 @@
 
 void reciprocal_fp(vec384 out, const vec384 inp)
 {
+#if 0
     static const vec384 Px8 = {    /* left-aligned value of the modulus */
         TO_LIMB_T(0xcff7fffffffd5558), TO_LIMB_T(0xf55ffff58a9ffffd),
         TO_LIMB_T(0x39869507b587b120), TO_LIMB_T(0x23ba5c279c2895fb),
@@ -22,6 +23,9 @@ void reciprocal_fp(vec384 out, const vec384 inp)
     mul_mont_384(temp.r[0], temp.r[0], RRx4, BLS12_381_P, p0);
 
     vec_copy(out, temp.r[0], sizeof(vec384));
+#else 
+    flt_inverse_mont_384(out, inp, BLS12_381_P, p0);
+#endif 
 }
 
 void reciprocal_fp2(vec384x out, const vec384x inp)
