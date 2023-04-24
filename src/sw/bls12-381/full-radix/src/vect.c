@@ -507,7 +507,7 @@ void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
   ret[3] = z3; ret[4] = z4; ret[5] = z5; 
 }
 
-void mul_384(vec768 ret, const vec384 a, const vec384 b)
+void mul_384_c(vec768 ret, const vec384 a, const vec384 b)
 {
   uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
   uint64_t b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5];

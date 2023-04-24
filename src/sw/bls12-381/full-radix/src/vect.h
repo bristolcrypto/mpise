@@ -54,8 +54,9 @@ void mul_mont_384(vec384 ret, const vec384 a, const vec384 b,
 void sqr_mont_384(vec384 ret, const vec384 a, const vec384 p, limb_t n0);
 // done
 void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0);
-// done
-void mul_384(vec768 ret, const vec384 a, const vec384 b);
+// mul_384
+void mul_384_c(vec768 ret, const vec384 a, const vec384 b);
+void mul_384_isa(vec768 ret, const vec384 a, const vec384 b);
 
 // void ct_inverse_mod_383(vec768 ret, const vec384 inp, const vec384 mod,
 //                                                       const vec384 modx);
@@ -94,6 +95,7 @@ void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
 #define add_mod_384   add_mod_384_isa
 #define sub_mod_384   sub_mod_384_isa
 #define cneg_mod_384  cneg_mod_384_isa 
+#define mul_384       mul_384_isa
 
 
 #define restrict __restrict__
