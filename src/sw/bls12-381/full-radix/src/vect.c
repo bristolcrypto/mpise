@@ -217,7 +217,7 @@ void mul_by_3_mod_384(vec384 ret, const vec384 a, const vec384 p)
 
 // ret = a * b * 2^-384 mod p
 // coarsely integrated operand-scanning (CIOS)
-void mul_mont_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p, limb_t n0)
+void mul_mont_384_c(vec384 ret, const vec384 a, const vec384 b, const vec384 p, limb_t n0)
 {
   uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5];
   uint64_t b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3], b4 = b[4], b5 = b[5];
@@ -377,6 +377,14 @@ void mul_mont_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p, li
   ret[3] = z3; ret[4] = z4; ret[5] = z5; 
 }
 
+void mul_mont_384_isa(vec384 ret, const vec384 a, const vec384 b, const vec384 p, limb_t n0)
+{
+  vec768 z;
+
+  mul_384_isa(z, a, b);
+  redc_mont_384_isa(ret, z, p, n0);
+}
+
 // ret = a^2 * 2^-384 mod p
 // todo: dedicated squaring
 void sqr_mont_384(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
@@ -386,7 +394,7 @@ void sqr_mont_384(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
 
 // ret = a * 2^-384 mod p
 // todo: optimize with product-scanning
-void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
+void redc_mont_384_c(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
 {
   uint64_t z0 = a[0], z1 = a[1], z2 = a[2], z3 = a[3], z4  = a[4],  z5  = a[5];
   uint64_t z6 = a[6], z7 = a[7], z8 = a[8], z9 = a[9], z10 = a[10], z11 = a[11];
@@ -490,7 +498,7 @@ void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
   SUBB(c0, &z4, c0, z4, p4);
   SUBB(c0, &z5, c0, z5, p5);
   t0 = 0 - (uint64_t)c0;
-  p0 &= t0; 
+  p0 &= t0;
   p1 &= t0; 
   p2 &= t0; 
   p3 &= t0;
@@ -505,6 +513,12 @@ void redc_mont_384(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
 
   ret[0] = z0; ret[1] = z1; ret[2] = z2;
   ret[3] = z3; ret[4] = z4; ret[5] = z5; 
+}
+
+void redc_mont_384_isa(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
+{
+  _redc_mont_384_isa(ret, a, p, n0);
+  _redc_once_384_isa(ret, ret, p);
 }
 
 void mul_384_c(vec768 ret, const vec384 a, const vec384 b)
