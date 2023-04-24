@@ -26,32 +26,19 @@
 ## Organization 
 
 ```
-├── bin                       - scripts (e.g., environment configuration)
-├── doc                       - documentation (e.g., encoding and design)
-├── src                       - source code
-│   ├── hw                    - hardware part
-│   │   ├── fpga                - source code for the FPGA implementation using Vivado
-│   │   │   ├── board             - source for supporting targeted boards (i.e., sakura-x and arty100T)
-│   │   │   ├── script            - scripts for handling the FPGA bitstream on Vivado
-│   │   │   ├── soc               - the Vivado projects based on the Rocket Chip SoC.
-│   │   │   └── software          - build algorithm-specific sofware running on the FPGA.
-│   │   ├── rocketchip          - source code for ISE-enabled Rocket Chip
-│   │   ├── rtl                 - rtl implementation
-│   │   │   ├── rvzbk             - Implementation of RV64Zbk ISE
-│   │   │   ├── bls12-381         - Implementation of RV64 bls12-381 ISE
-│   │   │   └── x25519            - Implementation of RV64 x25519    ISE
-│   │   └── verilator         - source code for emulator for use with Rocket Chip 
-│   │
-│   ├── bls12-381             - bls12-381 implementations
-│   │   ├── full-radix            - radix-2^64 (pure-sw + ise-assisted)
-│   │   └── reduced-radix         - radix-2^55 (pure-sw + ise-assisted)
-│   └── x25519                - x25519 implementations
-│       ├── full-radix            - radix-2^64 (pure-sw + ise-assisted)
-│       └── reduced-radix         - radix-2^51 (pure-sw + ise-assisted)
-├── bitstream                 - pre-built bitstreams for the arty100T board 
-├── hw-toolchain              - scripts to install RISC-V hardware toolchains 
-├── sw-toolchain              - scripts to install RISC-V software toolchains 
-└── work                      - working directory for build
+├── bin                     - scripts (e.g., environment configuration)
+├── build                   - working directory for build
+└── src                     - source code
+    ├── hw                    - source code for hardware
+    ├── hw-toolchain          - source code for hardware toolchain
+    ├── sw                    - source code for software
+    │   ├── bls12-381           - optimal Ate pairing over BLS12-381 
+    │   │   ├── full-radix        - 64-bit-per-limb implementation   
+    │   │   └── reduced-radix     - 55-bit-per-limb implementation   
+    │   └── x25519              - x25519 key exchange
+    │       ├── full-radix        - 64-bit-per-limb implementation   
+    │       └── reduced-radix     - 51-bit-per-limb implementation  
+    └── sw-toolchain          - source code for software toolchain
 ```
 
 ## Usage 
