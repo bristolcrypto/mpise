@@ -5,6 +5,11 @@
 #include "point.h"
 #include "consts.h"
 
+void miller_loop_n(vec384fp12 ret, const POINTonE2_affine Q[],
+                                   const POINTonE1_affine P[], size_t n);
+                                   
+void final_exp(vec384fp12 ret, const vec384fp12 f);
+
 void optimal_ate_pairing(vec384fp12 ret, POINTonE2_affine Q[], 
                                          POINTonE1_affine P[], size_t n);
 

@@ -168,11 +168,21 @@ void timing()
   POINTonE1_affine P[1];
   POINTonE2 _Q[1];
   POINTonE1 _P[1];
-  vec384fp12 e1;
+  vec384fp12 e1, f;
 
   POINTonE2_double(_Q, &BLS12_381_G2);
   POINTonE1_to_affine(P, &BLS12_381_G1);
   POINTonE2_to_affine(Q, _Q);
+
+  printf("- miller_loop:        ");
+  LOAD_CACHE(miller_loop_n(f, Q, P, 1), 1);
+  MEASURE_CYCLES(miller_loop_n(f, Q, P, 1), 10);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- final_exp:          ");
+  LOAD_CACHE(final_exp(e1, f), 1);
+  MEASURE_CYCLES(final_exp(e1, f), 10);
+  printf("  #cycle = %lld\n", diff_cycles);
 
   printf("- optimal_ate_pairing:");
   LOAD_CACHE(optimal_ate_pairing(e1, Q, P, 1), 1);

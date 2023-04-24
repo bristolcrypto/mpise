@@ -166,8 +166,8 @@ static void add_n_dbl_n(vec384fp12 ret, POINTonE2 T[],
     }
 }
 
-static void miller_loop_n(vec384fp12 ret, const POINTonE2_affine Q[],
-                                          const POINTonE1_affine P[], size_t n)
+void miller_loop_n(vec384fp12 ret, const POINTonE2_affine Q[],
+                                   const POINTonE1_affine P[], size_t n)
 {
     POINTonE2 T[n];
     POINTonE1_affine Px2[n];
@@ -226,7 +226,7 @@ static void raise_to_z_div_by_2(vec384fp12 ret, const vec384fp12 a)
 /*
  * Adaptation from <zkcrypto>/pairing/src/bls12_381/mod.rs
  */
-static void final_exp(vec384fp12 ret, const vec384fp12 f)
+void final_exp(vec384fp12 ret, const vec384fp12 f)
 {
     vec384fp12 y0, y1, y2, y3;
 
