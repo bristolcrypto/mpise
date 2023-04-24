@@ -2,7 +2,7 @@
 
 ## Overview
 
-- We consider the RISC-V baseline ISA as being `rv64gc` meaning that the following standard extensions
+We consider the RISC-V baseline ISA as being `rv64gc` meaning that the following standard extensions
   - M      (multiplication)
   - A      (atomic)
   - F      (single-precision floating-point)
@@ -13,15 +13,18 @@
 
 ## Implementations 
 
-- We plan to develop 4 types of implementation for each of X25519 and optimal Ate pairing over BLS12-381:
-  - [x] full-radix    pure-software  x25519
-  - [x] full-radix    ISE-assisted   x25519
-  - [x] reduced-radix pure-software  x25519
-  - [x] reduced-radix ISE-assisted   x25519
-  - [ ] full-radix    pure-software  BLS12-381 pairing
-  - [ ] full-radix    ISE-assisted   BLS12-381 pairing
-  - [ ] reduced-radix pure-software  BLS12-381 pairing
-  - [ ] reduced-radix ISE-assisted   BLS12-381 pairing
+We plan to develop 4 types of implementation for each of X25519 and optimal Ate pairing over BLS12-381:
+
+  |  Status  |  Radix   |  Implementation |  Algorithm         |
+  | :------: | :------: | :-------------: | :----------------: |
+  |  &check; |  full    |  isa-only       |  x25519            |
+  |  &check; |  full    |  ise-assisted   |  x25519            |
+  |  &check; |  reduced |  isa-only       |  x25519            |
+  |  &check; |  reduced |  ise-assisted   |  x25519            |
+  |          |  full    |  isa-only       |  bls12-381 pairing |
+  |          |  full    |  ise-assisted   |  bls12-381 pairing |
+  |          |  reduced |  isa-only       |  bls12-381 pairing |
+  |          |  reduced |  ise-assisted   |  bls12-381 pairing |
 
 ## Organization 
 
