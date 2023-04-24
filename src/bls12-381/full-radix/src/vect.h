@@ -56,7 +56,8 @@ void mul_384(vec768 ret, const vec384 a, const vec384 b);
 
 // void ct_inverse_mod_383(vec768 ret, const vec384 inp, const vec384 mod,
 //                                                       const vec384 modx);
-// currently use Fermat's Little Theorem instead
+// currently use Fermat's Little Theorem instead 
+// done
 void flt_inverse_mont_384(vec384 ret, const vec384 inp, const vec384 p, 
                           limb_t n0);
 
