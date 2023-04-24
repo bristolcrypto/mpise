@@ -385,6 +385,14 @@ void mul_mont_384_isa(vec384 ret, const vec384 a, const vec384 b, const vec384 p
   redc_mont_384_isa(ret, z, p, n0);
 }
 
+void mul_mont_384_ise(vec384 ret, const vec384 a, const vec384 b, const vec384 p, limb_t n0)
+{
+  vec768 z;
+
+  mul_384_ise(z, a, b);
+  redc_mont_384_ise(ret, z, p, n0);
+}
+
 // ret = a^2 * 2^-384 mod p
 void sqr_mont_384_c(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
 {
@@ -397,6 +405,11 @@ void sqr_mont_384_isa(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
 
   sqr_384_isa(z, a);
   redc_mont_384_isa(ret, z, p, n0);
+}
+
+void sqr_mont_384_ise(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
+{
+  mul_mont_384_ise(ret, a, a, p, n0);
 }
 
 // ret = a * 2^-384 mod p
@@ -525,6 +538,12 @@ void redc_mont_384_c(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
 void redc_mont_384_isa(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
 {
   _redc_mont_384_isa(ret, a, p, n0);
+  _redc_once_384_isa(ret, ret, p);
+}
+
+void redc_mont_384_ise(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
+{
+  _redc_mont_384_ise(ret, a, p, n0);
   _redc_once_384_isa(ret, ret, p);
 }
 

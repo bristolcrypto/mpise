@@ -128,14 +128,16 @@ void timing()
   MEASURE_CYCLES(mul_384(z, a, b), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
+#if (ISA)
   printf("- sqr_384:            ");
   LOAD_CACHE(sqr_384_isa(z, a), 1000);
   MEASURE_CYCLES(sqr_384_isa(z, a), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
+#endif 
 
   printf("- _redc_mont_384:     ");
-  LOAD_CACHE(_redc_mont_384_isa(r, z, BLS12_381_P, p0), 1000);
-  MEASURE_CYCLES(_redc_mont_384_isa(r, z, BLS12_381_P, p0), 10000);
+  LOAD_CACHE(_redc_mont_384(r, z, BLS12_381_P, p0), 1000);
+  MEASURE_CYCLES(_redc_mont_384(r, z, BLS12_381_P, p0), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
   printf("- _redc_once_384:     ");

@@ -12,7 +12,7 @@ PK     =${PK_INSTALL}/riscv64-unknown-elf/bin/pk
 
 # =============================================================================
 
-SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S)
+SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S) $(wildcard src/asm/ise/*.S)
 RISCV_GCC_OPT ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf
 CCFLAGS += -march=${ISA} -lm -lgcc
 OUTPUT  = ${WORK_DIR}/bls12-381.elf
@@ -25,7 +25,7 @@ all: clean ${OUTPUT} ${DISASM}
 
 ${OUTPUT} : ${SRCS}
 	@mkdir -p ${WORK_DIR}
-	@${CC} ${RISCV_GCC_OPT} ${CCFLAGS} -o $@ $^
+	@${CC} ${RISCV_GCC_OPT} ${CCFLAGS} -D${TYPE} -o $@ $^
 
 ${DISASM} : ${OUTPUT}
 	@${OBJDUMP} -d -t $< > $@

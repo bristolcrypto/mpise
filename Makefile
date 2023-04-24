@@ -13,6 +13,7 @@ export WORK_DIR ?= ${REPO_HOME}/build/${ALG}_${RADIX}
 
 export ALG      ?= bls12-381
 export RADIX    ?= full
+export TYPE     ?= ISA
 
 # =============================================================================
 
