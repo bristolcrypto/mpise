@@ -31,17 +31,19 @@ typedef limb_t bool_t;
 /*
  * Assembly subroutines...
  */
-// done 
+// add_mod_384 
 void add_mod_384_c(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
 void add_mod_384_isa(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
-// done
-void sub_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
+// sub_mod_384
+void sub_mod_384_c(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
+void sub_mod_384_isa(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
 // done
 void mul_by_8_mod_384(vec384 ret, const vec384 a, const vec384 p);
 // done
 void mul_by_3_mod_384(vec384 ret, const vec384 a, const vec384 p);
-// done
-void cneg_mod_384(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
+// cneg_mod_384
+void cneg_mod_384_c(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
+void cneg_mod_384_isa(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
 // done
 void lshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p);
 
@@ -89,7 +91,9 @@ void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
 
 
 // select what implementations to use
-#define add_mod_384 add_mod_384_isa
+#define add_mod_384   add_mod_384_isa
+#define sub_mod_384   sub_mod_384_isa
+#define cneg_mod_384  cneg_mod_384_isa 
 
 
 #define restrict __restrict__
