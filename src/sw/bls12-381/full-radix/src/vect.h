@@ -50,59 +50,64 @@ void lshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p);
 // mul_mont_384
 void mul_mont_384_c(vec384 ret, const vec384 a, const vec384 b, const vec384 p, limb_t n0);
 void mul_mont_384_isa(vec384 ret, const vec384 a, const vec384 b, const vec384 p, limb_t n0);
-// done
-void sqr_mont_384(vec384 ret, const vec384 a, const vec384 p, limb_t n0);
+// sqr_mont_384
+void sqr_mont_384_c(vec384 ret, const vec384 a, const vec384 p, limb_t n0);
+void sqr_mont_384_isa(vec384 ret, const vec384 a, const vec384 p, limb_t n0);
 // redc_mont_384
 void redc_mont_384_c(vec384 ret, const vec768 a, const vec384 p, limb_t n0);
 void redc_mont_384_isa(vec384 ret, const vec768 a, const vec384 p, limb_t n0);
 void _redc_mont_384_isa(vec384 ret, const vec768 a, const vec384 p, limb_t n0);
-// _redc_once_384
 void _redc_once_384_isa(vec384 ret, const vec384 a, const vec384 p);
 // mul_384
 void mul_384_c(vec768 ret, const vec384 a, const vec384 b);
 void mul_384_isa(vec768 ret, const vec384 a, const vec384 b);
+// sqr_384
+void sqr_384_isa(vec768 ret, const vec384 a);
 
 // void ct_inverse_mod_383(vec768 ret, const vec384 inp, const vec384 mod,
 //                                                       const vec384 modx);
 // currently use Fermat's Little Theorem instead 
-// done
+// flt_inverse_mont_384
 void flt_inverse_mont_384(vec384 ret, const vec384 inp, const vec384 p, 
                           limb_t n0);
 
-// done
+// mul_mont_384x
 void mul_mont_384x(vec384x ret, const vec384x a, const vec384x b,
                    const vec384 p, limb_t n0);
-// done
+// sqr_mont_384x
 void sqr_mont_384x(vec384x ret, const vec384x a, const vec384 p, limb_t n0);
 
-// done
+// add_mod_384x
 void add_mod_384x(vec384x ret, const vec384x a, const vec384x b,
                   const vec384 p);
-// done
+// sub_mod_384x
 void sub_mod_384x(vec384x ret, const vec384x a, const vec384x b,
                   const vec384 p);
-// done
+// mul_by_8_mod_384x
 void mul_by_8_mod_384x(vec384x ret, const vec384x a, const vec384 p);
-// done
+// mul_by_3_mod_384x
 void mul_by_3_mod_384x(vec384x ret, const vec384x a, const vec384 p);
-// done
+// mul_by_1_plus_i_mod_384x
 void mul_by_1_plus_i_mod_384x(vec384x ret, const vec384x a, const vec384 p);
-// done
-void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
-                     const vec384 p);
-// done
-void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
-                     const vec384 p);
+// add_mod_384x384
+void add_mod_384x384_c(vec768 ret, const vec768 a, const vec768 b, const vec384 p);
+void add_mod_384x384_isa(vec768 ret, const vec768 a, const vec768 b, const vec384 p);
+// sub_mod_384x384
+void sub_mod_384x384_c(vec768 ret, const vec768 a, const vec768 b, const vec384 p);
+void sub_mod_384x384_isa(vec768 ret, const vec768 a, const vec768 b, const vec384 p);
 
 /*
  * Select what implementations to use
  */
-#define add_mod_384   add_mod_384_isa
-#define sub_mod_384   sub_mod_384_isa
-#define cneg_mod_384  cneg_mod_384_isa 
-#define mul_384       mul_384_isa
-#define redc_mont_384 redc_mont_384_isa
-#define mul_mont_384  mul_mont_384_isa
+#define add_mod_384     add_mod_384_isa
+#define sub_mod_384     sub_mod_384_isa
+#define cneg_mod_384    cneg_mod_384_isa 
+#define mul_384         mul_384_isa
+#define redc_mont_384   redc_mont_384_isa
+#define mul_mont_384    mul_mont_384_isa
+#define sqr_mont_384    sqr_mont_384_isa
+#define add_mod_384x384 add_mod_384x384_isa
+#define sub_mod_384x384 sub_mod_384x384_isa
 
 
 #define restrict __restrict__

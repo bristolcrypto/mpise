@@ -386,10 +386,17 @@ void mul_mont_384_isa(vec384 ret, const vec384 a, const vec384 b, const vec384 p
 }
 
 // ret = a^2 * 2^-384 mod p
-// todo: dedicated squaring
-void sqr_mont_384(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
+void sqr_mont_384_c(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
 {
-  mul_mont_384(ret, a, a, p, n0);
+  mul_mont_384_c(ret, a, a, p, n0);
+}
+
+void sqr_mont_384_isa(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
+{
+  vec768 z;
+
+  sqr_384_isa(z, a);
+  redc_mont_384_isa(ret, z, p, n0);
 }
 
 // ret = a * 2^-384 mod p
@@ -712,7 +719,7 @@ void mul_by_1_plus_i_mod_384x(vec384x ret, const vec384x a, const vec384 p)
 }
 
 // double-length ret = a + b mod (p * 2^384)
-void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
+void add_mod_384x384_c(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
 {
   uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4  = a[4],  a5  = a[5];
   uint64_t a6 = a[6], a7 = a[7], a8 = a[8], a9 = a[9], a10 = a[10], a11 = a[11];
@@ -771,7 +778,7 @@ void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
 }
 
 // double-length ret = a - b mod (p * 2^384)
-void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
+void sub_mod_384x384_c(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
 {
   uint64_t a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4  = a[4],  a5  = a[5];
   uint64_t a6 = a[6], a7 = a[7], a8 = a[8], a9 = a[9], a10 = a[10], a11 = a[11];
