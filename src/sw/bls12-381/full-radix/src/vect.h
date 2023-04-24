@@ -32,7 +32,8 @@ typedef limb_t bool_t;
  * Assembly subroutines...
  */
 // done 
-void add_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
+void add_mod_384_c(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
+void add_mod_384_isa(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
 // done
 void sub_mod_384(vec384 ret, const vec384 a, const vec384 b, const vec384 p);
 // done
@@ -85,6 +86,11 @@ void add_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
 // done
 void sub_mod_384x384(vec768 ret, const vec768 a, const vec768 b,
                      const vec384 p);
+
+
+// select what implementations to use
+#define add_mod_384 add_mod_384_isa
+
 
 #define restrict __restrict__
 
