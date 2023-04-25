@@ -644,17 +644,17 @@ void mul_mont_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p
   vec384 t0, t1, t2, t3;
   vec384 r0, r1;
 
-  // t0 = a0 * b0
+  // t0 = a0 * b0 mod p
   mul_mont_384(t0, a[0], b[0], p, n0);
-  // t1 = a0 * b1
+  // t1 = a0 * b1 mod p
   mul_mont_384(t1, a[0], b[1], p, n0);
-  // t2 = a1 * b0
+  // t2 = a1 * b0 mod p
   mul_mont_384(t2, a[1], b[0], p, n0);
-  // t3 = a1 * b1
+  // t3 = a1 * b1 mod p
   mul_mont_384(t3, a[1], b[1], p, n0);
-  // r0 = a0*b0 - a1*b1
+  // r0 = (a0*b0 - a1*b1) mod p
   sub_mod_384(r0, t0, t3, p);
-  // r1 = a0*b1 + a1*b0
+  // r1 = (a0*b1 + a1*b0) mod p
   add_mod_384(r1, t1, t2, p);
 
   vec_copy(ret[0], r0, sizeof(vec384));
@@ -846,4 +846,3 @@ void sub_mod_384x384_c(vec768 ret, const vec768 a, const vec768 b, const vec384 
   ret[6] = r6; ret[7]  = r7;  ret[8]  = r8;
   ret[9] = r9; ret[10] = r10; ret[11] = r11;
 }
-

@@ -45,7 +45,7 @@ index b2162963..e89d4be0 100644
  DECLARE_INSN(srai_rv32, MATCH_SRAI_RV32, MASK_SRAI_RV32)
 diff --git a/riscv/insns/cadd.h b/riscv/insns/cadd.h
 new file mode 100644
-index 00000000..51fb76be
+index 00000000..36812338
 --- /dev/null
 +++ b/riscv/insns/cadd.h
 @@ -0,0 +1,9 @@
@@ -58,10 +58,9 @@ index 00000000..51fb76be
 +
 +  WRITE_REG(insn.rd(), r);
 +}
-\ No newline at end of file
 diff --git a/riscv/insns/maddhu.h b/riscv/insns/maddhu.h
 new file mode 100644
-index 00000000..bd0c8ca9
+index 00000000..b70f87c9
 --- /dev/null
 +++ b/riscv/insns/maddhu.h
 @@ -0,0 +1,9 @@
@@ -74,10 +73,9 @@ index 00000000..bd0c8ca9
 +
 +  WRITE_REG(insn.rd(), r);
 +}
-\ No newline at end of file
 diff --git a/riscv/insns/maddlu.h b/riscv/insns/maddlu.h
 new file mode 100644
-index 00000000..d3dd8378
+index 00000000..2ac076c3
 --- /dev/null
 +++ b/riscv/insns/maddlu.h
 @@ -0,0 +1,9 @@
@@ -90,7 +88,6 @@ index 00000000..d3dd8378
 +
 +  WRITE_REG(insn.rd(), r);
 +}
-\ No newline at end of file
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
 index 9a6b118d..0bfa3ad0 100644
 --- a/riscv/riscv.mk.in
