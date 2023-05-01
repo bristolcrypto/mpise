@@ -1,6 +1,5 @@
 
-# export SPIKE_REDUCED_INSTALL=${REPO_HOME}/build/sw-toolchain/spike_reduced
-export SPIKE_REDUCED_INSTALL=${REPO_HOME}/build/sw-toolchain/spike_full
+export SPIKE_REDUCED_INSTALL=${REPO_HOME}/build/sw-toolchain/spike_reduced
 export PK_INSTALL=${REPO_HOME}/build/sw-toolchain/pk
 
 # =============================================================================
@@ -13,8 +12,7 @@ PK     =${PK_INSTALL}/riscv64-unknown-elf/bin/pk
 
 # =============================================================================
 
-# SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S) $(wildcard src/asm/ise/*.S)
-SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S)
+SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S) $(wildcard src/asm/ise/*.S)
 RISCV_GCC_OPT ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf
 CCFLAGS += -march=${ISA} -lm -lgcc
 OUTPUT  = ${WORK_DIR}/bls12-381.elf

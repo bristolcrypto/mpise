@@ -1,4 +1,7 @@
-// void _redc_once_384_isa(vec384 ret, const vec384 a, const vec384 p);
+// void _redc_once_384_ise(vec384 ret, const vec384 a, const vec384 p);
+
+
+#include "ise.h"
 
 
 // registers 
@@ -108,33 +111,27 @@
 // carry propagation
 
 .macro GET_SIGN 
-  srai  T_, P0, 55
-  and   P0, P0, M_
-  add   P1, P1, T_
-  srai  T_, P1, 55
-  and   P1, P1, M_
-  add   P2, P2, T_
-  srai  T_, P2, 55
-  and   P2, P2, M_
-  add   P3, P3, T_
-  srai  T_, P3, 55
-  and   P3, P3, M_
-  add   P4, P4, T_
-  srai  T_, P4, 55
-  and   P4, P4, M_
-  add   P5, P5, T_
-  srai  T_, P5, 55
-  and   P5, P5, M_
-  add   P6, P6, T_
-  srai  T_, P6, 63
+  sraiadd P1, P1, P0, 57
+  and     P0, P0, M_
+  sraiadd P2, P2, P1, 57
+  and     P1, P1, M_
+  sraiadd P3, P3, P2, 57
+  and     P2, P2, M_
+  sraiadd P4, P4, P3, 57
+  and     P3, P3, M_
+  sraiadd P5, P5, P4, 57
+  and     P4, P4, M_
+  sraiadd P6, P6, P5, 57
+  and     P5, P5, M_
+  srai    T_, P6, 63
 .endm
 
 
 .section .text
 
-.global _redc_once_384_isa
+.global _redc_once_384_ise
 
-_redc_once_384_isa:
+_redc_once_384_ise:
   PROLOGUE
   LOAD_P
   LOAD_A

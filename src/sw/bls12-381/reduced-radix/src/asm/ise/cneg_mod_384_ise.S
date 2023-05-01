@@ -1,4 +1,7 @@
-// void cneg_mod_384_isa(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
+// void cneg_mod_384_ise(vec384 ret, const vec384 a, bool_t flag, const vec384 p);
+
+
+#include "ise.h"
 
 
 // registers 
@@ -81,9 +84,8 @@
 .endm
 
 .macro _PROPAGATE_CARRY A, B 
-  srai  T_, \A, 55
-  add   \B, \B, T_
-  and   \A, \A, M_
+  sraiadd \B, \B, \A, 55
+  and     \A, \A, M_
 .endm
 
 .macro CARRY_PROPAGATION 
@@ -120,9 +122,9 @@
 
 .section .text
 
-.global cneg_mod_384_isa
+.global cneg_mod_384_ise
 
-cneg_mod_384_isa:
+cneg_mod_384_ise:
   PROLOGUE
   LOAD_A
   P_SUB_A

@@ -24,7 +24,7 @@ We plan to develop 4 types of implementation for each of X25519 and optimal Ate 
   |  &check; |  full    |  isa-only       |  bls12-381 pairing |
   |  &check; |  full    |  ise-assisted   |  bls12-381 pairing |
   |  &check; |  reduced |  isa-only       |  bls12-381 pairing |
-  |          |  reduced |  ise-assisted   |  bls12-381 pairing |
+  |  &check; |  reduced |  ise-assisted   |  bls12-381 pairing |
 
 ## Organization 
 

@@ -140,7 +140,7 @@ index 9a6b118d..c3f3bd5e 100644
 +	madd51lu \
 +	madd51hu \
 +	madd55lu \
-+	madd55hu 
++	madd55hu
 +# -- mpise
 +
  riscv_insn_list = \
