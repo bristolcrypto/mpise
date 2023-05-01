@@ -20,7 +20,6 @@ void mul_by_u_plus_1_fp2(vec384x ret, const vec384x a)
 #define __FP2x2__
 
 #if defined(__FP2x2__) 
-typedef vec768 vec768x[2];
 
 void add_fp2x2(vec768x ret, const vec768x a, const vec768x b)
 {

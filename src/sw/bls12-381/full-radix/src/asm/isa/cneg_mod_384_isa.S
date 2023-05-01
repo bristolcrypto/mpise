@@ -75,6 +75,7 @@
   _CSWAP 5
 .endm
 
+
 .section .text
 
 .global cneg_mod_384_isa

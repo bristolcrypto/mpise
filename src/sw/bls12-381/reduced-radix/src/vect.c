@@ -177,12 +177,28 @@ void mul_mont_384_c(vec384 ret, const vec384 a, const vec384 b, const vec384 p, 
   redc_mont_384_c(ret, z, p, n0);
 }
 
+void mul_mont_384_isa(vec384 ret, const vec384 a, const vec384 b, const vec384 p, limb_t n0)
+{
+  vec768 z;
+
+  mul_384_delay_isa(z, a, b);
+  redc_mont_384_isa(ret, z, p, n0);
+}
+
 void sqr_mont_384_c(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
 {
   vec768 z;
 
   mul_384_c(z, a, a);
   redc_mont_384_c(ret, z, p, n0);
+}
+
+void sqr_mont_384_isa(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
+{
+  vec768 z;
+
+  sqr_384_delay_isa(z, a);
+  redc_mont_384_isa(ret, z, p, n0);
 }
 
 void mul_384_c(vec768 ret, const vec384 a, const vec384 b)
@@ -254,6 +270,12 @@ void redc_mont_384_c(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
   _redc_once_384_c(_r, _r, p);
 
   vec_copy(ret, _r, sizeof(vec384));
+}
+
+void redc_mont_384_isa(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
+{
+  _redc_mont_384_isa(ret, a, p, n0);
+  _redc_once_384_isa(ret, ret, p);
 }
 
 void flt_inverse_mont_384(vec384 ret, const vec384 inp, const vec384 p, limb_t n0)

@@ -128,17 +128,22 @@ void timing()
   MEASURE_CYCLES(mul_384(z, a, b), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
-#if (ISA)
+#if (ISE)
+  printf("- _redc_mont_384:     ");
+  LOAD_CACHE(_redc_mont_384_ise(r, z, BLS12_381_P, p0), 1000);
+  MEASURE_CYCLES(_redc_mont_384_ise(r, z, BLS12_381_P, p0), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+#elif (ISA)
   printf("- sqr_384:            ");
   LOAD_CACHE(sqr_384_isa(z, a), 1000);
   MEASURE_CYCLES(sqr_384_isa(z, a), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
-#endif 
 
   printf("- _redc_mont_384:     ");
-  LOAD_CACHE(_redc_mont_384(r, z, BLS12_381_P, p0), 1000);
-  MEASURE_CYCLES(_redc_mont_384(r, z, BLS12_381_P, p0), 10000);
+  LOAD_CACHE(_redc_mont_384_isa(r, z, BLS12_381_P, p0), 1000);
+  MEASURE_CYCLES(_redc_mont_384_isa(r, z, BLS12_381_P, p0), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
+#endif 
 
   printf("- _redc_once_384:     ");
   LOAD_CACHE(_redc_once_384_isa(r, a, BLS12_381_P), 1000);
@@ -150,6 +155,7 @@ void timing()
   printf("fp2 arith:\n");
 
   vec384x c, d, s;
+  vec768x g;
 
   printf("- mul_mont_384x:      ");
   LOAD_CACHE(mul_mont_384x(s, c, d, BLS12_381_P, p0), 1000);
@@ -159,6 +165,16 @@ void timing()
   printf("- sqr_mont_384x:      ");
   LOAD_CACHE(sqr_mont_384x(s, c, BLS12_381_P, p0), 1000);
   MEASURE_CYCLES(sqr_mont_384x(s, c, BLS12_381_P, p0), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- mul_fp2x2:          ");
+  LOAD_CACHE(mul_fp2x2(g, c, d), 1000);
+  MEASURE_CYCLES(mul_fp2x2(g, c, d), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- sqr_fp2x2:          ");
+  LOAD_CACHE(sqr_fp2x2(g, c), 1000);
+  MEASURE_CYCLES(sqr_fp2x2(g, c), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
   printf("-------------------------------------------------------------\n");

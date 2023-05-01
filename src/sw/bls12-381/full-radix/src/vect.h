@@ -109,13 +109,11 @@ void sub_mod_384x384_isa(vec768 ret, const vec768 a, const vec768 b, const vec38
 #define redc_mont_384   redc_mont_384_ise
 #define mul_mont_384    mul_mont_384_ise
 #define sqr_mont_384    sqr_mont_384_ise
-#define _redc_mont_384  _redc_mont_384_ise
 #elif (ISA)
 #define mul_384         mul_384_isa
 #define redc_mont_384   redc_mont_384_isa
 #define mul_mont_384    mul_mont_384_isa
 #define sqr_mont_384    sqr_mont_384_isa
-#define _redc_mont_384  _redc_mont_384_isa
 #endif
 #define add_mod_384     add_mod_384_isa
 #define sub_mod_384     sub_mod_384_isa
