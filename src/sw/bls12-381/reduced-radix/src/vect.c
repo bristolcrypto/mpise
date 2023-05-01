@@ -13,7 +13,7 @@ void _redc_once_384_c(vec384 ret, const vec384 a, const vec384 p)
 {
   vec384 _r, _a, _p;
   uint64_t m;
-  size_t i;
+  int i;
 
   vec_copy(_a, a, sizeof(vec384));
   vec_copy(_p, p, sizeof(vec384));
@@ -49,7 +49,7 @@ void _redc_once_384_c(vec384 ret, const vec384 a, const vec384 p)
 void add_mod_384_c(vec384 ret, const vec384 a, const vec384 b, const vec384 p)
 {
   vec384 _r, _a, _b;
-  size_t i;
+  int i;
 
   vec_copy(_a, a, sizeof(vec384));
   vec_copy(_b, b, sizeof(vec384));
@@ -74,7 +74,7 @@ void sub_mod_384_c(vec384 ret, const vec384 a, const vec384 b, const vec384 p)
 {
   vec384 _r, _a, _b, _p;
   uint64_t m;
-  size_t i;
+  int i;
 
   vec_copy(_a, a, sizeof(vec384));
   vec_copy(_b, b, sizeof(vec384));
@@ -111,7 +111,7 @@ void cneg_mod_384_c(vec384 ret, const vec384 a, bool_t flag, const vec384 p)
 {
   vec384 _r, _a;
   const uint64_t m = 0 - (uint64_t)(flag & 1);
-  size_t i;
+  int i;
 
   vec_copy(_a, a, sizeof(vec384));
 
@@ -125,13 +125,13 @@ void cneg_mod_384_c(vec384 ret, const vec384 a, bool_t flag, const vec384 p)
   }
 
   // r = r ^ a
-  for (i = 0; i < NLIMBS-1; i++) _r[i] ^= _a[i];
+  for (i = 0; i < NLIMBS; i++) _r[i] ^= _a[i];
 
   // r = r & m
-  for (i = 0; i < NLIMBS-1; i++) _r[i] &= m;
+  for (i = 0; i < NLIMBS; i++) _r[i] &= m;
 
   // r = r ^ a
-  for (i = 0; i < NLIMBS-1; i++) _r[i] ^= _a[i];
+  for (i = 0; i < NLIMBS; i++) _r[i] ^= _a[i];
 
   vec_copy(ret, _r, sizeof(vec384));
 }
@@ -190,8 +190,7 @@ void mul_384_c(vec768 ret, const vec384 a, const vec384 b)
   vec768 _r;
   vec384 _a, _b;
   __uint128_t t = 0;
-  uint64_t c;
-  size_t i, j, k;
+  int i, j, k;
 
   vec_copy(_a, a, sizeof(vec384));
   vec_copy(_b, b, sizeof(vec384));
@@ -200,17 +199,21 @@ void mul_384_c(vec768 ret, const vec384 a, const vec384 b)
     for (j = 0, k = i; k >= 0; j++, k--) 
       t += (__uint128_t)_a[j] * _b[k];
     _r[i] = t & BMASK;
-    t >>= 64;
-    t <<= (64 - LIMB_T_BITS);
+    t >>= LIMB_T_BITS;
+    // t >>= 64;
+    // t <<= (64 - LIMB_T_BITS);
   }
 
   for (i = NLIMBS; i <= 2*(NLIMBS-1); i++) {
     for (j = i-(NLIMBS-1), k = NLIMBS-1; j <= NLIMBS-1; j++, k--)
       t += (__uint128_t)_a[j] * _b[k];
     _r[i] = t & BMASK;
-    t >>= 64;
-    t <<= (64 - LIMB_T_BITS);
+    t >>= LIMB_T_BITS;
+    // t >>= 64;
+    // t <<= (64 - LIMB_T_BITS);
   }
+
+  _r[2*NLIMBS-1] = t;
 
   vec_copy(ret, _r, sizeof(vec768));
 }
@@ -220,7 +223,7 @@ void redc_mont_384_c(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
   vec768 _a;
   vec384 _r;
   __uint128_t acc = 0;
-  size_t i, j, k;
+  int i, j, k;
 
   vec_copy(_a, a, sizeof(vec768));
 
@@ -257,7 +260,7 @@ void flt_inverse_mont_384(vec384 ret, const vec384 inp, const vec384 p, limb_t n
 {
   vec384 r = { ONE_MONT_P }, a, p_minus_2, two = { 2 };
   uint64_t t;
-  size_t i, j;
+  int i, j;
 
   vec_copy(a, inp, sizeof(vec384));
   sub_mod_384(p_minus_2, p, two, p);
@@ -375,13 +378,80 @@ void mul_by_1_plus_i_mod_384x(vec384x ret, const vec384x a, const vec384 p)
   vec_copy(ret[1], r1, sizeof(vec384));
 }
 
-// void add_mod_384x384_c(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
-// {
-//   vec768 _r, _a, _b;
-//   size_t i;
+void add_mod_384x384_c(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
+{
+  vec768 _r, _a, _b, _p;
+  uint64_t m;
+  int i;
 
-//   for (i = 0; i < NLIMBS; i++) _r[i] = _a[i] + _b[i];
+  vec_copy(_a, a, sizeof(vec768));
+  vec_copy(_b, b, sizeof(vec768));
+  vec_copy(_p, p, sizeof(vec384));
 
+  // r = a + b
+  for (i = 0; i < 2*NLIMBS; i++) _r[i] = _a[i] + _b[i];
 
+  // r = r - p * 2^385
+  for (i = NLIMBS; i < 2*NLIMBS; i++) _r[i] -= _p[i-NLIMBS];
 
-// }
+  // carry propagation
+  for (i = 0; i < 2*NLIMBS-1; i++) {
+    _r[i+1] += (int64_t)_r[i] >> LIMB_T_BITS;
+    _r[i]   &= BMASK;
+  }
+
+  // generate mask
+  m = (int64_t)_r[2*NLIMBS-1] >> 63;
+
+  // p = p & m
+  for (i = 0; i < NLIMBS; i++) _p[i] &= m;
+
+  // r = r + p * 2^385
+  for (i = NLIMBS; i < 2*NLIMBS; i++) _r[i] += _p[i-NLIMBS];
+
+  // carry propagation 
+  for (i = NLIMBS; i < 2*NLIMBS-1; i++) {
+    _r[i+1] += (int64_t)_r[i] >> LIMB_T_BITS;
+    _r[i]   &= BMASK;
+  }
+
+  vec_copy(ret, _r, sizeof(vec768));
+
+}
+
+void sub_mod_384x384_c(vec768 ret, const vec768 a, const vec768 b, const vec384 p)
+{
+  vec768 _r, _a, _b, _p;
+  uint64_t m;
+  int i;
+
+  vec_copy(_a, a, sizeof(vec768));
+  vec_copy(_b, b, sizeof(vec768));
+  vec_copy(_p, p, sizeof(vec384));
+
+  // r = a - b
+  for (i = 0; i < 2*NLIMBS; i++) _r[i] = _a[i] - _b[i];
+
+  // carry propagation
+  for (i = 0; i < 2*NLIMBS-1; i++) {
+    _r[i+1] += (int64_t)_r[i] >> LIMB_T_BITS;
+    _r[i]   &= BMASK;
+  }
+
+  // generate mask
+  m = (int64_t)_r[2*NLIMBS-1] >> 63;
+
+  // p = p & m
+  for (i = 0; i < NLIMBS; i++) _p[i] &= m;
+
+  // r = r + p * 2^385
+  for (i = NLIMBS; i < 2*NLIMBS; i++) _r[i] += _p[i-NLIMBS];
+
+  // carry propagation 
+  for (i = NLIMBS; i < 2*NLIMBS-1; i++) {
+    _r[i+1] += (int64_t)_r[i] >> LIMB_T_BITS;
+    _r[i]   &= BMASK;
+  }
+
+  vec_copy(ret, _r, sizeof(vec768));
+}

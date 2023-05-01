@@ -619,7 +619,7 @@ void flt_inverse_mont_384(vec384 ret, const vec384 inp, const vec384 p, limb_t n
 {
   vec384 r = { ONE_MONT_P }, a, p_minus_2, two = { 2 };
   uint64_t t;
-  size_t i, j;
+  int i, j;
 
   vec_copy(a, inp, sizeof(vec384));
   sub_mod_384(p_minus_2, p, two, p);

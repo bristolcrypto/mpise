@@ -122,7 +122,7 @@ void timing()
   MEASURE_CYCLES(sqr_mont_384(r, a, BLS12_381_P, p0), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
-#if 1
+#if 0
   printf("- mul_384:            ");
   LOAD_CACHE(mul_384(z, a, b), 1000);
   MEASURE_CYCLES(mul_384(z, a, b), 10000);
@@ -195,7 +195,7 @@ void timing()
 int main()
 {
   test_pairing();
-  timing();
+  // timing();
 
   return 0;
 }
