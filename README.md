@@ -20,7 +20,7 @@ We consider the RISC-V baseline ISA as being `rv64gc` meaning that the following
 We plan to develop below 8 implementations of X25519 and optimal Ate
 pairing over BLS12-381 as the case studies:
 
-  |  Algorithm         |  Radix   |  Implementation  |  Software                                           |  Hardware  |
+  |  Algorithm         |  Radix   |  Type            |  Software                                           |  Hardware  |
   | :----------------: | :------: | :--------------: | :-------------------------------------------------: | :--------: |
   |  x25519            |  full    |  isa-only        |  [o](./src/sw/x25519/full-radix/src/asm/isa/)       |  o         |
   |  x25519            |  full    |  ise-assisted    |  [o](./src/sw/x25519/full-radix/src/asm/ise/)       |  o         |
@@ -29,7 +29,7 @@ pairing over BLS12-381 as the case studies:
   |  bls12-381 pairing |  full    |  isa-only        |  [o](./src/sw/bls12-381/full-radix/src/asm/isa/)    |            |
   |  bls12-381 pairing |  full    |  ise-assisted    |  [o](./src/sw/bls12-381/full-radix/src/asm/ise/)    |            |
   |  bls12-381 pairing |  reduced |  isa-only        |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |            |
-  |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |            |
+  |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/ise/) |            |
 
 <!--- ==================================================================== --->
 
