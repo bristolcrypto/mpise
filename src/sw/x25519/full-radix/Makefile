@@ -1,22 +1,29 @@
 
-export SPIKE_REDUCED_INSTALL=${REPO_HOME}/build/sw-toolchain/spike_reduced
+export SPIKE_FULL_INSTALL=${REPO_HOME}/build/sw-toolchain/spike_full
 export PK_INSTALL=${REPO_HOME}/build/sw-toolchain/pk
 
 # =============================================================================
 
 CC     =${RISCV}/bin/riscv64-unknown-elf-gcc
 OBJDUMP=${RISCV}/bin/riscv64-unknown-elf-objdump
-SIM    =${SPIKE_REDUCED_INSTALL}/bin/spike
+SIM    =${SPIKE_FULL_INSTALL}/bin/spike
 ISA    =rv64gc
 PK     =${PK_INSTALL}/riscv64-unknown-elf/bin/pk
 
 # =============================================================================
 
 SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S) $(wildcard src/asm/ise/*.S)
+
 RISCV_GCC_OPT ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf
 CCFLAGS += -march=${ISA} -lm -lgcc
-OUTPUT  = ${WORK_DIR}/bls12-381.elf
-DISASM  = ${WORK_DIR}/bls12-381.disasm
+OUTPUT  = ${WORK_DIR}/x25519.elf
+DISASM  = ${WORK_DIR}/x25519.disasm
+
+# =============================================================================
+
+ifeq ($(MODE), debug)
+	CCFLAGS += -DDEBUG
+endif
 
 # =============================================================================
 
