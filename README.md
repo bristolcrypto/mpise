@@ -83,7 +83,7 @@ pairing over BLS12-381 as the case studies:
 - Build and execute implementations
 
   ```sh
-  make sw-run ALG=[x25519|bls12-381] RADIX=[full|reduced] TYPE=[ISA/ISE]
+  make sw-run ALG=[x25519/bls12-381] RADIX=[full/reduced] TYPE=[ISA/ISE]
   ```
 
   For example, to build and execute an ISE-assisted reduced-radix optimal Ate pairing over BLS12-381 
