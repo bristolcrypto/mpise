@@ -190,7 +190,7 @@ void mul_mont_384_ise(vec384 ret, const vec384 a, const vec384 b, const vec384 p
   vec768 z;
 
   mul_384_ise(z, a, b);
-  redc_mont_384_isa(ret, z, p, n0);
+  redc_mont_384_ise(ret, z, p, n0);
 }
 
 void sqr_mont_384_c(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
@@ -214,7 +214,7 @@ void sqr_mont_384_ise(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
   vec768 z;
 
   mul_384_ise(z, a, a);
-  redc_mont_384_isa(ret, z, p, n0);
+  redc_mont_384_ise(ret, z, p, n0);
 }
 
 void mul_384_c(vec768 ret, const vec384 a, const vec384 b)
