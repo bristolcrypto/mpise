@@ -1,5 +1,7 @@
 # ISEs for Multi-Precision Integer arithmetic
 
+<!--- ==================================================================== --->
+
 ## Overview
 
 We consider the RISC-V baseline ISA as being `rv64gc` meaning that the following standard extensions
@@ -11,20 +13,25 @@ We consider the RISC-V baseline ISA as being `rv64gc` meaning that the following
 
   are available by default.
 
+<!--- ==================================================================== --->
+
 ## Implementations 
 
-We plan to develop 4 types of implementation for each of X25519 and optimal Ate pairing over BLS12-381:
+We plan to develop below 8 implementations of X25519 and optimal Ate
+pairing over BLS12-381 as the case studies:
 
-  |  Status  |  Radix   |  Implementation |  Algorithm         |
-  | :------: | :------: | :-------------: | :----------------: |
-  |  &check; |  full    |  isa-only       |  x25519            |
-  |  &check; |  full    |  ise-assisted   |  x25519            |
-  |  &check; |  reduced |  isa-only       |  x25519            |
-  |  &check; |  reduced |  ise-assisted   |  x25519            |
-  |  &check; |  full    |  isa-only       |  bls12-381 pairing |
-  |  &check; |  full    |  ise-assisted   |  bls12-381 pairing |
-  |  &check; |  reduced |  isa-only       |  bls12-381 pairing |
-  |  &check; |  reduced |  ise-assisted   |  bls12-381 pairing |
+  |  Algorithm         |  Radix   |  Implementation  |  Software                                           |  Hardware  |
+  | :----------------: | :------: | :--------------: | :-------------------------------------------------: | :--------: |
+  |  x25519            |  full    |  isa-only        |  [o](./src/sw/x25519/full-radix/src/asm/isa/)       |  o         |
+  |  x25519            |  full    |  ise-assisted    |  [o](./src/sw/x25519/full-radix/src/asm/ise/)       |  o         |
+  |  x25519            |  reduced |  isa-only        |  [o](./src/sw/x25519/reduced-radix/src/asm/isa/)    |  o         |
+  |  x25519            |  reduced |  ise-assisted    |  [o](./src/sw/x25519/reduced-radix/src/asm/ise/)    |  o         |
+  |  bls12-381 pairing |  full    |  isa-only        |  [o](./src/sw/bls12-381/full-radix/src/asm/isa/)    |            |
+  |  bls12-381 pairing |  full    |  ise-assisted    |  [o](./src/sw/bls12-381/full-radix/src/asm/ise/)    |            |
+  |  bls12-381 pairing |  reduced |  isa-only        |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |            |
+  |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |            |
+
+<!--- ==================================================================== --->
 
 ## Organization 
 
