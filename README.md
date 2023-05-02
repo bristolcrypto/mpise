@@ -17,8 +17,8 @@ We consider the RISC-V baseline ISA as being `rv64gc` meaning that the following
 
 ## Implementations 
 
-We plan to develop below 8 implementations of X25519 and optimal Ate
-pairing over BLS12-381 as the case studies:
+X25519 and optimal Ate pairing over BLS12-381 are two case studies considered in this repo., 
+and we plan to develop eight associated implementations shown as below.
 
   |  Algorithm         |  Radix   |  Type            |  Software                                           |  Hardware  |
   | :----------------: | :------: | :--------------: | :-------------------------------------------------: | :--------: |
