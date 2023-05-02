@@ -26,8 +26,8 @@ pairing over BLS12-381 as the case studies:
   |  x25519            |  full    |  ise-assisted    |  [o](./src/sw/x25519/full-radix/src/asm/ise/)       |  o         |
   |  x25519            |  reduced |  isa-only        |  [o](./src/sw/x25519/reduced-radix/src/asm/isa/)    |  o         |
   |  x25519            |  reduced |  ise-assisted    |  [o](./src/sw/x25519/reduced-radix/src/asm/ise/)    |  o         |
-  |  bls12-381 pairing |  full    |  isa-only        |  [o](./src/sw/bls12-381/full-radix/src/asm/isa/)    |            |
-  |  bls12-381 pairing |  full    |  ise-assisted    |  [o](./src/sw/bls12-381/full-radix/src/asm/ise/)    |            |
+  |  bls12-381 pairing |  full    |  isa-only        |  [o](./src/sw/bls12-381/full-radix/src/asm/isa/)    |  o         |
+  |  bls12-381 pairing |  full    |  ise-assisted    |  [o](./src/sw/bls12-381/full-radix/src/asm/ise/)    |  o         |
   |  bls12-381 pairing |  reduced |  isa-only        |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |            |
   |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/ise/) |            |
 
@@ -53,4 +53,47 @@ pairing over BLS12-381 as the case studies:
 
 ## Usage 
 
-**TBA**
+### Software simulation 
+
+- Clone the repo. 
+
+  ```sh
+  git clone https://github.com/scarv/mpise.git 
+  cd ./mpise 
+  ```
+
+- Fix paths, e.g., 
+  
+  ```sh
+  export RISCV=/opt/riscv
+  ```
+
+- Set up local variables for repo.
+
+  ```sh
+  source ./bin/conf.sh 
+  ```
+
+- Build software toolchains 
+
+  ```sh 
+  make sw-toolchain-build
+  ```
+
+- Build and execute implementations
+
+  ```sh
+  make sw-run ALG=[x25519|bls12-381] RADIX=[full|reduced] TYPE=[ISA/ISE]
+  ```
+
+  For example, to build and execute an ISE-assisted reduced-radix optimal Ate pairing over BLS12-381 
+
+  ```sh
+  make sw-run ALG=bls12-381 RADIX=reduced TYPE=ISE
+  ``` 
+
+### Hardware evaluation 
+
+- **TBA**
+
+<!--- ==================================================================== --->
