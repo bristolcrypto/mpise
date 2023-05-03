@@ -1,0 +1,20 @@
+# Copyright (C) 2021 SCARV project <info@scarv.org>
+#
+# Use of this source code is restricted per the MIT license, a copy of which 
+# can be found at https://opensource.org/licenses/MIT (or should be included 
+# as LICENSE.txt within the associated archive or repository).
+
+#--------------------------------------------------------------------
+# Sources
+#--------------------------------------------------------------------
+RTL64 = $(REPO_HOME)/src/hw/rtl/$(ALG)/$(RADIX)-radix/rv64
+rtl64_x25519_src= $(RTL64)/x25519_ise.v 
+
+rtl64_xmul_src= $(RTL64)/xmul.v 
+rtl64_xalu_src= $(RTL64)/xalu_ise.v 
+
+rtl64_ise_src= \
+        $(rtl64_x25519_src) \
+        $(rtl64_xmul_src) \
+        $(rtl64_xalu_src) 
+

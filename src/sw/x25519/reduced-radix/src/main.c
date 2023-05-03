@@ -250,8 +250,8 @@ void test_ecdh()
   rand_bytes((uint8_t *)sk_b.t64, 32);
 
   printf("- private keys:\n");
-  mpi64_print("  Carol: ", sk_a.t64, 4);
-  mpi64_print("  Dave : ", sk_b.t64, 4);
+  mpi64_print("  carol: ", sk_a.t64, 4);
+  mpi64_print("  dave : ", sk_b.t64, 4);
 
   mon_mul_varbase(pk_a.t64, sk_a.t64, base_pt.t64);
   mon_mul_varbase(pk_b.t64, sk_b.t64, base_pt.t64);
