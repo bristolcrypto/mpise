@@ -20,16 +20,16 @@ We consider the RISC-V baseline ISA as being `rv64gc` meaning that the following
 X25519 and optimal Ate pairing over BLS12-381 are two case studies considered in this repo., 
 and we plan to develop eight associated implementations shown as below.
 
-  |  Algorithm         |  Radix   |  Type            |  Software                                           |  Hardware  |
-  | :----------------: | :------: | :--------------: | :-------------------------------------------------: | :--------: |
-  |  x25519            |  full    |  isa-only        |  [o](./src/sw/x25519/full-radix/src/asm/isa/)       |  o         |
-  |  x25519            |  full    |  ise-assisted    |  [o](./src/sw/x25519/full-radix/src/asm/ise/)       |  o         |
-  |  x25519            |  reduced |  isa-only        |  [o](./src/sw/x25519/reduced-radix/src/asm/isa/)    |  o         |
-  |  x25519            |  reduced |  ise-assisted    |  [o](./src/sw/x25519/reduced-radix/src/asm/ise/)    |  o         |
-  |  bls12-381 pairing |  full    |  isa-only        |  [o](./src/sw/bls12-381/full-radix/src/asm/isa/)    |  o         |
-  |  bls12-381 pairing |  full    |  ise-assisted    |  [o](./src/sw/bls12-381/full-radix/src/asm/ise/)    |  o         |
-  |  bls12-381 pairing |  reduced |  isa-only        |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |            |
-  |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/ise/) |            |
+  |  Algorithm         |  Radix   |  Type            |  Software                                           |  Hardware                                          |
+  | :----------------: | :------: | :--------------: | :-------------------------------------------------: | :------------------------------------------------: |
+  |  x25519            |  full    |  isa-only        |  [o](./src/sw/x25519/full-radix/src/asm/isa/)       |  o                                                 |
+  |  x25519            |  full    |  ise-assisted    |  [o](./src/sw/x25519/full-radix/src/asm/ise/)       |  [o](./src/hw/rtl/x25519/full-radix/rv64/)         |
+  |  x25519            |  reduced |  isa-only        |  [o](./src/sw/x25519/reduced-radix/src/asm/isa/)    |  o                                                 |
+  |  x25519            |  reduced |  ise-assisted    |  [o](./src/sw/x25519/reduced-radix/src/asm/ise/)    |  [o](./src/hw/rtl/x25519/reduced-radix/rv64/)      |
+  |  bls12-381 pairing |  full    |  isa-only        |  [o](./src/sw/bls12-381/full-radix/src/asm/isa/)    |  o                                                 |
+  |  bls12-381 pairing |  full    |  ise-assisted    |  [o](./src/sw/bls12-381/full-radix/src/asm/ise/)    |  [o](./src/hw/rtl/bls12-381/full-radix/rv64/)      |
+  |  bls12-381 pairing |  reduced |  isa-only        |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |                                                    |
+  |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/ise/) |                                                    |
 
 <!--- ==================================================================== --->
 

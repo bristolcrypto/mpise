@@ -15,8 +15,8 @@ PK     =${PK_INSTALL}/riscv64-unknown-elf/bin/pk
 SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S) $(wildcard src/asm/ise/*.S)
 RISCV_GCC_OPT ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf
 CCFLAGS += -march=${ISA} -lm -lgcc
-OUTPUT  = ${WORK_DIR}/x25519.elf
-DISASM  = ${WORK_DIR}/x25519.disasm
+OUTPUT  = ${SW_WORK_DIR}/x25519.elf
+DISASM  = ${SW_WORK_DIR}/x25519.disasm
 
 # =============================================================================
 
@@ -28,13 +28,13 @@ all: clean ${OUTPUT} ${DISASM}
 	@${SIM} --isa=${ISA} ${PK} ${OUTPUT}
 
 ${OUTPUT} : ${SRCS}
-	@mkdir -p ${WORK_DIR}
+	@mkdir -p ${SW_WORK_DIR}
 	@${CC} ${RISCV_GCC_OPT} ${CCFLAGS} -D${TYPE} -o $@ $^
 
 ${DISASM} : ${OUTPUT}
 	@${OBJDUMP} -d -t $< > $@
 
 clean:
-	@rm -rf ${WORK_DIR}
+	@rm -rf ${SW_WORK_DIR}
 
 # =============================================================================

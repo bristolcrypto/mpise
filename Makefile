@@ -9,7 +9,7 @@ endif
 
 # =============================================================================
 
-export WORK_DIR ?= ${REPO_HOME}/build/${ALG}_${RADIX}
+export SW_WORK_DIR ?= ${REPO_HOME}/build/sw/${ALG}_${RADIX}
 
 export ALG      ?= bls12-381
 export RADIX    ?= full
