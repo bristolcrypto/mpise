@@ -94,6 +94,44 @@ and we plan to develop eight associated implementations shown as below.
 
 ### Hardware evaluation 
 
-- **TBA**
+- Fix paths for the Rocket chip toolchian, e.g., 
+
+  ```sh
+  export RISCV_ROCKET=/opt/riscv-rocket 
+  ```
+
+- Build hardware toolchains 
+
+  ```sh
+  make hw-toolchain-build
+  ```
+
+- Fix the path for Vivado design suite, e.g., 
+
+  ```sh
+  export VIVADO_TOOL_DIR=/opt/Xilinx/Vivado/2019.1
+  ```
+
+- Set up the variable about Vivado for repo.
+
+  ```sh
+  source ./bin/vivado.sh
+  ```
+
+- Program a pre-built bitstream to FPGA board (currently only `arty100T` is supported in this repo.)
+
+  ```sh
+  make fpga-prog ALG=[x25519/bls12-381] RADIX=[full/reduced] BOARD=arty100T
+  ```
+
+- Build and execute implementations (assuming the port `/dev/ttyUSB0` is used)
+
+  ```sh 
+  make fpga-run ALG=[x25519/bls12-381] RADIX=[full/reduced] TYPE=[ISA/ISE] BOARD=arty100T PORT=/dev/ttyUSB0
+  ```
+
+- Rebuild bitstream 
+
+  **TBA**
 
 <!--- ==================================================================== --->

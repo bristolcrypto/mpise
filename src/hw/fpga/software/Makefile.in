@@ -1,0 +1,73 @@
+# Copyright (C) 2021 SCARV project <info@scarv.org>
+#
+# Use of this source code is restricted per the MIT license, a copy of which 
+# can be found at https://opensource.org/licenses/MIT (or should be included 
+# as LICENSE.txt within the associated archive or repository).
+
+#--------------------------------------------------------------------
+# Build software
+#--------------------------------------------------------------------
+
+export SOC_HAL  = ${REPO_HOME}/src/hw/fpga/soc/${SOC}/hal
+export SW = ${REPO_HOME}/src/sw
+
+# include build-related content for algorithm
+include ${SW}/${ALG}/${RADIX}-radix/Makefile.in
+
+GCC_PREFIX = ${RISCV_ROCKET}/bin/riscv64-unknown-elf
+MABI       = $(findstring i,$(ARCH:rv32=i))lp$(ARCH:rv%=%)
+
+include ${REPO_HOME}/src/hw/fpga/software/FPGA_SWCONF.in
+export FPGA_SWCONF ?= $(FPGA_DEF_CONF)
+
+# -----------------------------------------------------------------------------
+export RVKEX_INCLUDES += ${SW}/${ALG}/${RADIX}-radix/
+
+
+export RVKEX_SOURCES  = $(addprefix ${FPGA_INCLUDES}, ${SRCS})
+export RVKEX_HEADERS  = $(wildcard $(addsuffix /*.h,   ${RVKEX_INCLUDES}))
+
+export FPGA_INCLUDES := ${SOC_HAL} ${RVKEX_INCLUDES}
+export FPGA_SOURCES  := ${RVKEX_SOURCES}  $(wildcard $(addsuffix /*.c, ${SOC_HAL})) $(wildcard $(addsuffix /*.S, ${SOC_HAL}))
+export FPGA_HEADERS  := ${RVKEX_HEADERS}  $(wildcard $(addsuffix /*.h, ${SOC_HAL}))
+
+FPGA_GCC_FLAGS  = -march=$(ARCH)imac -mabi=$(MABI)  -DPREALLOCATE=1 -mcmodel=medany
+FPGA_GCC_FLAGS += -fno-builtin-printf -static -nostartfiles -T$(SOC_HAL)/lscript.ld -g
+
+
+# pass-through environment variable as macros for use in source code
+
+FPGA_GCC_FLAGS += -DALG="\"${ALG}\"" ${FPGA_SWCONF} -DARCH="\"${ARCH}\"" -DIMP="\"${IMP}\"" -D${TYPE} ${CCFLAGS}
+
+
+FPGA_TARGET   = ${REPO_HOME}/build/fpga/${ALG}-${RADIX}/fpga_${ARCH}_${ISE}.elf
+FPGA_OUTBIN   = ${REPO_HOME}/build/fpga/${ALG}-${RADIX}/fpga_${ARCH}_${ISE}.bin
+
+# -----------------------------------------------------------------------------
+
+${REPO_HOME}/build/fpga/${ALG}-${RADIX} :
+	@mkdir --parents ${@}
+
+${FPGA_TARGET} : ${FPGA_SOURCES} ${FPGA_HEADERS} ${REPO_HOME}/build/fpga/${ALG}-${RADIX}
+
+	@${GCC_PREFIX}-gcc ${FPGA_GCC_FLAGS} ${GCC_PATHS} $(addprefix -I ,${FPGA_INCLUDES}) -std='gnu99' -O2 -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
+
+$(FPGA_OUTBIN) : $(FPGA_TARGET)
+	@${GCC_PREFIX}-objcopy -O binary $< $@
+
+${FPGA_TARGET}.asm : ${FPGA_TARGET}
+	@${GCC_PREFIX}-objdump -fhSD ${<} > ${@}
+
+fpga-run : $(FPGA_OUTBIN) ${FPGA_TARGET}.asm 
+	@$(FPGA)/script/upload.py --port $(PORT) --baud 115200 upload $(FPGA_OUTBIN) --stdout
+
+fpga-build: ${FPGA_TARGET}.asm 
+
+
+#all   : ${TARGET}.elf ${TARGET}.asm
+fpga-swclean : 
+	@rm --force ${FPGA_TARGET}
+	@rm --force ${FPGA_TARGET}.asm
+	@rm --force ${FPGA_OUTBIN}
+
+# =============================================================================

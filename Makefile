@@ -31,4 +31,20 @@ sw-run:
 sw-clean:
 	@make --directory="${REPO_HOME}/src/sw/${ALG}/${RADIX}-radix" clean
 
+# -----------------------------------------------------------------------------
+
+hw-toolchain-build :
+	@make --directory="${REPO_HOME}/src/hw-toolchain" clone 
+	@make --directory="${REPO_HOME}/src/hw-toolchain" build
+hw-toolchain-clean :
+	@make --directory="${REPO_HOME}/src/hw-toolchain" clean
+
+# -----------------------------------------------------------------------------
+
+fpga-prog   :
+	@make --directory="${REPO_HOME}/src/hw" program-fpga
+
+fpga-run    :
+	@make --directory="${REPO_HOME}/src/hw" fpga-run
+
 # =============================================================================
