@@ -36,8 +36,13 @@ sw-clean:
 hw-toolchain-build :
 	@make --directory="${REPO_HOME}/src/hw-toolchain" clone 
 	@make --directory="${REPO_HOME}/src/hw-toolchain" build
+
 hw-toolchain-clean :
 	@make --directory="${REPO_HOME}/src/hw-toolchain" clean
+
+hw-get-rocketchip :
+	@make --directory="${REPO_HOME}/src/hw" rocketchip-clone
+	@make --directory="${REPO_HOME}/src/hw" rocketchip-apply
 
 # -----------------------------------------------------------------------------
 
@@ -46,5 +51,12 @@ fpga-prog   :
 
 fpga-run    :
 	@make --directory="${REPO_HOME}/src/hw" fpga-run
+
+fpga-hw     :
+	@make --directory="${REPO_HOME}/src/hw" fpga-verilog
+	@make --directory="${REPO_HOME}/src/hw" bitstream
+
+fpga-update :
+	@make --directory="${REPO_HOME}/src/hw" update-bistream
 
 # =============================================================================

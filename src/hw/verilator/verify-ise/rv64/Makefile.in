@@ -1,0 +1,26 @@
+# Copyright (C) 2021 SCARV project <info@scarv.org>
+#
+# Use of this source code is restricted per the MIT license, a copy of which 
+# can be found at https://opensource.org/licenses/MIT (or should be included 
+# as LICENSE.txt within the associated archive or repository).
+
+ise_dir = ${REPO_HOME}/src/hw/verilator/verify-ise/ise
+
+INC_DIRS  =-I$(EMU_HAL) -I$(ise_dir)
+SRCS = ${REPO_HOME}/src/hw/verilator/verify-ise/$(ARCH)/verify.c \
+       ${REPO_HOME}/src/hw/verilator/verify-ise/$(ARCH)/ise.S \
+       $(wildcard $(EMU_HAL)/*.c) \
+       $(wildcard $(EMU_HAL)/*.S) \
+
+
+VERIFY  = ${REPO_HOME}/work/emu_verify-ise-${ARCH}.elf
+DISASM  = ${REPO_HOME}/work/emu_verify-use-${ARCH}.disasm
+
+$(VERIFY) : $(SRCS)
+	${GCC_PREFIX}-gcc ${GCC_FLAGS} ${EMU_GCC_FLAGS} ${INC_DIRS} -std='gnu99' -O2 -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
+	
+$(DISASM) : $(VERIFY)
+	${GCC_PREFIX}-objdump --disassemble-all -Dt $< > $@
+
+emulate-verify-ise : ${EMULATOR} ${VERIFY} $(DISASM)
+	${EMULATOR} -c -x 100000 -v ${REPO_HOME}/work/emu_verify-${ARCH}.vcd -m 2100000 ${VERIFY}

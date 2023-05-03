@@ -10,7 +10,7 @@ export FPGA            = $(REPO_HOME)/src/hw/fpga
 export BOARD          ?= arty100T
 export SOC	           = $(ARCH)-rocket
 
-ALGS=x25519
+ALGS=x25519 bls12-381
 export RADIX ?= full
 
 

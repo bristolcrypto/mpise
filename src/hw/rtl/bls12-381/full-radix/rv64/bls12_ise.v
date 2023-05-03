@@ -1,4 +1,4 @@
-module x25519_ise (
+module bls12_ise (
 input  wire [63:0]  rs1,
 input  wire [63:0]  rs2,
 //input  wire [63:0]  rs3,

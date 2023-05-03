@@ -1,0 +1,15 @@
+# Copyright (C) 2021 SCARV project <info@scarv.org>
+#
+# Use of this source code is restricted per the MIT license, a copy of which 
+# can be found at https://opensource.org/licenses/MIT (or should be included 
+# as LICENSE.txt within the associated archive or repository).
+
+ifeq "${IMP}" "nist"
+EMU_DEF_CONF += -DDRIVER_TRIALS_WARM=10 -DDRIVER_TRIALS_REAL=50 -DDRIVER_MEASURE=1 
+
+else ifeq "${ALG}" "ascon"
+EMU_DEF_CONF  = -DASCON_RV32_TYPE2
+EMU_DEF_CONF += -DENABLE_ZBKB_ZBKX 
+EMU_DEF_CONF += -DDRIVER_TRIALS_WARM=10 -DDRIVER_TRIALS_REAL=50 -DDRIVER_MEASURE=1 
+
+endif

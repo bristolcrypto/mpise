@@ -28,8 +28,8 @@ and we plan to develop eight associated implementations shown as below.
   |  x25519            |  reduced |  ise-assisted    |  [o](./src/sw/x25519/reduced-radix/src/asm/ise/)    |  [o](./src/hw/rtl/x25519/reduced-radix/rv64/)      |
   |  bls12-381 pairing |  full    |  isa-only        |  [o](./src/sw/bls12-381/full-radix/src/asm/isa/)    |  o                                                 |
   |  bls12-381 pairing |  full    |  ise-assisted    |  [o](./src/sw/bls12-381/full-radix/src/asm/ise/)    |  [o](./src/hw/rtl/bls12-381/full-radix/rv64/)      |
-  |  bls12-381 pairing |  reduced |  isa-only        |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |                                                    |
-  |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/ise/) |                                                    |
+  |  bls12-381 pairing |  reduced |  isa-only        |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |  o                                                 |
+  |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/ise/) |  [o](./src/hw/rtl/bls12-381/reduced-radix/rv64/)   |
 
 <!--- ==================================================================== --->
 
@@ -94,6 +94,10 @@ and we plan to develop eight associated implementations shown as below.
 
 ### Hardware evaluation 
 
+- Pre-requisites
+  - Vivado design suite
+  - Verilator
+
 - Fix paths for the Rocket chip toolchian, e.g., 
 
   ```sh
@@ -130,8 +134,18 @@ and we plan to develop eight associated implementations shown as below.
   make fpga-run ALG=[x25519/bls12-381] RADIX=[full/reduced] TYPE=[ISA/ISE] BOARD=arty100T PORT=/dev/ttyUSB0
   ```
 
-- Rebuild bitstream 
+- Rebuild bitstream (e.g., to modify ISE or to add new ISEs) 
 
-  **TBA**
+  - generate a new bitstream file
+  
+    ```sh
+    make fpga-hw ALG=[x25519/bls12-381] RADIX=[full/reduced] BOARD=arty100T 
+    ```
+
+  - replace the correponding pre-built bistream with this new bitstream generated 
+
+    ```sh
+    make fpga-update ALG=[x25519/bls12-381] RADIX=[full/reduced] BOARD=arty100T
+    ```
 
 <!--- ==================================================================== --->
