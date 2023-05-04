@@ -45,7 +45,7 @@ and we plan to develop eight associated implementations shown as below.
     │   ├── bls12-381           - optimal Ate pairing over BLS12-381 
     │   │   ├── full-radix        - 64-bit-per-limb implementation   
     │   │   └── reduced-radix     - 55-bit-per-limb implementation   
-    │   └── x25519              - x25519 key exchange
+    │   └── x25519              - X25519 key exchange
     │       ├── full-radix        - 64-bit-per-limb implementation   
     │       └── reduced-radix     - 51-bit-per-limb implementation  
     └── sw-toolchain          - source code for software toolchain
@@ -86,7 +86,7 @@ and we plan to develop eight associated implementations shown as below.
   make sw-run ALG=[x25519/bls12-381] RADIX=[full/reduced] TYPE=[ISA/ISE]
   ```
 
-  For example, to build and execute an ISE-assisted reduced-radix optimal Ate pairing over BLS12-381 
+  For example, to build and execute an ISE-assisted reduced-radix implementation of optimal Ate pairing over BLS12-381 
 
   ```sh
   make sw-run ALG=bls12-381 RADIX=reduced TYPE=ISE
