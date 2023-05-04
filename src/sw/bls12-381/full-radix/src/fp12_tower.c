@@ -50,7 +50,7 @@ void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b)
 {
 #if 0
     mul_382x(ret, a, b, BLS12_381_P);   /* +~6% in Miller loop */
-#else
+#elif 0
     union { vec384 x[2]; vec768 x2; } t;
 
     add_mod_384(t.x[0], a[0], a[1], BLS12_381_P);
@@ -64,6 +64,16 @@ void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b)
     sub_mod_384x384(ret[1], ret[1], t.x2, BLS12_381_P);
 
     sub_mod_384x384(ret[0], ret[0], t.x2, BLS12_381_P);
+#else 
+    vec768 t0, t1, t2, t3;
+
+    mul_384(t0, a[0], b[0]);
+    mul_384(t1, a[0], b[1]);
+    mul_384(t2, a[1], b[0]);
+    mul_384(t3, a[1], b[1]);
+
+    sub_mod_384x384(ret[0], t0, t3, BLS12_381_P);
+    add_mod_384x384(ret[1], t1, t2, BLS12_381_P);
 #endif
 }
 
@@ -71,7 +81,7 @@ void sqr_fp2x2(vec768x ret, const vec384x a)
 {
 #if 0
     sqr_382x(ret, a, BLS12_381_P);      /* +~5% in final exponentiation */
-#else
+#elif 1
     vec384 t0, t1;
 
     add_mod_384(t0, a[0], a[1], BLS12_381_P);
@@ -81,6 +91,17 @@ void sqr_fp2x2(vec768x ret, const vec384x a)
     add_mod_384x384(ret[1], ret[1], ret[1], BLS12_381_P);
 
     mul_384(ret[0], t0, t1);
+#else 
+    vec768 t0, t1;
+    vec384 t2;
+
+    add_mod_384(t2, a[0], a[0], BLS12_381_P);
+
+    mul_384(t0, a[0], a[0]);
+    mul_384(t1, a[1], a[1]);
+
+    mul_384(ret[1], t2, a[1]);
+    sub_mod_384x384(ret[0], t0, t1, BLS12_381_P);
 #endif
 }
 #endif

@@ -70,8 +70,8 @@ void test_pairing()
 {
   POINTonE2_affine Q[1];
   POINTonE1_affine P[1];
-  POINTonE2 _Q[1], _T[1];
-  POINTonE1 _P[1], _S[1];
+  POINTonE2 _Q[1];
+  POINTonE1 _P[1];
   vec384fp12 e1, e2;
 
   // scalar k can be modified to be any non-0 value
