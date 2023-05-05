@@ -50,7 +50,7 @@ fpga-prog   :
 	@make --directory="${REPO_HOME}/src/hw" program-fpga
 
 fpga-run    :
-	@make --directory="${REPO_HOME}/src/hw" fpga-run
+	@make --directory="${REPO_HOME}/src/hw" fpga-swclean fpga-run
 
 fpga-hw     :
 	@make --directory="${REPO_HOME}/src/hw" fpga-verilog

@@ -199,7 +199,7 @@ void timing()
   MEASURE_CYCLES(sqr_384_delay_isa(z, a), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
-  printf("- redc_mont_384:     ");
+  printf("- redc_mont_384:      ");
   LOAD_CACHE(redc_mont_384_isa(r, z, BLS12_381_P, p0), 1000);
   MEASURE_CYCLES(redc_mont_384_isa(r, z, BLS12_381_P, p0), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
