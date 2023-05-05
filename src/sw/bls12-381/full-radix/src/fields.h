@@ -90,10 +90,12 @@ typedef vec768 vec768x[2];
 
 void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b);
 void sqr_fp2x2(vec768x ret, const vec384x a);
+void redc_fp2x2(vec384x ret, const vec768x a);
 
 typedef vec768x vec768fp6[3];
 
 void mul_fp6x2(vec768fp6 ret, const vec384fp6 a, const vec384fp6 b);
+void redc_fp6x2(vec384fp6 ret, const vec768fp6 a);
 void mul_fp6(vec384fp6 ret, const vec384fp6 a, const vec384fp6 b);
 void sqr_fp6(vec384fp6 ret, const vec384fp6 a);
 

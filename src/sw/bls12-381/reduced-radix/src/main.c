@@ -174,6 +174,11 @@ void timing()
   MEASURE_CYCLES(mul_384_ise(z, a, b), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
+  printf("- redc_mont_384:      ");
+  LOAD_CACHE(redc_mont_384_ise(r, z, BLS12_381_P, p0), 1000);
+  MEASURE_CYCLES(redc_mont_384_ise(r, z, BLS12_381_P, p0), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
   printf("- _redc_mont_384:     ");
   LOAD_CACHE(_redc_mont_384_ise(r, z, BLS12_381_P, p0), 1000);
   MEASURE_CYCLES(_redc_mont_384_ise(r, z, BLS12_381_P, p0), 10000);
@@ -192,6 +197,11 @@ void timing()
   printf("- sqr_384_delay:      ");
   LOAD_CACHE(sqr_384_delay_isa(z, a), 1000);
   MEASURE_CYCLES(sqr_384_delay_isa(z, a), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- redc_mont_384:     ");
+  LOAD_CACHE(redc_mont_384_isa(r, z, BLS12_381_P, p0), 1000);
+  MEASURE_CYCLES(redc_mont_384_isa(r, z, BLS12_381_P, p0), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
   printf("- _redc_mont_384:     ");
@@ -232,6 +242,11 @@ void timing()
   MEASURE_CYCLES(sqr_fp2x2(y, c), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
+  printf("- redc_fp2x2:         ");
+  LOAD_CACHE(redc_fp2x2(s, y), 1000);
+  MEASURE_CYCLES(redc_fp2x2(s, y), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
   printf("- mul_mont_384x:      ");
   LOAD_CACHE(mul_mont_384x(s, c, d, BLS12_381_P, p0), 1000);
   MEASURE_CYCLES(mul_mont_384x(s, c, d, BLS12_381_P, p0), 10000);
@@ -251,6 +266,11 @@ void timing()
   printf("- mul_fp6x2:          ");
   LOAD_CACHE(mul_fp6x2(x, e, h), 100);
   MEASURE_CYCLES(mul_fp6x2(x, e, h), 1000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- redc_fp6x2:         ");
+  LOAD_CACHE(redc_fp6x2(e, x), 1000);
+  MEASURE_CYCLES(redc_fp6x2(e, x), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
   printf("- mul_fp6:            ");
