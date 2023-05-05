@@ -168,8 +168,6 @@ void timing()
   MEASURE_CYCLES(sqr_mont_384(r, a, BLS12_381_P, p0), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
-#if 1
-
 #if (ISE)
   printf("- mul_384:            ");
   LOAD_CACHE(mul_384_ise(z, a, b), 1000);
@@ -206,13 +204,33 @@ void timing()
   MEASURE_CYCLES(_redc_once_384_isa(r, a, BLS12_381_P), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 #endif
-#endif
 
   printf("-------------------------------------------------------------\n");
   printf("fp2 arith:\n");
 
   vec384x c, d, s;
-  vec768x g;
+  vec768x y;
+  vec768  m, n;
+
+  printf("- add_mod_384x384:    ");
+  LOAD_CACHE(add_mod_384x384(z, m, n, BLS12_381_P), 1000);
+  MEASURE_CYCLES(add_mod_384x384(z, m, n, BLS12_381_P), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- sub_mod_384x384:    ");
+  LOAD_CACHE(sub_mod_384x384(z, m, n, BLS12_381_P), 1000);
+  MEASURE_CYCLES(sub_mod_384x384(z, m, n, BLS12_381_P), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- mul_fp2x2:          ");
+  LOAD_CACHE(mul_fp2x2(y, c, d), 1000);
+  MEASURE_CYCLES(mul_fp2x2(y, c, d), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- sqr_fp2x2:          ");
+  LOAD_CACHE(sqr_fp2x2(y, c), 1000);
+  MEASURE_CYCLES(sqr_fp2x2(y, c), 10000);
+  printf("  #cycle = %lld\n", diff_cycles);
 
   printf("- mul_mont_384x:      ");
   LOAD_CACHE(mul_mont_384x(s, c, d, BLS12_381_P, p0), 1000);
@@ -224,14 +242,40 @@ void timing()
   MEASURE_CYCLES(sqr_mont_384x(s, c, BLS12_381_P, p0), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
-  printf("- mul_fp2x2:          ");
-  LOAD_CACHE(mul_fp2x2(g, c, d), 1000);
-  MEASURE_CYCLES(mul_fp2x2(g, c, d), 10000);
+  printf("-------------------------------------------------------------\n");
+  printf("fp6 arith:\n");
+
+  vec384fp6 e, h, t;
+  vec768fp6 x;
+
+  printf("- mul_fp6x2:          ");
+  LOAD_CACHE(mul_fp6x2(x, e, h), 100);
+  MEASURE_CYCLES(mul_fp6x2(x, e, h), 1000);
   printf("  #cycle = %lld\n", diff_cycles);
 
-  printf("- sqr_fp2x2:          ");
-  LOAD_CACHE(sqr_fp2x2(g, c), 1000);
-  MEASURE_CYCLES(sqr_fp2x2(g, c), 10000);
+  printf("- mul_fp6:            ");
+  LOAD_CACHE(mul_fp6(t, e, h), 100);
+  MEASURE_CYCLES(mul_fp6(t, e, h), 1000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- sqr_fp6:            ");
+  LOAD_CACHE(sqr_fp6(t, e), 100);
+  MEASURE_CYCLES(sqr_fp6(t, e), 1000);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("-------------------------------------------------------------\n");
+  printf("fp12 arith:\n");
+
+  vec384fp12 g, l, u;
+
+  printf("- mul_fp12:           ");
+  LOAD_CACHE(mul_fp12(u, g, l), 10);
+  MEASURE_CYCLES(mul_fp12(u, g, l), 100);
+  printf("  #cycle = %lld\n", diff_cycles);
+
+  printf("- sqr_fp12:           ");
+  LOAD_CACHE(sqr_fp12(u, g), 10);
+  MEASURE_CYCLES(sqr_fp12(u, g), 100);
   printf("  #cycle = %lld\n", diff_cycles);
 
   printf("-------------------------------------------------------------\n");

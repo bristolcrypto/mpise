@@ -110,7 +110,6 @@ void sqr_fp2x2(vec768x ret, const vec384x a)
  * Fp6 extension
  */
 #if defined(__FP2x2__) 
-typedef vec768x vec768fp6[3];
 
 void sub_fp6x2(vec768fp6 ret, const vec768fp6 a, const vec768fp6 b)
 {
