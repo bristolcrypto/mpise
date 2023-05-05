@@ -322,8 +322,14 @@ void mul_mont_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p
   vec768x t;
 
   mul_fp2x2(t, a, b);
+#if (ISA)
   redc_mont_384(ret[0], t[0], p, n0);
   redc_mont_384(ret[1], t[1], p, n0);
+#elif(ISE)
+  _redc_mont_384x2_ise(ret, t, p, n0);
+  _redc_once_384_ise(ret[0], ret[0], p);
+  _redc_once_384_ise(ret[1], ret[1], p);
+#endif
 }
 
 // Karatsuba
@@ -332,8 +338,14 @@ void sqr_mont_384x(vec384x ret, const vec384x a, const vec384 p, limb_t n0)
   vec768x t;
   
   sqr_fp2x2(t, a);
+#if (ISA)
   redc_mont_384(ret[0], t[0], p, n0);
   redc_mont_384(ret[1], t[1], p, n0);
+#elif(ISE)
+  _redc_mont_384x2_ise(ret, t, p, n0);
+  _redc_once_384_ise(ret[0], ret[0], p);
+  _redc_once_384_ise(ret[1], ret[1], p);
+#endif
 }
 
 void add_mod_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p)
