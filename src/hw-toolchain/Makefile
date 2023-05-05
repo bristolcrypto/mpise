@@ -14,11 +14,11 @@ COMPONENTS = riscv-gnu riscv-fesvr
 
 define rule_clone
 $(strip ${1})-clone  :
-	@$${REPO_HOME}/hw-toolchain/$(strip ${1})-clone.sh
+	@$${REPO_HOME}/src/hw-toolchain/$(strip ${1})-clone.sh
 endef
 define rule_build
 $(strip ${1})-build  :
-	@$${REPO_HOME}/hw-toolchain/$(strip ${1})-build.sh
+	@$${REPO_HOME}/src/hw-toolchain/$(strip ${1})-build.sh
 endef
 
 $(foreach COMPONENT,${COMPONENTS},$(eval $(call rule_clone, ${COMPONENT})))
