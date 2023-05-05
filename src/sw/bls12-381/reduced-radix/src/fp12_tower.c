@@ -158,31 +158,30 @@ void mul_fp6x2(vec768fp6 ret, const vec384fp6 a, const vec384fp6 b)
     sub_fp2x2(ret[2], ret[2], t2);
     add_fp2x2(ret[2], ret[2], t1);
 #elif (ISE)
-    vec768x t0, t1, t2, t3, t4, t5, t6, t7, t8;
-
-    mul_fp2x2(t0, a[0], b[0]);
-    mul_fp2x2(t1, a[0], b[1]);
-    mul_fp2x2(t2, a[0], b[2]);
-    mul_fp2x2(t3, a[1], b[0]);
-    mul_fp2x2(t4, a[1], b[1]);
-    mul_fp2x2(t5, a[1], b[2]); 
-    mul_fp2x2(t6, a[2], b[0]);
-    mul_fp2x2(t7, a[2], b[1]);
-    mul_fp2x2(t8, a[2], b[2]);
+    vec768x t0, t1, t2;
 
     /* ret[0] = (a1*b2 + a2*b1)*(u+1) + a0*b0 */
-    add_fp2x2(t5, t5, t7);
-    mul_by_u_plus_1_fp2x2(ret[0], t5);
+    mul_fp2x2(t0, a[0], b[0]);
+    mul_fp2x2(t1, a[1], b[2]); 
+    mul_fp2x2(t2, a[2], b[1]);
+    add_fp2x2(t1, t1, t2);
+    mul_by_u_plus_1_fp2x2(ret[0], t1);
     add_fp2x2(ret[0], ret[0], t0);
 
     /* ret[1] = a0*b1 + a1*b0 + a2*b2*(u+1) */
-    mul_by_u_plus_1_fp2x2(ret[1], t8);
+    mul_fp2x2(t0, a[0], b[1]);
+    mul_fp2x2(t1, a[1], b[0]);
+    mul_fp2x2(t2, a[2], b[2]);
+    mul_by_u_plus_1_fp2x2(ret[1], t2);
+    add_fp2x2(ret[1], ret[1], t0);
     add_fp2x2(ret[1], ret[1], t1);
-    add_fp2x2(ret[1], ret[1], t3);
 
     /* ret[2] = a0*b2 + a2*b0 + a1*b1 */
-    add_fp2x2(ret[2], t2, t6);
-    add_fp2x2(ret[2], ret[2], t4);
+    mul_fp2x2(t0, a[0], b[2]);
+    mul_fp2x2(t1, a[1], b[1]);
+    mul_fp2x2(t2, a[2], b[0]);
+    add_fp2x2(ret[2], t0, t2);
+    add_fp2x2(ret[2], ret[2], t1);
 #endif
 }
 
@@ -237,33 +236,31 @@ void sqr_fp6(vec384fp6 ret, const vec384fp6 a)
     add_fp2x2(rx, rx, m01);
     redc_fp2x2(ret[1], rx);
 #elif (ISE)
-    vec768x t0, t1, t2, t3, t4, t5, t6, t7, t8;
-    vec384x s0, s1, s2;
+    vec768x t0, t1;
+    vec384x s0, s1;
 
     add_fp2(s0, a[0], a[0]);
     add_fp2(s1, a[1], a[1]);
 
-    // mul_fp2x2(t0, a[0], a[0]);
-    sqr_fp2x2(t0, a[0]);
-    sqr_fp2x2(t1, a[1]);
-    sqr_fp2x2(t2, a[2]);
-    mul_fp2x2(t3, s0, a[1]);
-    mul_fp2x2(t4, s0, a[2]);
-    mul_fp2x2(t5, s1, a[2]);
-
     /* ret[0] = a0^2 + 2*(a1*a2)*(u+1) */
-    mul_by_u_plus_1_fp2x2(t7, t5);
-    add_fp2x2(t0, t0, t7);
+    mul_fp2x2(t1, s1, a[2]);
+    mul_by_u_plus_1_fp2x2(t0, t1);
+    sqr_fp2x2(t1, a[0]);
+    add_fp2x2(t0, t0, t1);
     redc_fp2x2(ret[0], t0);
 
     /* ret[1] = a2^2*(u+1) + 2*(a0*a1) */
-    mul_by_u_plus_1_fp2x2(t8, t2);
-    add_fp2x2(t8, t8, t3);
-    redc_fp2x2(ret[1], t8);
+    sqr_fp2x2(t1, a[2]);
+    mul_by_u_plus_1_fp2x2(t0, t1);
+    mul_fp2x2(t1, s0, a[1]);
+    add_fp2x2(t0, t0, t1);
+    redc_fp2x2(ret[1], t0);
 
     /* ret[2] = a1^2 + 2*(a0*a2) */
-    add_fp2x2(t1, t1, t4);
-    redc_fp2x2(ret[2], t1);
+    sqr_fp2x2(t0, a[1]);
+    mul_fp2x2(t1, s0, a[2]);
+    add_fp2x2(t0, t0, t1);
+    redc_fp2x2(ret[2], t0);
 #endif
 }
 #endif
@@ -376,24 +373,23 @@ void mul_by_xy0_fp6x2(vec768fp6 ret, const vec384fp6 a, const vec384fp6 b)
     mul_fp2x2(ret[2], a[2], b[0]);
     add_fp2x2(ret[2], ret[2], t1);
 #elif (ISE) 
-    vec768x t0, t1, t2, t3, t4, t5, t6, t7, t8;
-
-    mul_fp2x2(t0, a[0], b[0]);
-    mul_fp2x2(t1, a[0], b[1]);
-    mul_fp2x2(t3, a[1], b[0]);
-    mul_fp2x2(t4, a[1], b[1]);
-    mul_fp2x2(t6, a[2], b[0]);
-    mul_fp2x2(t7, a[2], b[1]);
+    vec768x t0, t1;
 
     /* ret[0] = (a1*0 + a2*b1)*(u+1) + a0*b0 */
-    mul_by_u_plus_1_fp2x2(ret[0], t7);
+    mul_fp2x2(t0, a[0], b[0]);
+    mul_fp2x2(t1, a[2], b[1]);
+    mul_by_u_plus_1_fp2x2(ret[0], t1);
     add_fp2x2(ret[0], ret[0], t0);
 
     /* ret[1] = a0*b1 + a1*b0 + a2*0*(u+1) */
-    add_fp2x2(ret[1], t1, t3);
+    mul_fp2x2(t0, a[0], b[1]);
+    mul_fp2x2(t1, a[1], b[0]);
+    add_fp2x2(ret[1], t0, t1);
 
     /* ret[2] = a0*0 + a2*b0 + a1*b1 */
-    add_fp2x2(ret[2], t4, t6);
+    mul_fp2x2(t0, a[1], b[1]);
+    mul_fp2x2(t1, a[2], b[0]);
+    add_fp2x2(ret[2], t0, t1);
 #endif
 }
 

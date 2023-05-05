@@ -1,4 +1,5 @@
 #include "vect.h"
+#include "fields.h"
 #include "consts.h"
 
 #include <stdint.h>
@@ -185,15 +186,11 @@ void cneg_mod_384_c(vec384 ret, const vec384 a, bool_t flag, const vec384 p)
 // ret = (a << count) mod p
 void lshift_mod_384(vec384 ret, const vec384 a, size_t count, const vec384 p)
 {
-  vec384 t; 
-
-  vec_copy(t, a, sizeof(vec384));
+  vec_copy(ret, a, sizeof(vec384));
 
   while (count--) {
-    add_mod_384(t, t, t, p);
+    add_mod_384(ret, ret, ret, p);
   }
-
-  vec_copy(ret, t, sizeof(vec384));
 }
 
 // ret = a * 8 mod p
@@ -413,7 +410,6 @@ void sqr_mont_384_ise(vec384 ret, const vec384 a, const vec384 p, limb_t n0)
 }
 
 // ret = a * 2^-384 mod p
-// todo: optimize with product-scanning
 void redc_mont_384_c(vec384 ret, const vec768 a, const vec384 p, limb_t n0)
 {
   uint64_t z0 = a[0], z1 = a[1], z2 = a[2], z3 = a[3], z4  = a[4],  z5  = a[5];
@@ -637,104 +633,58 @@ void flt_inverse_mont_384(vec384 ret, const vec384 inp, const vec384 p, limb_t n
 
 // fp2 arithmetic 
 
-// schoolbook
-// todo: Karatsuba + Longa's method
+// Karatsuba
 void mul_mont_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p, limb_t n0)
 {
-  vec384 t0, t1, t2, t3;
-  vec384 r0, r1;
+  vec768x t;
 
-  // t0 = a0 * b0 mod p
-  mul_mont_384(t0, a[0], b[0], p, n0);
-  // t1 = a0 * b1 mod p
-  mul_mont_384(t1, a[0], b[1], p, n0);
-  // t2 = a1 * b0 mod p
-  mul_mont_384(t2, a[1], b[0], p, n0);
-  // t3 = a1 * b1 mod p
-  mul_mont_384(t3, a[1], b[1], p, n0);
-  // r0 = (a0*b0 - a1*b1) mod p
-  sub_mod_384(r0, t0, t3, p);
-  // r1 = (a0*b1 + a1*b0) mod p
-  add_mod_384(r1, t1, t2, p);
-
-  vec_copy(ret[0], r0, sizeof(vec384));
-  vec_copy(ret[1], r1, sizeof(vec384));
+  mul_fp2x2(t, a, b);
+  redc_mont_384(ret[0], t[0], p, n0);
+  redc_mont_384(ret[1], t[1], p, n0);
 }
 
 // Karatsuba
 void sqr_mont_384x(vec384x ret, const vec384x a, const vec384 p, limb_t n0)
 {
-  vec384 t0, t1, t2, t3;
-  vec384 r0, r1;
-
-  // t0 = a0 + a1
-  add_mod_384(t0, a[0], a[1], p);
-  // t1 = a0 - a1 
-  sub_mod_384(t1, a[0], a[1], p);
-  // t2 = 2 * a0
-  add_mod_384(t2, a[0], a[0], p);
-  // r0 = (a0+a1) * (a0-a1)
-  mul_mont_384(r0, t0, t1, p, n0);
-  // r1 = 2*a0 * a1
-  mul_mont_384(r1, t2, a[1], p, n0);
-
-  vec_copy(ret[0], r0, sizeof(vec384));
-  vec_copy(ret[1], r1, sizeof(vec384));
+  vec768x t;
+  
+  sqr_fp2x2(t, a);
+  redc_mont_384(ret[0], t[0], p, n0);
+  redc_mont_384(ret[1], t[1], p, n0);
 }
 
 void add_mod_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p)
 {
-  vec384 r0, r1;
-
-  add_mod_384(r0, a[0], b[0], p);
-  add_mod_384(r1, a[1], b[1], p);
-
-  vec_copy(ret[0], r0, sizeof(vec384));
-  vec_copy(ret[1], r1, sizeof(vec384));
+  add_mod_384(ret[0], a[0], b[0], p);
+  add_mod_384(ret[1], a[1], b[1], p);
 }
 
 void sub_mod_384x(vec384x ret, const vec384x a, const vec384x b, const vec384 p)
 {  
-  vec384 r0, r1;
-
-  sub_mod_384(r0, a[0], b[0], p);
-  sub_mod_384(r1, a[1], b[1], p);
-
-  vec_copy(ret[0], r0, sizeof(vec384));
-  vec_copy(ret[1], r1, sizeof(vec384));
+  sub_mod_384(ret[0], a[0], b[0], p);
+  sub_mod_384(ret[1], a[1], b[1], p);
 }
 
 void mul_by_8_mod_384x(vec384x ret, const vec384x a, const vec384 p)
 {
-  vec384 r0, r1;
-
-  mul_by_8_mod_384(r0, a[0], p);
-  mul_by_8_mod_384(r1, a[1], p);
-
-  vec_copy(ret[0], r0, sizeof(vec384));
-  vec_copy(ret[1], r1, sizeof(vec384));
+  mul_by_8_mod_384(ret[0], a[0], p);
+  mul_by_8_mod_384(ret[1], a[1], p);
 }
 
 void mul_by_3_mod_384x(vec384x ret, const vec384x a, const vec384 p)
 {
-  vec384 r0, r1;
-
-  mul_by_3_mod_384(r0, a[0], p);
-  mul_by_3_mod_384(r1, a[1], p);
-
-  vec_copy(ret[0], r0, sizeof(vec384));
-  vec_copy(ret[1], r1, sizeof(vec384));
+  mul_by_3_mod_384(ret[0], a[0], p);
+  mul_by_3_mod_384(ret[1], a[1], p);
 }
 
 void mul_by_1_plus_i_mod_384x(vec384x ret, const vec384x a, const vec384 p)
 {
-  vec384 r0, r1;
+  vec384 r0;
 
   sub_mod_384(r0, a[0], a[1], p);
-  add_mod_384(r1, a[0], a[1], p);
+  add_mod_384(ret[1], a[0], a[1], p);
 
   vec_copy(ret[0], r0, sizeof(vec384));
-  vec_copy(ret[1], r1, sizeof(vec384));
 }
 
 // double-length ret = a + b mod (p * 2^384)

@@ -136,6 +136,12 @@ and we plan to develop eight associated implementations shown as below.
 
 - Rebuild bitstream (e.g., to modify ISE or to add new ISEs) 
 
+  - get the ISE-enabled Rocket chip repo.
+
+    ```sh
+    make hw-get-rocketchip
+    ```
+
   - generate a new bitstream file
   
     ```sh
