@@ -88,7 +88,8 @@ void frobenius_map_fp12(vec384fp12 ret, const vec384fp12 a, size_t n);
 
 typedef vec768 vec768x[2];
 
-extern void mul_fp2x2_a0_ise(vec768 ret0, vec768 ret1, const vec384x a, const vec384x b);
+void mul_384_aixb_ise(vec768 ret0, vec768 ret1, const vec384 a, const vec384x b);
+void _redc_mont_384x2_ise(vec384x ret, const vec768x a, const vec384 p, limb_t n0);
 
 void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b);
 void sqr_fp2x2(vec768x ret, const vec384x a);

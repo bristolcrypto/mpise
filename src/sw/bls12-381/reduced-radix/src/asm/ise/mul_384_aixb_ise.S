@@ -1,4 +1,4 @@
-// void mul_fp2x2_a0_ise(vec768 ret0, vec768 ret1, const vec384x a, const vec384x b)
+// void mul_384_aixb_ise(vec768 ret0, vec768 ret1, const vec384 a, const vec384x b)
 
 
 #include "ise.h"
@@ -373,9 +373,9 @@
 
 .section .text
 
-.global mul_fp2x2_a0_ise
+.global mul_384_aixb_ise
 
-mul_fp2x2_a0_ise:
+mul_384_aixb_ise:
   PROLOGUE
   LOAD_A
   LOAD_B

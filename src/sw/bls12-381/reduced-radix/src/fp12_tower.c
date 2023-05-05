@@ -42,8 +42,14 @@ void mul_by_u_plus_1_fp2x2(vec768x ret, const vec768x a)
 
 void redc_fp2x2(vec384x ret, const vec768x a)
 {
+#if ISA
     redc_mont_384(ret[0], a[0], BLS12_381_P, p0);
     redc_mont_384(ret[1], a[1], BLS12_381_P, p0);
+#elif ISE 
+    _redc_mont_384x2_ise(ret, a, BLS12_381_P, p0);
+    _redc_once_384_ise(ret[0], ret[0], BLS12_381_P);
+    _redc_once_384_ise(ret[1], ret[1], BLS12_381_P);
+#endif
 }
 
 void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b)
@@ -77,11 +83,8 @@ void mul_fp2x2(vec768x ret, const vec384x a, const vec384x b)
 #elif (ISE)
     vec768 t0, t1, t2, t3;
 
-    // mul_384(t0, a[0], b[0]);
-    // mul_384(t1, a[0], b[1]);
-    mul_fp2x2_a0_ise(t0, t1, a, b);
-    mul_384(t2, a[1], b[0]);
-    mul_384(t3, a[1], b[1]);
+    mul_384_aixb_ise(t0, t1, a[0], b);
+    mul_384_aixb_ise(t2, t3, a[1], b);
 
     sub_mod_384x384(ret[0], t0, t3, BLS12_381_P);
     add_mod_384x384(ret[1], t1, t2, BLS12_381_P); 
