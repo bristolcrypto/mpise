@@ -1,4 +1,4 @@
-# ISEs for Multi-Precision Integer arithmetic
+# RISC-V ISEs for multi-precision integer arithmetic
 
 <!--- ==================================================================== --->
 
