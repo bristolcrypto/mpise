@@ -1,21 +1,21 @@
+#!/bin/bash
+
 # Copyright (C) 2019 SCARV project <info@scarv.org>
 #
 # Use of this source code is restricted per the MIT license, a copy of which
 # can be found at https://opensource.org/licenses/MIT (or should be included
 # as LICENSE.txt within the associated archive or repository).
 
-ifndef REPO_HOME
-  $(error "execute 'source ./bin/conf.sh' to configure environment")
-endif
+source ${PWD}/share.sh
 
 # =============================================================================
 
-sw-toolchain-build :
-	@make --directory="${REPO_HOME}/src/sw-toolchain" clone 
-	@make --directory="${REPO_HOME}/src/sw-toolchain" apply 
-	@make --directory="${REPO_HOME}/src/sw-toolchain" build
+if [ ! -d ${SPIKE_REPO} ] ; then
+  git clone https://github.com/riscv/riscv-isa-sim.git ${SPIKE_REPO}
+fi
 
-sw-toolchain-clean :
-	@make --directory="${REPO_HOME}/src/sw-toolchain" clean
+cd ${SPIKE_REPO}
+git fetch origin ${SPIKE_COMMIT}:${SPIKE_BRANCH}
+git checkout ${SPIKE_BRANCH}
 
 # =============================================================================

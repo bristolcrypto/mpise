@@ -2,156 +2,92 @@
 
 <!--- ==================================================================== --->
 
+*
+*
+
+<!--- ==================================================================== --->
+
 ## Overview
 
-We consider the RISC-V baseline ISA as being `rv64gc` meaning that the following standard extensions
-  - M      (multiplication)
-  - A      (atomic)
-  - F      (single-precision floating-point)
-  - D      (double-precision floating-point)
-  - C      (compressed)
-
-  are available by default.
-
 <!--- ==================================================================== --->
 
-## Implementations 
-
-X25519 and optimal Ate pairing over BLS12-381 are two case studies considered in this repo., 
-and we plan to develop eight associated implementations shown as below.
-
-  |  Algorithm         |  Radix   |  Type            |  Software                                           |  Hardware                                          |
-  | :----------------: | :------: | :--------------: | :-------------------------------------------------: | :------------------------------------------------: |
-  |  x25519            |  full    |  isa-only        |  [o](./src/sw/x25519/full-radix/src/asm/isa/)       |  o                                                 |
-  |  x25519            |  full    |  ise-assisted    |  [o](./src/sw/x25519/full-radix/src/asm/ise/)       |  [o](./src/hw/rtl/x25519/full-radix/rv64/)         |
-  |  x25519            |  reduced |  isa-only        |  [o](./src/sw/x25519/reduced-radix/src/asm/isa/)    |  o                                                 |
-  |  x25519            |  reduced |  ise-assisted    |  [o](./src/sw/x25519/reduced-radix/src/asm/ise/)    |  [o](./src/hw/rtl/x25519/reduced-radix/rv64/)      |
-  |  bls12-381 pairing |  full    |  isa-only        |  [o](./src/sw/bls12-381/full-radix/src/asm/isa/)    |  o                                                 |
-  |  bls12-381 pairing |  full    |  ise-assisted    |  [o](./src/sw/bls12-381/full-radix/src/asm/ise/)    |  [o](./src/hw/rtl/bls12-381/full-radix/rv64/)      |
-  |  bls12-381 pairing |  reduced |  isa-only        |  [o](./src/sw/bls12-381/reduced-radix/src/asm/isa/) |  o                                                 |
-  |  bls12-381 pairing |  reduced |  ise-assisted    |  [o](./src/sw/bls12-381/reduced-radix/src/asm/ise/) |  [o](./src/hw/rtl/bls12-381/reduced-radix/rv64/)   |
-
-<!--- ==================================================================== --->
-
-## Organization 
+## Organisation
 
 ```
 ├── bin                     - scripts (e.g., environment configuration)
 ├── build                   - working directory for build
+├── doc                     - documentation
 └── src                     - source code
-    ├── hw                    - source code for hardware
-    ├── hw-toolchain          - source code for hardware toolchain
-    ├── sw                    - source code for software
-    │   ├── bls12-381           - optimal Ate pairing over BLS12-381 
-    │   │   ├── full-radix        - 64-bit-per-limb implementation   
-    │   │   └── reduced-radix     - 55-bit-per-limb implementation   
-    │   └── x25519              - X25519 key exchange
-    │       ├── full-radix        - 64-bit-per-limb implementation   
-    │       └── reduced-radix     - 51-bit-per-limb implementation  
-    └── sw-toolchain          - source code for software toolchain
+    ├── sw                  - source code for software
+    └── sw-toolchain        - source code for software tool-chain
 ```
+
+<!--- ==================================================================== --->
 
 ## Usage 
 
-### Software simulation 
+- Options which use a RISC-V baseline ISA plus custom ISE do so via the
+  [`.insn`](https://www.sourceware.org/binutils/docs/as/RISC_002dV_002dFormats.html)
+  directive, rather than an invasive change to `binutils` itself.
 
-- Clone the repo. 
+- Clone the repo.
 
   ```sh
-  git clone https://github.com/scarv/mpise.git 
-  cd ./mpise 
+  git clone https://github.com/scarv/mpise.git ./mpise
+  cd ./mpise
+  git submodule update --init --recursive
+  source ./bin/conf.sh
   ```
 
 - Fix paths, e.g., 
   
   ```sh
-  export RISCV=/opt/riscv
+  export RISCV="${REPO_HOME}/build/riscv"
   ```
 
-- Set up local variables for repo.
-
+- Build a multi-architecture 
+  [tool-chain](https://github.com/riscv/riscv-gnu-toolchain)
+  into `${RISCV}`:
+  
   ```sh
-  source ./bin/conf.sh 
+  git clone https://github.com/riscv/riscv-gnu-toolchain.git ${REPO_HOME}/build/riscv-gnu-toolchain
+  cd ${REPO_HOME}/build/riscv-gnu-toolchain
+  git submodule update --init --recursive
+  ./configure --prefix="${RISCV}" --enable-multilib --with-multilib-generator="rv32gc-ilp32--;rv64gc-lp64--"
+  make
   ```
 
-- Build software toolchains 
+- Build an ISE-enabled tool-chain, including
+  [`spike`](https://github.com/riscv/riscv-isa-sim)
+  and associated
+  [`pk`](https://github.com/riscv/riscv-pk),
+  via
 
   ```sh 
   make sw-toolchain-build
   ```
 
-- Build and execute implementations
+  Note that since said tool-chain is 
+  [patch](https://savannah.gnu.org/projects/patch)-based,
+  making changes to it is somewhat tricky.  The idea, for each component,
+  (i.e., `pk` and `spike`) referred to as `${COMPONENT}` is as follows:
 
-  ```sh
-  make sw-run ALG=[x25519/bls12-381] RADIX=[full/reduced] TYPE=[ISA/ISE]
-  ```
+  - perform a fresh clone of the component repository,
+  - apply the existing patch to the cloned component repository,
+  - implement the change in the cloned component repository,
+  - stage the change via `git add`, but do *not* commit it, in the cloned component repository,
+  - execute `${COMPONENT}-update.sh` to produce an updated patch,
+  - optionally commit and push the updated patch.
 
-  For example, to build and execute an ISE-assisted reduced-radix implementation of optimal Ate pairing over BLS12-381 
+<!--- ==================================================================== --->
 
-  ```sh
-  make sw-run ALG=bls12-381 RADIX=reduced TYPE=ISE
-  ``` 
+## Acknowledgements
 
-### Hardware evaluation 
-
-- Pre-requisites
-  - Vivado design suite
-  - Verilator
-
-- Fix paths for the Rocket chip toolchian, e.g., 
-
-  ```sh
-  export RISCV_ROCKET=/opt/riscv-rocket 
-  ```
-
-- Build hardware toolchains 
-
-  ```sh
-  make hw-toolchain-build
-  ```
-
-- Fix the path for Vivado design suite, e.g., 
-
-  ```sh
-  export VIVADO_TOOL_DIR=/opt/Xilinx/Vivado/2019.1
-  ```
-
-- Set up the variable about Vivado for repo.
-
-  ```sh
-  source ./bin/vivado.sh
-  ```
-
-- Program a pre-built bitstream to FPGA board (currently only `arty100T` is supported in this repo.)
-
-  ```sh
-  make fpga-prog ALG=[x25519/bls12-381] RADIX=[full/reduced] BOARD=arty100T
-  ```
-
-- Build and execute implementations (assuming the port `/dev/ttyUSB0` is used)
-
-  ```sh 
-  make fpga-run ALG=[x25519/bls12-381] RADIX=[full/reduced] TYPE=[ISA/ISE] BOARD=arty100T PORT=/dev/ttyUSB0
-  ```
-
-- Rebuild bitstream (e.g., to modify ISE or to add new ISEs) 
-
-  - get the ISE-enabled Rocket chip repo.
-
-    ```sh
-    make hw-get-rocketchip
-    ```
-
-  - generate a new bitstream file
-  
-    ```sh
-    make fpga-hw ALG=[x25519/bls12-381] RADIX=[full/reduced] BOARD=arty100T 
-    ```
-
-  - replace the correponding pre-built bistream with this new bitstream generated 
-
-    ```sh
-    make fpga-update ALG=[x25519/bls12-381] RADIX=[full/reduced] BOARD=arty100T
-    ```
+This work has been supported in part
+by EPSRC       via grant
+[EP/R012288/1](https://gtr.ukri.org/projects?ref=EP/R012288/1) (under the [RISE](http://www.ukrise.org) programme),
+and 
+by Innovate UK via grant
+[10065634](https://gtr.ukri.org/projects?ref=10065634).
 
 <!--- ==================================================================== --->

@@ -1,24 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 
-echo "-------------------------[setting up project]--------------------------"
-
-# =============================================================================
-
-if [ -z ${RISCV} ]; then
-    echo "[ERROR] No 'RISCV' environment variable defined"
-fi
-
-export REPO_HOME=`pwd`
-export CORE=rocket-mpise
+# Copyright (C) 2019 SCARV project <info@scarv.org>
+#
+# Use of this source code is restricted per the MIT license, a copy of which
+# can be found at https://opensource.org/licenses/MIT (or should be included
+# as LICENSE.txt within the associated archive or repository).
 
 # =============================================================================
 
-echo "REPO_HOME         = $REPO_HOME"
-echo "RISCV             = $RISCV"
-echo "CORE              = $CORE"
+export REPO_HOME="${PWD}"
 
-# =============================================================================
+export REPO_VERSION_MAJOR="0"
+export REPO_VERSION_MINOR="1"
+export REPO_VERSION_PATCH="0"
 
-echo "------------------------------[finished]-------------------------------"
+export REPO_VERSION="${REPO_VERSION_MAJOR}.${REPO_VERSION_MINOR}.${REPO_VERSION_PATCH}"
 
 # =============================================================================

@@ -1,21 +1,28 @@
+#!/bin/bash
+
 # Copyright (C) 2019 SCARV project <info@scarv.org>
 #
 # Use of this source code is restricted per the MIT license, a copy of which
 # can be found at https://opensource.org/licenses/MIT (or should be included
 # as LICENSE.txt within the associated archive or repository).
 
-ifndef REPO_HOME
-  $(error "execute 'source ./bin/conf.sh' to configure environment")
-endif
+source ${PWD}/share.sh
 
 # =============================================================================
 
-sw-toolchain-build :
-	@make --directory="${REPO_HOME}/src/sw-toolchain" clone 
-	@make --directory="${REPO_HOME}/src/sw-toolchain" apply 
-	@make --directory="${REPO_HOME}/src/sw-toolchain" build
+if [ -d ${SPIKE_BUILD} ] ; then
+    rm --force --recursive ${SPIKE_BUILD}
+fi
 
-sw-toolchain-clean :
-	@make --directory="${REPO_HOME}/src/sw-toolchain" clean
+mkdir --parents ${SPIKE_INSTALL}
+mkdir --parents ${SPIKE_BUILD}
+
+export PATH="${RISCV}/bin:${PATH}"
+
+cd ${SPIKE_BUILD}
+../configure --prefix="${SPIKE_INSTALL}" --target="riscv64-unknown-elf" --with-isa="rv32gcb"
+make
+make install
 
 # =============================================================================
+
