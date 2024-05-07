@@ -120,7 +120,69 @@
   f_3(x) = selection of radix based on x
   ```
 
-- Some notes:
+- [RISC-V specification](https://riscv.org/technical/specifications)
+  states that the R4 instruction format (ab)used by the DAC paper
+  "*is only used by the floating-point fused multiply-add instructions*",
+  i.e., `f[n]madd` and `f[n]msub`: this use-case consumes an entire major
+  opcode (i.e., `opcode = 1001011`), and therefore a significant amount of 
+  encoding space.  As is, R4 uses 
+
+  - a 2-bit `fmt' field to specify the floating-point format
+  - a 3-bit `rm` field to specify the rounding mode
+
+  The value `fmt = 10` is reserved, meaning it *could* be used an integer 
+  format; the values `rm = 101` and `rm = 110` are also reserved.  
+
+- The *ideal* instruction would be 5-address, in the sense one can specify 
+  3 inputs and 2 outputs for more- and less-significant halves of a result:
+
+  - using 1 output        is better aligned with the 3-address norm, 
+    but
+    implies a need for separate instructions to produce the
+  - using 2  inputs would be better aligned with the 3-address norm, 
+    but
+    makes the ISE redundant: we are left with `mul` and `mulhi` from the base ISA.
+
+  So, treating a 4-address format as a requirement and ignoring some more
+  exotic options (e.g., via use of 64-bit instructions), we could
+
+  1. use the R4      format with existing    major opcode, 
+     i.e., make ISE mutually exclusive with F and D floating-point extensions,
+  2. use the R4      format with alternative major opcode,
+  3. use an  R4-like format with alternative major opcode, 
+     e.g.,
+
+     a. destructive semantics: overload `rd` to produce both `rd` and `rs3`
+     b. implicit addresses: make `rs3` implied rather than explicit
+
+  as characterised by the following:
+
+  +--------+------+-----------------------------------------------------------+
+  | Option | Bits | Constraints                                               |
+  +--------+------+-----------------------------------------------------------+
+  | 1.     |  5   | 5 bits = 4 for radix + 1 for high/low opcode is not a lot |
+  | 2.     |  5   | 5 bits = 4 for radix + 1 for high/low opcode is not a lot |
+  | 3a.    | 10   | need to demonstrate impact, e.g., re. additional moves    |
+  | 3b.    | 10   | need to demonstrate impact, e.g., re. additional moves    |
+  +--------+------+-----------------------------------------------------------+
+
+  Note that 3a. was considered for the design of R4, with the specification 
+  explicitly documenting
+  "*[destructive] use of `rd` to provide `rs3`*"
+  as an option.
+
+- Although concrete choices re. all the above will be needed to support an
+  implementable design, it is also important to remember that details such
+  as the the instruction variant and encoding are somewhat orthogonal to
+  the impact on execution latency.
+
+  For example, the stateful and stateless variants are basically equivalent 
+  in terms of execution latency.  Assuming both variants have single-cycle 
+  latency per instruction, the granularity of changes to the radix will be 
+  (very) coarse: one selects and uses one radix per high-level construction,
+  so changes to the radix will be infrequent and their cost amortised.
+
+- Some other notes:
 
   - Johann estimated that we should support a set of radix between 48 and
     63 bits, although this set may be sparse (provided motivation for any
@@ -142,39 +204,3 @@
     the stateful variant, because selection of radix is based on `imm`: use
     of a CSR potentially offers more bits than for `imm`, which implies the
     stateful variant might be able to offer a larger set of radix.
-
-- The variant aside, a R4-style instruction format is implied by use of 3
-  input operands.  The 
-  [RISC-V specification](https://riscv.org/technical/specifications)
-  states that R4
-  "*is only used by the floating-point fused multiply-add instructions*",
-  i.e., `f[n]madd` and `f[n]msub`: this use-case consumes an entire major
-  opcode (i.e., `opcode = 1001011`), and therefore a significant amount of 
-  encoding space.  As is, R4 uses 
-
-  - a 2-bit `fmt' field to specify the floating-point format
-  - a 3-bit `rm` field to specify the rounding mode
-
-  The value `fmt = 10` is reserved, meaning it *could* be used an integer 
-  format; the values `rm = 101` and `rm = 110` are also reserved.  Beyond
-  this, however, there is no potential to add an immediate operand so one
-  cannot plausibly add to this specific feature of the ISA.
-  So, what can/should we do?
-
-  - One could use an alternative major opcode to support more instructions
-    based on the same format: the DAC paper uses `opcode = 1111011`, for
-    example, plus `fmt` and `rm` as further sub-opcodes.
-  - One could consider an alternative to R4: the specification states that
-    some (e.g., "*[destructive] use of `rd` to provide `rs3`*") were at
-    least considered.
-
-- Although concrete choices re. all the above will be needed to support an
-  implementable design, it is also important to remember that details such
-  as the the instruction variant and encoding are somewhat orthogonal to
-  the impact on execution latency.
-
-  For example, the stateful and stateless variants are basically equivalent 
-  in terms of execution latency.  Assuming both variants have single-cycle 
-  latency per instruction, the granularity of changes to the radix will be 
-  (very) coarse: one selects and uses one radix per high-level construction,
-  so changes to the radix will be infrequent and their cost amortised.
