@@ -157,14 +157,12 @@
 
   as characterised by the following:
 
-  +--------+------+-----------------------------------------------------------+
   | Option | Bits | Constraints                                               |
-  +--------+------+-----------------------------------------------------------+
+  |:-------|:-----|:----------------------------------------------------------|
   | 1.     |  5   | 5 bits = 4 for radix + 1 for high/low opcode is not a lot |
   | 2.     |  5   | 5 bits = 4 for radix + 1 for high/low opcode is not a lot |
   | 3a.    | 10   | need to demonstrate impact, e.g., re. additional moves    |
   | 3b.    | 10   | need to demonstrate impact, e.g., re. additional moves    |
-  +--------+------+-----------------------------------------------------------+
 
   Note that 3a. was considered for the design of R4, with the specification 
   explicitly documenting
