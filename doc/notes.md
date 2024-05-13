@@ -120,6 +120,16 @@
   f_3(x) = selection of radix based on x
   ```
 
+- Note that the stateful variant obviously introduces state, namely the
+  CSR: relative to the stateless variant, this is a disadvantage.  That
+  said, however, this overhead could plausibly be shared *if* one sets
+  this ISE in the context of a broader extension.
+  For example,
+  [Alkim et al.](https://tches.iacr.org/index.php/TCHES/article/view/8589)
+  present an ISE for arithmetic in a small finite field to support Kyber 
+  and NewHope: they consider fixed and flexible variants, with the latter
+  CSR to store the configuration (e.g., the modulus).
+
 - [RISC-V specification](https://riscv.org/technical/specifications)
   states that the R4 instruction format (ab)used by the DAC paper
   "*is only used by the floating-point fused multiply-add instructions*",
