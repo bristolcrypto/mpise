@@ -1,124 +1,15 @@
 - The DAC paper basically considered a 3-component ISE, which included
 
-  1. support for    full-radix multiply-add:
-
-     ```
-     maddlu   rd, rs1, rs2, rs3 {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       m       <- (1 << 64) - 1
-       r       <- ( (x * y + z)         & m) 
-       GPR[rd] <- r
-     }
-   
-     maddhu   rd, rs1, rs2, rs3 {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       m       <- (1 << 64) - 1
-       r       <- (((x * y  + z) >> 64) & m) 
-       GPR[rd] <- r
-     }
-     ```
-
-  2. support for reduced-radix multiply-add:
-
-     ```
-     madd57lu rd, rs1, rs2, rs3 {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       m       <- (1 << 57) - 1
-       r       <- ( (x * y)        & m) + z 
-       GPR[rd] <- r
-     }
-   
-     madd57hu rd, rs1, rs2, rs3 {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       m       <- (1 << 64) - 1
-       r       <- (((x * y) >> 57) & m) + z 
-       GPR[rd] <- r
-     }
-     ```
-
-  3. support for carry propagation:
-
-     ```
-     cadd     rd, rs1, rs2, rs3 {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       r       <- ((x + y) >> 64) + z
-       GPR[rd] <- r
-     }  
-
-     sraiadd  rd, rs1, rs2, imm {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       r       <- x + EXTS(y >> imm)
-       GPR[rd] <- r
-     }
-     ```
+  1. support for carry propagation,
+  2. support for    full-radix multiply-add,
+  3. support for reduced-radix multiply-add.
 
 - As a first step, the goal is to generalise the reduced-radix component:
   doing so will replace the fixed limb size (of 57 bits) with a parameter.
   Ignoring the challenge of encoding, there are 2 high level approaches:
 
-  1. stateful  (or CSR)       variant:
-
-     ```
-     maddrrlu rd, rs1, rs2, rs3      {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       m       <- (1 << f_0(CSR[maddrr])) - 1
-       r       <- (((x * y) >> f_1(CSR[maddrr])) & m) + z 
-       GPR[rd] <- r
-     }
-   
-     maddrrhu rd, rs1, rs2, rs3      {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       m       <- (1 << f_2(CSR[maddrr])) - 1
-       r       <- (((x * y) >> f_3(CSR[maddrr])) & m) + z 
-       GPR[rd] <- r
-     }
-     ```
-
-  2. stateless (or immediate) variant:
-
-     ```
-     maddrrlu rd, rs1, rs2, rs3, imm {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       m       <- (1 << f_0(imm        )) - 1
-       r       <- (((x * y) >> f_1(imm        )) & m) + z 
-       GPR[rd] <- r
-     }
-   
-     maddrrhu rd, rs1, rs2, rs3, imm {
-       x       <- GPR[rs1]
-       y       <- GPR[rs2]
-       z       <- GPR[rs3]
-       m       <- (1 << f_2(imm        )) - 1
-       r       <- (((x * y) >> f_3(imm        )) & m) + z 
-       GPR[rd] <- r
-     }
-     ```
-
-  where
-
-  ```
-  f_0(x) = selection of radix based on x
-  f_1(x) =  0
-  f_2(x) = 64
-  f_3(x) = selection of radix based on x
-  ```
+  1. stateful  (or CSR)       variant,
+  2. stateless (or immediate) variant.
 
 - Note that the stateful variant obviously introduces state, namely the
   CSR: relative to the stateless variant, this is a disadvantage.  That
