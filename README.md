@@ -2,8 +2,6 @@
 
 <!--- ==================================================================== --->
 
-*
-*
 
 <!--- ==================================================================== --->
 
@@ -38,6 +36,26 @@
   git submodule update --init --recursive
   source ./bin/conf.sh
   ```
+
+- Fix configuration, e.g., 
+
+  - one option from
+
+    ```sh
+    export MPISE_DESTRUCTIVE="0"
+    export MPISE_DESTRUCTIVE="1"
+    ```
+     
+    to disable (resp. enable) destructive instruction variants.
+
+  - one option from
+
+    ```sh
+    export MPISE_STATELESS="0"
+    export MPISE_STATELESS="1"
+    ```
+
+    to disable (resp. enable) stateless   instruction variants.
 
 - Fix paths, e.g., 
   

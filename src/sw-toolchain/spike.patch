@@ -1,0 +1,329 @@
+diff --git a/riscv/arith.cc b/riscv/arith.cc
+new file mode 100644
+index 00000000..32ce9d92
+--- /dev/null
++++ b/riscv/arith.cc
+@@ -0,0 +1 @@
++#include "arith.h"
+diff --git a/riscv/decode.h b/riscv/decode.h
+index 7028c855..addb4e89 100644
+--- a/riscv/decode.h
++++ b/riscv/decode.h
+@@ -80,6 +80,11 @@ public:
+   insn_t(insn_bits_t bits) : b(bits) {}
+   insn_bits_t bits() { return b & ~((UINT64_MAX) << (length() * 8)); }
+   int length() { return insn_length(b); }
++  // ++ mpise
++  uint64_t funct7() { return x(25, 7); }
++  uint64_t funct3() { return x(12, 3); }
++  uint64_t funct2() { return x(25, 2); }
++  // -- mpise
+   int64_t i_imm() { return int64_t(b) >> 20; }
+   int64_t shamt() { return x(20, 6); }
+   int64_t s_imm() { return x(7, 5) + (xs(25, 7) << 5); }
+diff --git a/riscv/encoding.h b/riscv/encoding.h
+index b2162963..4bad2767 100644
+--- a/riscv/encoding.h
++++ b/riscv/encoding.h
+@@ -2795,6 +2795,53 @@
+ #define MASK_VFWREDSUM_VS  0xfc00707f
+ #define MATCH_VPOPC_M 0x40082057
+ #define MASK_VPOPC_M  0xfc0ff07f
++// ++ mpise
++#define MATCH_SRAIADD  0x000100B
++#define  MASK_SRAIADD  0x000107B
++#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
++// !destructive
++#define MATCH_CACC     0x000000B
++#define  MASK_CACC     0x000107B
++#define MATCH_MACCFRLU 0x000002B
++#define  MASK_MACCFRLU 0x000107B
++#define MATCH_MACCFRHU 0x000102B
++#define  MASK_MACCFRHU 0x000107B
++#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
++// !destructive && !stateless
++#define MATCH_MACCRRLU 0x000005B
++#define  MASK_MACCRRLU 0x000107B
++#define MATCH_MACCRRHU 0x000105B
++#define  MASK_MACCRRHU 0x000107B
++#elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
++// !destructive &&  stateless
++#define MATCH_MACCRRLU 0x000005B
++#define  MASK_MACCRRLU 0x000107B
++#define MATCH_MACCRRHU 0x000105B
++#define  MASK_MACCRRHU 0x000107B
++#endif
++#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
++//  destructive
++#define MATCH_CACC     0x000000B
++#define  MASK_CACC     0x000107B
++#define MATCH_MACCFRLU 0x000002B
++#define  MASK_MACCFRLU 0x000107B
++#define MATCH_MACCFRHU 0x000102B
++#define  MASK_MACCFRHU 0x000107B
++#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
++//  destructive && !stateless
++#define MATCH_MACCRRLU 0x000005B
++#define  MASK_MACCRRLU 0x000107B
++#define MATCH_MACCRRHU 0x000105B
++#define  MASK_MACCRRHU 0x000107B
++#elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
++//  destructive &&  stateless
++#define MATCH_MACCRRLU 0x000005B
++#define  MASK_MACCRRLU 0x000107B
++#define MATCH_MACCRRHU 0x000105B
++#define  MASK_MACCRRHU 0x000107B
++#endif
++#endif
++// -- mpise
+ #define CSR_FFLAGS 0x1
+ #define CSR_FRM 0x2
+ #define CSR_FCSR 0x3
+@@ -3071,6 +3118,9 @@
+ #define CSR_MHPMCOUNTER29H 0xb9d
+ #define CSR_MHPMCOUNTER30H 0xb9e
+ #define CSR_MHPMCOUNTER31H 0xb9f
++// ++ mpise
++#define CSR_MACC           0x800
++// -- mpise
+ #define CAUSE_MISALIGNED_FETCH 0x0
+ #define CAUSE_FETCH_ACCESS 0x1
+ #define CAUSE_ILLEGAL_INSTRUCTION 0x2
+@@ -4349,6 +4399,14 @@ DECLARE_INSN(vse1_v, MATCH_VSE1_V, MASK_VSE1_V)
+ DECLARE_INSN(vfredsum_vs, MATCH_VFREDSUM_VS, MASK_VFREDSUM_VS)
+ DECLARE_INSN(vfwredsum_vs, MATCH_VFWREDSUM_VS, MASK_VFWREDSUM_VS)
+ DECLARE_INSN(vpopc_m, MATCH_VPOPC_M, MASK_VPOPC_M)
++// ++ mpise
++DECLARE_INSN(cacc,    MATCH_CACC,     MASK_CACC)
++DECLARE_INSN(sraiadd, MATCH_SRAIADD,  MASK_SRAIADD)
++DECLARE_INSN(maccfrlu,MATCH_MACCFRLU, MASK_MACCFRLU)
++DECLARE_INSN(maccfrhu,MATCH_MACCFRHU, MASK_MACCFRHU)
++DECLARE_INSN(maccrrlu,MATCH_MACCRRLU, MASK_MACCRRLU)
++DECLARE_INSN(maccrrhu,MATCH_MACCRRHU, MASK_MACCRRHU)
++// -- mpise
+ #endif
+ #ifdef DECLARE_CSR
+ DECLARE_CSR(fflags, CSR_FFLAGS)
+@@ -4627,6 +4685,9 @@ DECLARE_CSR(mhpmcounter28h, CSR_MHPMCOUNTER28H)
+ DECLARE_CSR(mhpmcounter29h, CSR_MHPMCOUNTER29H)
+ DECLARE_CSR(mhpmcounter30h, CSR_MHPMCOUNTER30H)
+ DECLARE_CSR(mhpmcounter31h, CSR_MHPMCOUNTER31H)
++// ++ mpise
++DECLARE_CSR(macc, CSR_MACC)
++// -- mpise
+ #endif
+ #ifdef DECLARE_CAUSE
+ DECLARE_CAUSE("misaligned fetch", CAUSE_MISALIGNED_FETCH)
+diff --git a/riscv/insns/cacc.h b/riscv/insns/cacc.h
+new file mode 100644
+index 00000000..a4923a17
+--- /dev/null
++++ b/riscv/insns/cacc.h
+@@ -0,0 +1,20 @@
++if     ( xlen == 32 ) {
++  abort();
++}
++else if( xlen == 64 ) {
++  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
++  // !destructive
++  uint64_t x = READ_REG( insn.rs1() );
++  uint64_t y = READ_REG( insn.rs2() );
++  uint64_t z = READ_REG( insn.rs3() );
++  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
++  //  destructive
++  uint64_t x = READ_REG( insn.rs1() );
++  uint64_t y = READ_REG( insn.rs2() );
++  uint64_t z = READ_REG( insn.rd()  );
++  #endif
++
++  uint64_t r = ( ( ( uint128_t )( x ) + ( uint128_t )( y ) ) >> xlen ) + ( uint128_t )( z );
++
++  WRITE_REG( insn.rd(), r );
++}
+diff --git a/riscv/insns/maccfrhu.h b/riscv/insns/maccfrhu.h
+new file mode 100644
+index 00000000..5a8ff4d1
+--- /dev/null
++++ b/riscv/insns/maccfrhu.h
+@@ -0,0 +1,21 @@
++if     ( xlen == 32 ) {
++  abort();
++}
++else if( xlen == 64 ) {
++  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
++  // !destructive
++  uint64_t x   = READ_REG( insn.rs1() );
++  uint64_t y   = READ_REG( insn.rs2() );
++  uint64_t z   = READ_REG( insn.rs3() );
++  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
++  //  destructive
++  uint64_t x   = READ_REG( insn.rs1() );
++  uint64_t y   = READ_REG( insn.rs2() );
++  uint64_t z   = READ_REG( insn.rd()  );
++  #endif
++
++  uint64_t m = ( ( uint128_t )( 1 ) << xlen ) - 1;
++  uint64_t r   = ( ( ( ( uint128_t )( x ) * ( uint128_t )( y ) ) + ( uint128_t )( z ) ) >> xlen ) & m;
++
++  WRITE_REG( insn.rd(), r );
++}
+diff --git a/riscv/insns/maccfrlu.h b/riscv/insns/maccfrlu.h
+new file mode 100644
+index 00000000..eea8fbc3
+--- /dev/null
++++ b/riscv/insns/maccfrlu.h
+@@ -0,0 +1,21 @@
++if     ( xlen == 32 ) {
++  abort();
++}
++else if( xlen == 64 ) {
++  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
++  // !destructive
++  uint64_t x   = READ_REG( insn.rs1() );
++  uint64_t y   = READ_REG( insn.rs2() );
++  uint64_t z   = READ_REG( insn.rs3() );
++  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
++  //  destructive
++  uint64_t x   = READ_REG( insn.rs1() );
++  uint64_t y   = READ_REG( insn.rs2() );
++  uint64_t z   = READ_REG( insn.rd()  );
++  #endif
++
++  uint64_t m = ( ( uint128_t )( 1 ) << xlen ) - 1;
++  uint64_t r   = ( ( ( ( uint128_t )( x ) * ( uint128_t )( y ) ) + ( uint128_t )( z ) ) >>    0 ) & m;
++
++  WRITE_REG( insn.rd(), r );
++}
+diff --git a/riscv/insns/maccrrhu.h b/riscv/insns/maccrrhu.h
+new file mode 100644
+index 00000000..520dcf34
+--- /dev/null
++++ b/riscv/insns/maccrrhu.h
+@@ -0,0 +1,36 @@
++if     ( xlen == 32 ) {
++  abort();
++}
++else if( xlen == 64 ) {
++  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
++  // !destructive
++  uint64_t x   = READ_REG( insn.rs1() );
++  uint64_t y   = READ_REG( insn.rs2() );
++  uint64_t z   = READ_REG( insn.rs3() );
++  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
++  //  destructive
++  uint64_t x   = READ_REG( insn.rs1() );
++  uint64_t y   = READ_REG( insn.rs2() );
++  uint64_t z   = READ_REG( insn.rd()  );
++  #endif
++
++  #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
++  // !stateless
++  uint64_t imm = p->get_csr( 0x800, insn, false );
++
++  uint64_t f_2 = xlen;
++  uint64_t f_3 =   57; // TODO: need to decode immediate => radix
++  #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
++  //  stateless
++  uint64_t imm = ( ( insn.funct2() & 0x3 ) << 2 ) |
++                 ( ( insn.funct3() & 0x6 ) >> 1 ) ;
++
++  uint64_t f_2 = xlen;
++  uint64_t f_3 =   57; // TODO: need to decode immediate => radix
++  #endif
++
++  uint64_t m = ( ( uint128_t )( 1 ) << f_2 ) - 1;
++  uint64_t r = ( ( ( ( uint128_t )( x ) * ( uint128_t )( y ) ) >> f_3 ) & m ) + ( uint128_t )( z );
++
++  WRITE_REG( insn.rd(), r );
++}
+diff --git a/riscv/insns/maccrrlu.h b/riscv/insns/maccrrlu.h
+new file mode 100644
+index 00000000..870ffc50
+--- /dev/null
++++ b/riscv/insns/maccrrlu.h
+@@ -0,0 +1,36 @@
++if     ( xlen == 32 ) {
++  abort();
++}
++else if( xlen == 64 ) {
++  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
++  // !destructive
++  uint64_t x   = READ_REG( insn.rs1() );
++  uint64_t y   = READ_REG( insn.rs2() );
++  uint64_t z   = READ_REG( insn.rs3() );
++  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
++  //  destructive
++  uint64_t x   = READ_REG( insn.rs1() );
++  uint64_t y   = READ_REG( insn.rs2() );
++  uint64_t z   = READ_REG( insn.rd()  );
++  #endif
++
++  #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
++  // !stateless
++  uint64_t imm = p->get_csr( 0x800, insn, false );
++
++  uint64_t f_0 =   57; // TODO: need to decode immediate => radix
++  uint64_t f_1 =    0;
++  #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
++  //  stateless
++  uint64_t imm = ( ( insn.funct2() & 0x3 ) << 2 ) |
++                 ( ( insn.funct3() & 0x6 ) >> 1 ) ;
++
++  uint64_t f_0 =   57; // TODO: need to decode immediate => radix
++  uint64_t f_1 =    0;
++  #endif
++
++  uint64_t m = ( ( uint128_t )( 1 ) << f_0 ) - 1;
++  uint64_t r = ( ( ( ( uint128_t )( x ) * ( uint128_t )( y ) ) >> f_1 ) & m ) + ( uint128_t )( z );
++
++  WRITE_REG( insn.rd(), r );
++}
+diff --git a/riscv/insns/sraiadd.h b/riscv/insns/sraiadd.h
+new file mode 100644
+index 00000000..a2ed1c98
+--- /dev/null
++++ b/riscv/insns/sraiadd.h
+@@ -0,0 +1,12 @@
++if     ( xlen == 32 ) {
++  abort();
++}
++else if( xlen == 64 ) {
++   int64_t x   = READ_REG( insn.rs1() );
++   int64_t y   = READ_REG( insn.rs2() );
++  uint64_t imm = insn.funct7() & 0x3F;
++
++   int64_t r   = x + ( y >> imm );
++
++  WRITE_REG( insn.rd(), r );
++}
+diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
+index 9a6b118d..b08ab069 100644
+--- a/riscv/riscv.mk.in
++++ b/riscv/riscv.mk.in
+@@ -39,6 +39,7 @@ riscv_precompiled_hdrs = \
+ 	insn_template.h \
+ 
+ riscv_srcs = \
++	arith.cc \
+ 	processor.cc \
+ 	execute.cc \
+ 	dts.cc \
+@@ -1273,6 +1274,10 @@ riscv_insn_svinval = \
+ 	hinval_vvma \
+ 	hinval_gvma \
+ 
++# ++ mpise
++riscv_insn_mpise = cacc sraiadd maccfrlu maccfrhu maccrrhu maccrrlu
++# -- mpise
++
+ riscv_insn_list = \
+ 	$(riscv_insn_ext_a) \
+ 	$(riscv_insn_ext_c) \
+@@ -1289,6 +1294,7 @@ riscv_insn_list = \
+ 	$(riscv_insn_ext_p) \
+ 	$(riscv_insn_priv) \
+ 	$(riscv_insn_svinval) \
++	$(riscv_insn_mpise) \
+ 
+ riscv_gen_srcs = \
+ 	$(addsuffix .cc,$(riscv_insn_list))

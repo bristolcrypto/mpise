@@ -8,6 +8,9 @@
 
 # =============================================================================
 
+export CFLAGS="-DMPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE} -DMPISE_STATELESS=${MPISE_STATELESS}"
+export CXXFLAGS="-DMPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE} -DMPISE_STATELESS=${MPISE_STATELESS}"
+
 export PK_REPO="${REPO_HOME}/build/riscv-pk"
 export PK_BUILD="${PK_REPO}/build"
 export PK_COMMIT="b7ee9734776123c34a8c0d37fa981169521614ad"
