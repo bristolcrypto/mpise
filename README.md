@@ -97,6 +97,11 @@
   - execute `${COMPONENT}-update.sh` to produce an updated patch,
   - optionally commit and push the updated patch.
 
+- Software simulation with `spike` and `pk` 
+  ```sh
+  make sw-run ALG=bls12-381 RADIX=[full/reduced] TYPE=[ISA/ISE]
+  ```
+
 <!--- ==================================================================== --->
 
 ## Acknowledgements
