@@ -99,7 +99,7 @@
 
 - Software simulation with `spike` and `pk` 
   ```sh
-  make sw-run ALG=bls12-381 RADIX=[full/reduced] TYPE=[ISA/ISE]
+  make sw-run ALG=x25519 RADIX=[full/reduced] TYPE=[ISA/ISE]
   ```
 
 <!--- ==================================================================== --->
