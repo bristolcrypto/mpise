@@ -56,6 +56,14 @@
 // interleaved multiplication and reduction (based on operand-scanning)
 
 .macro MULTIPLY_A0
+#if defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+  xor       R0, R0, R0
+  xor       R1, R1, R1
+  xor       R2, R2, R2
+  xor       R3, R3, R3
+  xor       R4, R4, R4
+  xor       R5, R5, R5
+#endif
   madd51lu  R0, A0, A0, x0
   madd51hu  R1, A0, A0, x0
   add       A0, A0, A0

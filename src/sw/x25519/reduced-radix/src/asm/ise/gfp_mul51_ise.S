@@ -46,6 +46,14 @@
 // multiplication
 
 .macro MULTIPLY_B0
+#if defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+  xor       R0, R0, R0
+  xor       R1, R1, R1
+  xor       R2, R2, R2
+  xor       R3, R3, R3
+  xor       R4, R4, R4
+  xor       R5, R5, R5
+#endif
   ld        A_,  0(a1)
   madd51lu  R0, A_, B0, x0
   madd51hu  R1, A_, B0, x0
