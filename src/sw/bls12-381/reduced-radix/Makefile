@@ -25,7 +25,7 @@ all: clean ${OUTPUT} ${DISASM}
 
 ${OUTPUT} : ${SRCS}
 	@mkdir -p ${SW_WORK_DIR}
-	@${CC} ${RISCV_GCC_OPT} ${CCFLAGS} -D${TYPE} -o $@ $^
+	@${CC} ${RISCV_GCC_OPT} ${CCFLAGS} -D${TYPE} -DMPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE} -DMPISE_STATELESS=${MPISE_STATELESS} -o $@ $^
 
 ${DISASM} : ${OUTPUT}
 	@${OBJDUMP} -d -t $< > $@

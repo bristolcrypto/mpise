@@ -103,6 +103,8 @@ void test_pairing()
   else 
     printf("\x1b[32m  e1 == e2 \x1b[0m \n");
 
+  printf("test: %016llx\n", e1[0][0][0][0]);
+
   printf("- (e(P, [k]Q))^2 == e([2k]P, Q) \n");
   // compute [2k]P 
   POINTonE1_double(_P, _P);
@@ -168,27 +170,32 @@ void timing()
   MEASURE_CYCLES(sqr_mont_384(r, a, BLS12_381_P, p0), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
-#if (ISE)
   printf("- mul_384:            ");
-  LOAD_CACHE(mul_384_ise(z, a, b), 1000);
-  MEASURE_CYCLES(mul_384_ise(z, a, b), 10000);
+  LOAD_CACHE(mul_384(z, a, b), 1000);
+  MEASURE_CYCLES(mul_384(z, a, b), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
 
-  printf("- redc_mont_384:      ");
-  LOAD_CACHE(redc_mont_384_ise(r, z, BLS12_381_P, p0), 1000);
-  MEASURE_CYCLES(redc_mont_384_ise(r, z, BLS12_381_P, p0), 10000);
-  printf("  #cycle = %lld\n", diff_cycles);
+// #if (ISE)
+  // printf("- mul_384:            ");
+  // LOAD_CACHE(mul_384_ise(z, a, b), 1000);
+  // MEASURE_CYCLES(mul_384_ise(z, a, b), 10000);
+  // printf("  #cycle = %lld\n", diff_cycles);
 
-  printf("- _redc_mont_384:     ");
-  LOAD_CACHE(_redc_mont_384_ise(r, z, BLS12_381_P, p0), 1000);
-  MEASURE_CYCLES(_redc_mont_384_ise(r, z, BLS12_381_P, p0), 10000);
-  printf("  #cycle = %lld\n", diff_cycles);
+//   printf("- redc_mont_384:      ");
+//   LOAD_CACHE(redc_mont_384_ise(r, z, BLS12_381_P, p0), 1000);
+//   MEASURE_CYCLES(redc_mont_384_ise(r, z, BLS12_381_P, p0), 10000);
+//   printf("  #cycle = %lld\n", diff_cycles);
 
-  printf("- _redc_once_384:     ");
-  LOAD_CACHE(_redc_once_384_ise(r, a, BLS12_381_P), 1000);
-  MEASURE_CYCLES(_redc_once_384_ise(r, a, BLS12_381_P), 10000);
-  printf("  #cycle = %lld\n", diff_cycles);
-#elif (ISA)
+//   printf("- _redc_mont_384:     ");
+//   LOAD_CACHE(_redc_mont_384_ise(r, z, BLS12_381_P, p0), 1000);
+//   MEASURE_CYCLES(_redc_mont_384_ise(r, z, BLS12_381_P, p0), 10000);
+//   printf("  #cycle = %lld\n", diff_cycles);
+
+//   printf("- _redc_once_384:     ");
+//   LOAD_CACHE(_redc_once_384_ise(r, a, BLS12_381_P), 1000);
+//   MEASURE_CYCLES(_redc_once_384_ise(r, a, BLS12_381_P), 10000);
+//   printf("  #cycle = %lld\n", diff_cycles);
+// #elif (ISA)
   printf("- mul_384_delay:      ");
   LOAD_CACHE(mul_384_delay_isa(z, a, b), 1000);
   MEASURE_CYCLES(mul_384_delay_isa(z, a, b), 10000);
@@ -213,7 +220,7 @@ void timing()
   LOAD_CACHE(_redc_once_384_isa(r, a, BLS12_381_P), 1000);
   MEASURE_CYCLES(_redc_once_384_isa(r, a, BLS12_381_P), 10000);
   printf("  #cycle = %lld\n", diff_cycles);
-#endif
+// #endif
 
   printf("-------------------------------------------------------------\n");
   printf("fp2 arith:\n");
