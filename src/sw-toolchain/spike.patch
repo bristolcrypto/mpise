@@ -22,7 +22,7 @@ index 7028c855..addb4e89 100644
    int64_t shamt() { return x(20, 6); }
    int64_t s_imm() { return x(7, 5) + (xs(25, 7) << 5); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index b2162963..4bad2767 100644
+index b2162963..c53a271e 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -2795,6 +2795,53 @@
@@ -31,48 +31,48 @@ index b2162963..4bad2767 100644
  #define MASK_VPOPC_M  0xfc0ff07f
 +// ++ mpise
 +#define MATCH_SRAIADD  0x000100B
-+#define  MASK_SRAIADD  0x000107B
++#define  MASK_SRAIADD  0x000707F
 +#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +// !destructive
 +#define MATCH_CACC     0x000000B
-+#define  MASK_CACC     0x000107B
++#define  MASK_CACC     0x000707F
 +#define MATCH_MACCFRLU 0x000002B
-+#define  MASK_MACCFRLU 0x000107B
++#define  MASK_MACCFRLU 0x000707F
 +#define MATCH_MACCFRHU 0x000102B
-+#define  MASK_MACCFRHU 0x000107B
++#define  MASK_MACCFRHU 0x000707F
 +#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 +// !destructive && !stateless
 +#define MATCH_MACCRRLU 0x000005B
-+#define  MASK_MACCRRLU 0x000107B
++#define  MASK_MACCRRLU 0x000107F
 +#define MATCH_MACCRRHU 0x000105B
-+#define  MASK_MACCRRHU 0x000107B
++#define  MASK_MACCRRHU 0x000107F
 +#elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 +// !destructive &&  stateless
 +#define MATCH_MACCRRLU 0x000005B
-+#define  MASK_MACCRRLU 0x000107B
++#define  MASK_MACCRRLU 0x000107F
 +#define MATCH_MACCRRHU 0x000105B
-+#define  MASK_MACCRRHU 0x000107B
++#define  MASK_MACCRRHU 0x000107F
 +#endif
 +#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +//  destructive
 +#define MATCH_CACC     0x000000B
-+#define  MASK_CACC     0x000107B
++#define  MASK_CACC     0x000707F
 +#define MATCH_MACCFRLU 0x000002B
-+#define  MASK_MACCFRLU 0x000107B
++#define  MASK_MACCFRLU 0x000107F
 +#define MATCH_MACCFRHU 0x000102B
-+#define  MASK_MACCFRHU 0x000107B
++#define  MASK_MACCFRHU 0x000107F
 +#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 +//  destructive && !stateless
 +#define MATCH_MACCRRLU 0x000005B
-+#define  MASK_MACCRRLU 0x000107B
++#define  MASK_MACCRRLU 0x000107F
 +#define MATCH_MACCRRHU 0x000105B
-+#define  MASK_MACCRRHU 0x000107B
++#define  MASK_MACCRRHU 0x000107F
 +#elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 +//  destructive &&  stateless
 +#define MATCH_MACCRRLU 0x000005B
-+#define  MASK_MACCRRLU 0x000107B
++#define  MASK_MACCRRLU 0x000107F
 +#define MATCH_MACCRRHU 0x000105B
-+#define  MASK_MACCRRHU 0x000107B
++#define  MASK_MACCRRHU 0x000107F
 +#endif
 +#endif
 +// -- mpise
@@ -196,7 +196,7 @@ index 00000000..eea8fbc3
 +}
 diff --git a/riscv/insns/maccrrhu.h b/riscv/insns/maccrrhu.h
 new file mode 100644
-index 00000000..520dcf34
+index 00000000..2536942b
 --- /dev/null
 +++ b/riscv/insns/maccrrhu.h
 @@ -0,0 +1,36 @@
@@ -220,15 +220,15 @@ index 00000000..520dcf34
 +  // !stateless
 +  uint64_t imm = p->get_csr( 0x800, insn, false );
 +
-+  uint64_t f_2 = xlen;
-+  uint64_t f_3 =   57; // TODO: need to decode immediate => radix
++  uint64_t f_2 =     xlen;
++  uint64_t f_3 = imm + 48;
 +  #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 +  //  stateless
 +  uint64_t imm = ( ( insn.funct2() & 0x3 ) << 2 ) |
 +                 ( ( insn.funct3() & 0x6 ) >> 1 ) ;
 +
-+  uint64_t f_2 = xlen;
-+  uint64_t f_3 =   57; // TODO: need to decode immediate => radix
++  uint64_t f_2 =     xlen;
++  uint64_t f_3 = imm + 48;
 +  #endif
 +
 +  uint64_t m = ( ( uint128_t )( 1 ) << f_2 ) - 1;
@@ -238,7 +238,7 @@ index 00000000..520dcf34
 +}
 diff --git a/riscv/insns/maccrrlu.h b/riscv/insns/maccrrlu.h
 new file mode 100644
-index 00000000..870ffc50
+index 00000000..e29a794c
 --- /dev/null
 +++ b/riscv/insns/maccrrlu.h
 @@ -0,0 +1,36 @@
@@ -262,15 +262,15 @@ index 00000000..870ffc50
 +  // !stateless
 +  uint64_t imm = p->get_csr( 0x800, insn, false );
 +
-+  uint64_t f_0 =   57; // TODO: need to decode immediate => radix
-+  uint64_t f_1 =    0;
++  uint64_t f_0 = imm + 48;
++  uint64_t f_1 =        0;
 +  #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 +  //  stateless
 +  uint64_t imm = ( ( insn.funct2() & 0x3 ) << 2 ) |
 +                 ( ( insn.funct3() & 0x6 ) >> 1 ) ;
 +
-+  uint64_t f_0 =   57; // TODO: need to decode immediate => radix
-+  uint64_t f_1 =    0;
++  uint64_t f_0 = imm + 48;
++  uint64_t f_1 =        0;
 +  #endif
 +
 +  uint64_t m = ( ( uint128_t )( 1 ) << f_0 ) - 1;
