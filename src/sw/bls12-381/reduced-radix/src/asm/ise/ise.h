@@ -71,6 +71,47 @@
 #endif
 #endif
 
+
+// macros to use different custom instructions 
+
+.macro madd55lu Z, A, B, S
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+// !destructive
+#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
+// !destructive && !stateless
+#elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+// !destructive &&  stateless
+  maccrrlu \Z, \A, \B, \S, 7    // imm = 7 = 55 - 48
+#endif
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+//  destructive
+#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
+//  destructive && !stateless
+#elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+//  destructive &&  stateless
+#endif
+#endif
+.endm
+
+.macro madd55hu Z, A, B, S
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+// !destructive
+#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
+// !destructive && !stateless
+#elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+// !destructive &&  stateless
+  maccrrhu \Z, \A, \B, \S, 7    // imm = 7 = 55 - 48
+#endif
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+//  destructive
+#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
+//  destructive && !stateless
+#elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+//  destructive &&  stateless
+#endif
+#endif
+.endm
+
 // ============================================================================                              
 
 #endif 

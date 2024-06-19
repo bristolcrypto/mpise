@@ -113,17 +113,16 @@ void sub_mod_384x384_ise(vec768 ret, const vec768 a, const vec768 b, const vec38
  */
 #if (ISE)
 #define mul_384         mul_384_ise
-// #define redc_mont_384   redc_mont_384_ise
-// #define mul_mont_384    mul_mont_384_ise
-// #define sqr_mont_384    sqr_mont_384_ise
-// #define add_mod_384     add_mod_384_ise
-// #define sub_mod_384     sub_mod_384_ise
-// #define cneg_mod_384    cneg_mod_384_ise
-// #define add_mod_384x384 add_mod_384x384_ise
-// #define sub_mod_384x384 sub_mod_384x384_ise
+#define redc_mont_384   redc_mont_384_ise
+#define mul_mont_384    mul_mont_384_ise
+#define sqr_mont_384    sqr_mont_384_ise
+#define add_mod_384     add_mod_384_ise
+#define sub_mod_384     sub_mod_384_ise
+#define cneg_mod_384    cneg_mod_384_ise
+#define add_mod_384x384 add_mod_384x384_ise
+#define sub_mod_384x384 sub_mod_384x384_ise
 #elif (ISA)
 #define mul_384         mul_384_isa
-#endif
 #define redc_mont_384   redc_mont_384_isa
 #define mul_mont_384    mul_mont_384_isa
 #define sqr_mont_384    sqr_mont_384_isa
@@ -132,7 +131,7 @@ void sub_mod_384x384_ise(vec768 ret, const vec768 a, const vec768 b, const vec38
 #define cneg_mod_384    cneg_mod_384_isa
 #define add_mod_384x384 add_mod_384x384_isa
 #define sub_mod_384x384 sub_mod_384x384_isa
-
+#endif
 
 #define restrict __restrict__
 
