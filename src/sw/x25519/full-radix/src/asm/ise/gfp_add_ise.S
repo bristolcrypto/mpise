@@ -92,6 +92,9 @@
   slli   R3, R3, 1
   srli   R3, R3, 1
   li     M0, 19
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     T1, R0
+#endif
   maddlu T1, R4, M0, R0
   sltu   T0, T1, T0 
   add    R1, R1, T0 

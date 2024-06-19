@@ -67,13 +67,19 @@
 // integer multiplication (based on product-scanning)
 
 // L != 0, M = 0, H = 0
-.macro _ACCU_AIBJ_0 L, M, H, T, A, B 
+.macro _ACCU_AIBJ_0 L, M, H, T, A, B
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     \M, \L
+#endif 
   maddhu \M, \A, \B, \L
   maddlu \L, \A, \B, \L
 .endm
 
 // L != 0, M != 0, H = 0
 .macro _ACCU_AIBJ_1 L, M, H, T, A, B 
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     \T, \L
+#endif 
   maddhu \T, \A, \B, \L
   maddlu \L, \A, \B, \L
   add    \M, \M, \T
@@ -82,9 +88,12 @@
 
 // L != 0, M != 0, H != 0
 .macro _ACCU_AIBJ_2 L, M, H, T, A, B 
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     \T, \L
+#endif 
   maddhu \T, \A, \B, \L
   maddlu \L, \A, \B, \L
-  cadd   \H, \M, \T, \H
+  cacc   \H, \M, \T, \H
   add    \M, \M, \T
 .endm
 
@@ -123,6 +132,9 @@
 .endm
 
 .macro COMPUTE_R6 
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     T0, R6
+#endif 
   maddhu T0, A3, B3, R6 
   maddlu R6, A3, B3, R6
 .endm
@@ -134,20 +146,35 @@
 // reduction R0-R4 = R0-R3 + 38*(R4-R7)
 
 .macro REDUCTION
-  li     M0, 38 
+  li     M0, 38
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     T0, R0
+#endif  
   maddhu T0, R4, M0, R0
   maddlu R0, R4, M0, R0
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     T1, T0
+#endif
   maddhu T1, R5, M0, T0
   maddlu T0, R5, M0, T0
-  cadd   T1, R1, T0, T1
+  cacc   T1, R1, T0, T1
   add    R1, R1, T0
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     T0, T1
+#endif
   maddhu T0, R6, M0, T1
   maddlu T1, R6, M0, T1
-  cadd   T0, R2, T1, T0
+  cacc   T0, R2, T1, T0
   add    R2, R2, T1
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     T1, T0
+#endif
   maddhu T1, R7, M0, T0
   maddlu T0, R7, M0, T0
-  cadd   R4, R3, T0, T1
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     R4, T1
+#endif
+  cacc   R4, R3, T0, T1
   add    R3, R3, T0
 .endm
 
@@ -160,6 +187,9 @@
   slli   R3, R3, 1
   srli   R3, R3, 1
   li     M0, 19
+#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+  mv     T0, R0
+#endif
   maddhu T0, R4, M0, R0
   maddlu R0, R4, M0, R0
   add    R1, R1, T0 
