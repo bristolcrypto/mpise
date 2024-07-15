@@ -1,3 +1,5 @@
+# General notes
+
 - The DAC paper basically considered a 3-component ISE, which included
 
   1. support for carry propagation,
@@ -103,3 +105,104 @@
     the stateful variant, because selection of radix is based on `imm`: use
     of a CSR potentially offers more bits than for `imm`, which implies the
     stateful variant might be able to offer a larger set of radix.
+
+- The merged full- and reduced-radix approach yields various properties re. 
+  implementation:
+
+  - The data-path for high and low instructions, i.e., the computation
+    steps, is the same (the difference comes from the `f_i`); we're
+    basically doing a post-processing step on the multiplication that
+    generates `t_0`.
+  - What look like multiplexers to generate `t_1` and `t_2` are really
+    just AND gates, because we either want `z` or `0`.
+  - Most of the `f_i` functions are trivial (e.g., `f_2), and some are
+    duplicates (e.g., `f_0` and `f_1`).
+
+# INNER-LOOP OPERATIONS
+
+Based on the instructions defined above, we have to distinguish between four implementations for the inner-loop operation of the multi-precision multiplication: (i) full-radix prepresentation with non-destructive instructions, (ii) full-radix prepresentation with destructive instructions, (iii) reduced-radix prepresentation with non-destructive instructions, and (iv) reduced-radix prepresentation with destructive instructions. The two former cases are the more challenging ones.
+
+# 1. Full-radix representation with non-desructive instructions
+
+This is basically the full-radix implementation from the DAC 2024 paper. The accumulator consists of the three registers L, M, and H.
+
+  ```
+  .macro MUL_ADD_FR_ND L, M, H, T, A, B
+    maccfrhu \T, \A, \B, \L    // hi-part first, result in T
+    maccfrlu \L, \A, \B, \L    // then lo-part, result in L
+    cacc     \H, \M, \T, \H    // propagate carry from M to L
+    add      \M, \M, \T        // add result of hi-part to M
+  .endm
+  ```
+
+Note that the addend of both `maccfrlu` and `maccfrhu` is the same, namely L. There are two carry propagations, one from L to M, and another one from M to H. The former is implicitly performed as part of the `maccfrhu` instruction, while the latter is done through the `cacc` instruction.
+
+# 2. Full-radix representation with desructive instructions
+
+Due to the desructive nature `maccfrlu` and `maccfrlu`, a `mv` instruction is necessary to save the content of L.
+
+  ```
+  .macro MUL_ADD_FR_D L, M, H, T, A, B
+    mv       \T, \L            // necessary for destr. instr.
+    maccfrhu \T, \A, \B        // hi-part first, result in T
+    maccfrlu \L, \A, \B        // then lo-part, result in L
+    cacc     \H, \M, \T        // propagate carry from M to L
+    add      \M, \M, \T        // add result of hi-part to M
+  .endm
+  ```
+
+Apart from the `mv` instruction, the implementation with destructive instructions is very similar to the non-destructive case. It seems to be impossible to have a destructive version with less than 5 instructions.
+
+# 3. Reduced-radix representation with non-desructive instructions
+
+This is basically the reduced-radix implementation from the DAC 2024 paper. The accumulator consists of the two registers L and H.
+
+  ```
+  .macro MUL_ADD_RR_ND L, H, A, B 
+    maccrrlu \L, \A, \B, \L
+    maccrrhu \H, \A, \B, \H
+  .endm
+  ```
+
+Note that the addend of `maccfrlu` is L, whereas the addend of `maccfrhu` H. Assuming that the number-representation radix has been chosen properly, there is no carry propagation from L to H and there should also be no overflow (i.e., no carry-out) of H.
+
+# 4. Reduced-radix representation with desructive instructions
+
+The implementation using destruvtive instructions is basically the same as the non-destructive version above.
+
+# 5. Full-radix instructions as special case of reduced-radix instructions
+
+Here we assume that A and B are 64 bits long. Futhermore, we assume that `maccrrlu rd, rs1, rs2, rs3` adds `rs3` to the lower 64 bits of the product `rs1*rs2` and that `maccrrhu rd, rs1, rs2, rs3` adds `rs3` to the upper 64 bits of the product `rs1*rs2`. We only consider here the non-destructive instructions.
+
+The highly-efficient reduced-radix implementation using only 2 instructions does not work anymore since each of the accu registers can overflow. Thus, we have to manually do a carry propagation from L to M and from M to H.
+
+  ```
+  .macro MUL_ADD_RR_ND L, M, H, TL, TM, A, B
+    maccrrlu \TL, \A, \B, \L   // lo-part first, result in TL
+    sltu     \TM, \TL, \L      // TM is 0 or 1 (carry from L to M)
+    maccrrhu \TM, \A, \B, \TM  // TM can not overflow here !!!
+    cacc     \H, \M, \TM, \H   // propagate carry from M+TM to H
+    add      \M, \M, \TM       // add hi-part of product to M
+  .endm
+  ```
+
+The accumultor is now in TL, M, H instead of L, M, H. This version requires 5 instructions.
+
+Note that the reduced-radix `maccrrlu` for a radix of 2^64 is equivalent to the full-radix `maccfrlu` instruction. On the other hand, the reduced-radix `maccrrhu` instruction for a radix of 2^64 differs from the the full-radix `maccfrhu` instruction with respect to carry propagation. As a consequence, when we want to support full-radix as a special case of reduced-radix and still achieve peak perforrmance with both radix representations, we would need 1 kind of MACC instruction for the lower part, but 2 kinds of MACC instruction for the upper part.
+
+An implementation using destructive instructions requires a `mv` instruction to save the content of L before `maccrrlu` is executed, i.e., the number of instructios increases to six.
+
+# 6. Full-radix variant using only native multiply instructions
+
+Below is a low-const variant for full-radix representation that uses the native multiply instructions and `cacc` as only custom instruction.
+
+  ```
+  .macro MUL_ADD_FR_ND L, M, H, TL, TH, A, B 
+    mul      \TL, \A, \B
+    mulhi    \TH, \A, \B
+    cacc     \TH, \TL, \L, \TH // no carry out !!!
+    cacc     \H,  \TH, \M, \H
+    add      \L, \L, \TL
+    add      \M, \M, \TH
+  .endm
+  ```
