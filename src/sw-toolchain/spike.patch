@@ -106,7 +106,7 @@ index b2162963..a4822cb7 100644
  DECLARE_CAUSE("misaligned fetch", CAUSE_MISALIGNED_FETCH)
 diff --git a/riscv/insns/cacc.h b/riscv/insns/cacc.h
 new file mode 100644
-index 00000000..a4923a17
+index 00000000..24b3b7c0
 --- /dev/null
 +++ b/riscv/insns/cacc.h
 @@ -0,0 +1,20 @@
@@ -116,23 +116,23 @@ index 00000000..a4923a17
 +else if( xlen == 64 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  uint64_t x = READ_REG( insn.rs1() );
-+  uint64_t y = READ_REG( insn.rs2() );
-+  uint64_t z = READ_REG( insn.rs3() );
++  uint128_t x = READ_REG( insn.rs1() );
++  uint128_t y = READ_REG( insn.rs2() );
++  uint128_t z = READ_REG( insn.rs3() );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  uint64_t x = READ_REG( insn.rs1() );
-+  uint64_t y = READ_REG( insn.rs2() );
-+  uint64_t z = READ_REG( insn.rd()  );
++  uint128_t x = READ_REG( insn.rs1() );
++  uint128_t y = READ_REG( insn.rs2() );
++  uint128_t z = READ_REG( insn.rd()  );
 +  #endif
 +
-+  uint64_t r = ( ( ( uint128_t )( x ) + ( uint128_t )( y ) ) >> xlen ) + ( uint128_t )( z );
++  uint128_t r = ( ( x + y ) >> 64 ) + z;
 +
-+  WRITE_REG( insn.rd(), r );
++  WRITE_REG( insn.rd(), ( uint64_t )( r ) );
 +}
 diff --git a/riscv/insns/macchu.h b/riscv/insns/macchu.h
 new file mode 100644
-index 00000000..bc38fbe8
+index 00000000..fa86cd58
 --- /dev/null
 +++ b/riscv/insns/macchu.h
 @@ -0,0 +1,47 @@
@@ -142,23 +142,23 @@ index 00000000..bc38fbe8
 +else if( xlen == 64 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  uint64_t x   = READ_REG( insn.rs1() );
-+  uint64_t y   = READ_REG( insn.rs2() );
-+  uint64_t z   = READ_REG( insn.rs3() );
++  uint128_t x   = READ_REG( insn.rs1() );
++  uint128_t y   = READ_REG( insn.rs2() );
++  uint128_t z   = READ_REG( insn.rs3() );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  uint64_t x   = READ_REG( insn.rs1() );
-+  uint64_t y   = READ_REG( insn.rs2() );
-+  uint64_t z   = READ_REG( insn.rd()  );
++  uint128_t x   = READ_REG( insn.rs1() );
++  uint128_t y   = READ_REG( insn.rs2() );
++  uint128_t z   = READ_REG( insn.rd()  );
 +  #endif
 +
 +  #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 +  // !stateless
-+  uint64_t c   = p->get_csr( 0x800, insn, false ) & 0xF;
++  int c = p->get_csr( 0x800, insn, false ) & 0xF;
 +  #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 +  //  stateless
-+  uint64_t c   = ( ( insn.funct2() & 0x3 ) << 2 ) |
-+                 ( ( insn.funct3() & 0x6 ) >> 1 ) ;
++  int c = ( ( insn.funct2() & 0x3 ) << 2 ) |
++          ( ( insn.funct3() & 0x6 ) >> 1 ) ;
 +  #endif
 +
 +  int f_3, f_4, f_5;
@@ -174,18 +174,18 @@ index 00000000..bc38fbe8
 +    f_5 = c + 49;
 +  }
 +
-+  uint64_t t_0 = x * y;
-+  uint64_t t_1 = f_3 ? z : 0;
-+  uint64_t t_2 = f_3 ? 0 : z;
++  uint128_t t_0 = x * y;
++  uint128_t t_1 = f_3 ? z : 0;
++  uint128_t t_2 = f_3 ? 0 : z;
 +
-+  uint64_t m   = ( 1 << f_4 ) - 1;
-+  uint64_t r   = ( ( ( t_0 + t_1 ) >> f_5 ) & m ) + t_2;
++  uint128_t m   = ( 1 << f_4 ) - 1;
++  uint128_t r   = ( ( ( t_0 + t_1 ) >> f_5 ) & m ) + t_2;
 +
-+  WRITE_REG( insn.rd(), r );
++  WRITE_REG( insn.rd(), ( uint64_t )( r ) );
 +}
 diff --git a/riscv/insns/macclu.h b/riscv/insns/macclu.h
 new file mode 100644
-index 00000000..af6cdaac
+index 00000000..0cdbc95f
 --- /dev/null
 +++ b/riscv/insns/macclu.h
 @@ -0,0 +1,50 @@
@@ -195,23 +195,23 @@ index 00000000..af6cdaac
 +else if( xlen == 64 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  uint64_t x   = READ_REG( insn.rs1() );
-+  uint64_t y   = READ_REG( insn.rs2() );
-+  uint64_t z   = READ_REG( insn.rs3() );
++  uint128_t x   = READ_REG( insn.rs1() );
++  uint128_t y   = READ_REG( insn.rs2() );
++  uint128_t z   = READ_REG( insn.rs3() );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  uint64_t x   = READ_REG( insn.rs1() );
-+  uint64_t y   = READ_REG( insn.rs2() );
-+  uint64_t z   = READ_REG( insn.rd()  );
++  uint128_t x   = READ_REG( insn.rs1() );
++  uint128_t y   = READ_REG( insn.rs2() );
++  uint128_t z   = READ_REG( insn.rd()  );
 +  #endif
 +
 +  #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 +  // !stateless
-+  uint64_t c   = p->get_csr( 0x800, insn, false ) & 0xF;
++  int c = p->get_csr( 0x800, insn, false ) & 0xF;
 +  #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 +  //  stateless
-+  uint64_t c   = ( ( insn.funct2() & 0x3 ) << 2 ) |
-+                 ( ( insn.funct3() & 0x6 ) >> 1 ) ;
++  int c = ( ( insn.funct2() & 0x3 ) << 2 ) |
++          ( ( insn.funct3() & 0x6 ) >> 1 ) ;
 +  #endif
 +
 +  int f_0, f_1, f_2;
@@ -227,14 +227,14 @@ index 00000000..af6cdaac
 +    f_2 =      0;
 +  }
 +
-+  uint64_t t_0 = x * y;
-+  uint64_t t_1 = f_0 ? z : 0;
-+  uint64_t t_2 = f_0 ? 0 : z;
++  uint128_t t_0 = x * y;
++  uint128_t t_1 = f_0 ? z : 0;
++  uint128_t t_2 = f_0 ? 0 : z;
 +
-+  uint64_t m   = ( 1 << f_1 ) - 1;
-+  uint64_t r   = ( ( ( t_0 + t_1 ) >> f_2 ) & m ) + t_2;
++  uint128_t m   = ( 1 << f_1 ) - 1;
++  uint128_t r   = ( ( ( t_0 + t_1 ) >> f_2 ) & m ) + t_2;
 +
-+  WRITE_REG( insn.rd(), r );
++  WRITE_REG( insn.rd(), ( uint64_t )( r ) );
 +}
 +
 +
