@@ -132,7 +132,7 @@ index 00000000..a4923a17
 +}
 diff --git a/riscv/insns/macchu.h b/riscv/insns/macchu.h
 new file mode 100644
-index 00000000..8f9a67c5
+index 00000000..bc38fbe8
 --- /dev/null
 +++ b/riscv/insns/macchu.h
 @@ -0,0 +1,47 @@
@@ -164,12 +164,12 @@ index 00000000..8f9a67c5
 +  int f_3, f_4, f_5;
 +
 +  if     ( c == 0xF ) { //    full-radix
-+    f_3 =      0;
++    f_3 =      1;
 +    f_4 =     64; // or xlen
 +    f_5 =     64; // or xlen
 +  }
 +  else if( c != 0xF ) { // reduced-radix
-+    f_3 =      1;
++    f_3 =      0;
 +    f_4 =     64; // or xlen
 +    f_5 = c + 49;
 +  }
