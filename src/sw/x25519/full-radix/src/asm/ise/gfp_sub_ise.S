@@ -1,7 +1,7 @@
 // void gfp_sub_ise(uint64_t *r, const uint64_t *a, const uint64_t *b);
 
 
-#include "ise.h"
+#include "ise_al.h"
 
 
 // registers 

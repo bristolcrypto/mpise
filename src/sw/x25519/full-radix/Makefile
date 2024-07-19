@@ -12,10 +12,9 @@ PK     =${PK_INSTALL}/riscv64-unknown-elf/bin/pk
 
 # =============================================================================
 
-SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S) $(wildcard src/asm/ise/*.S)
-
+SRCS  = $(wildcard src/*.c) $(wildcard src/asm/isa/*.S) $(wildcard src/asm/ise/*.S) ../../share/share.c ../../share/arch/rv64/rdtsc.c
 RISCV_GCC_OPT ?= -DPREALLOCATE=1 -mcmodel=medany -static -std=gnu99 -O3 -ffast-math -fno-common -fno-builtin-printf
-CCFLAGS += -march=${ISA} -lm -lgcc
+CCFLAGS += -march=${ISA} -lm -lgcc -I ../../share -I ../../share/arch/rv64
 OUTPUT  = ${SW_WORK_DIR}/x25519.elf
 DISASM  = ${SW_WORK_DIR}/x25519.disasm
 

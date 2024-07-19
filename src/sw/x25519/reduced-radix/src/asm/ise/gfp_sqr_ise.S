@@ -1,7 +1,7 @@
 // void gfp_sqr_ise(uint64_t *r, const uint64_t *a);
 
 
-#include "ise.h"
+#include "ise_al.h"
 
 
 // registers
