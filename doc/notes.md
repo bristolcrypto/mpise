@@ -117,6 +117,8 @@
     just AND gates, because we either want `z` or `0`.
   - Most of the `f_i` functions are trivial (e.g., `f_2), and some are
     duplicates (e.g., `f_0` and `f_1`).
+  - Since the design can be parameterised by the word size, it *could* be
+    considered for RV64 and RV32: this could be viewed as an advantage.
 
 # INNER-LOOP OPERATIONS
 
