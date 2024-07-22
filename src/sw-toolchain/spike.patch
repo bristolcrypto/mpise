@@ -132,7 +132,7 @@ index 00000000..24b3b7c0
 +}
 diff --git a/riscv/insns/macchu.h b/riscv/insns/macchu.h
 new file mode 100644
-index 00000000..fa86cd58
+index 00000000..37a9bef7
 --- /dev/null
 +++ b/riscv/insns/macchu.h
 @@ -0,0 +1,47 @@
@@ -178,14 +178,14 @@ index 00000000..fa86cd58
 +  uint128_t t_1 = f_3 ? z : 0;
 +  uint128_t t_2 = f_3 ? 0 : z;
 +
-+  uint128_t m   = ( 1 << f_4 ) - 1;
++  uint128_t m   = ( ( uint128_t )( 1 ) << f_4 ) - 1;
 +  uint128_t r   = ( ( ( t_0 + t_1 ) >> f_5 ) & m ) + t_2;
 +
 +  WRITE_REG( insn.rd(), ( uint64_t )( r ) );
 +}
 diff --git a/riscv/insns/macclu.h b/riscv/insns/macclu.h
 new file mode 100644
-index 00000000..0cdbc95f
+index 00000000..ef4300fa
 --- /dev/null
 +++ b/riscv/insns/macclu.h
 @@ -0,0 +1,50 @@
@@ -231,7 +231,7 @@ index 00000000..0cdbc95f
 +  uint128_t t_1 = f_0 ? z : 0;
 +  uint128_t t_2 = f_0 ? 0 : z;
 +
-+  uint128_t m   = ( 1 << f_1 ) - 1;
++  uint128_t m   = ( ( uint128_t )( 1 ) << f_1 ) - 1;
 +  uint128_t r   = ( ( ( t_0 + t_1 ) >> f_2 ) & m ) + t_2;
 +
 +  WRITE_REG( insn.rd(), ( uint64_t )( r ) );

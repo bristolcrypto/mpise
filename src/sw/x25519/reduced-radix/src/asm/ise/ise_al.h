@@ -18,7 +18,7 @@
 // !destructive && !stateless
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 // !destructive &&  stateless
-  macclu \Z, \A, \B, \S, 3    // imm = 3 = 51 - 48
+  macclu \Z, \A, \B, \S, 2    // imm = 2 = 51 - 49
 #endif
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 //  destructive
@@ -38,7 +38,7 @@
 // !destructive && !stateless
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 // !destructive &&  stateless
-  macchu \Z, \A, \B, \S, 3    // imm = 3 = 51 - 48
+  macchu \Z, \A, \B, \S, 2    // imm = 2 = 51 - 49
 #endif
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 //  destructive
