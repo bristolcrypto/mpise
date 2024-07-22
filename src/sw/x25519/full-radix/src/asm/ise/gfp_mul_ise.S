@@ -68,7 +68,7 @@
 
 // L != 0, M = 0, H = 0
 .macro _ACCU_AIBJ_0 L, M, H, T, A, B
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     \M, \L
 #endif 
   maddhu \M, \A, \B, \L
@@ -77,7 +77,7 @@
 
 // L != 0, M != 0, H = 0
 .macro _ACCU_AIBJ_1 L, M, H, T, A, B 
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     \T, \L
 #endif 
   maddhu \T, \A, \B, \L
@@ -88,12 +88,16 @@
 
 // L != 0, M != 0, H != 0
 .macro _ACCU_AIBJ_2 L, M, H, T, A, B 
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     \T, \L
 #endif 
   maddhu \T, \A, \B, \L
   maddlu \L, \A, \B, \L
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+  cacc   \H, \M, \T
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
   cacc   \H, \M, \T, \H
+#endif
   add    \M, \M, \T
 .endm
 
@@ -132,7 +136,7 @@
 .endm
 
 .macro COMPUTE_R6 
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     T0, R6
 #endif 
   maddhu T0, A3, B3, R6 
@@ -147,34 +151,45 @@
 
 .macro REDUCTION
   li     M0, 38
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     T0, R0
 #endif  
   maddhu T0, R4, M0, R0
   maddlu R0, R4, M0, R0
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     T1, T0
 #endif
   maddhu T1, R5, M0, T0
   maddlu T0, R5, M0, T0
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+  cacc   T1, R1, T0
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
   cacc   T1, R1, T0, T1
+#endif
   add    R1, R1, T0
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     T0, T1
 #endif
   maddhu T0, R6, M0, T1
   maddlu T1, R6, M0, T1
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+  cacc   T0, R2, T1
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
   cacc   T0, R2, T1, T0
+#endif  
   add    R2, R2, T1
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     T1, T0
 #endif
   maddhu T1, R7, M0, T0
   maddlu T0, R7, M0, T0
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     R4, T1
-#endif
+  cacc   R4, R3, T0
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+  mv     R4, T1
   cacc   R4, R3, T0, T1
+#endif
   add    R3, R3, T0
 .endm
 
@@ -187,7 +202,7 @@
   slli   R3, R3, 1
   srli   R3, R3, 1
   li     M0, 19
-#if defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
   mv     T0, R0
 #endif
   maddhu T0, R4, M0, R0
