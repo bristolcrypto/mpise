@@ -106,14 +106,13 @@ index b2162963..a4822cb7 100644
  DECLARE_CAUSE("misaligned fetch", CAUSE_MISALIGNED_FETCH)
 diff --git a/riscv/insns/cacc.h b/riscv/insns/cacc.h
 new file mode 100644
-index 00000000..24b3b7c0
+index 00000000..6fa325a4
 --- /dev/null
 +++ b/riscv/insns/cacc.h
-@@ -0,0 +1,20 @@
-+if     ( xlen == 32 ) {
-+  abort();
-+}
-+else if( xlen == 64 ) {
+@@ -0,0 +1,22 @@
++if( ( xlen == 32 ) || ( xlen == 64 ) ) {
++  int w = xlen;
++
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
 +  uint128_t x = READ_REG( insn.rs1() );
@@ -126,20 +125,22 @@ index 00000000..24b3b7c0
 +  uint128_t z = READ_REG( insn.rd()  );
 +  #endif
 +
-+  uint128_t r = ( ( x + y ) >> 64 ) + z;
++  uint128_t r = ( ( x + y ) >> w ) + z;
 +
-+  WRITE_REG( insn.rd(), ( uint64_t )( r ) );
++  WRITE_REG( insn.rd(), r );
++}
++else {
++  abort();
 +}
 diff --git a/riscv/insns/macchu.h b/riscv/insns/macchu.h
 new file mode 100644
-index 00000000..37a9bef7
+index 00000000..d02fa05e
 --- /dev/null
 +++ b/riscv/insns/macchu.h
-@@ -0,0 +1,47 @@
-+if     ( xlen == 32 ) {
-+  abort();
-+}
-+else if( xlen == 64 ) {
+@@ -0,0 +1,49 @@
++if( ( xlen == 32 ) || ( xlen == 64 ) ) {
++  int w = xlen;
++
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
 +  uint128_t x   = READ_REG( insn.rs1() );
@@ -164,14 +165,14 @@ index 00000000..37a9bef7
 +  int f_3, f_4, f_5;
 +
 +  if     ( c == 0xF ) { //    full-radix
-+    f_3 =      1;
-+    f_4 =     64; // or xlen
-+    f_5 =     64; // or xlen
++    f_3 =        1;
++    f_4 =  w      ;
++    f_5 =  w      ;
 +  }
 +  else if( c != 0xF ) { // reduced-radix
-+    f_3 =      0;
-+    f_4 =     64; // or xlen
-+    f_5 = c + 49;
++    f_3 =        0;
++    f_4 =  w      ;
++    f_5 = (w-15)+c;
 +  }
 +
 +  uint128_t t_0 = x * y;
@@ -181,18 +182,20 @@ index 00000000..37a9bef7
 +  uint128_t m   = ( ( uint128_t )( 1 ) << f_4 ) - 1;
 +  uint128_t r   = ( ( ( t_0 + t_1 ) >> f_5 ) & m ) + t_2;
 +
-+  WRITE_REG( insn.rd(), ( uint64_t )( r ) );
++  WRITE_REG( insn.rd(), r );
++}
++else {
++  abort();
 +}
 diff --git a/riscv/insns/macclu.h b/riscv/insns/macclu.h
 new file mode 100644
-index 00000000..ef4300fa
+index 00000000..4382feed
 --- /dev/null
 +++ b/riscv/insns/macclu.h
-@@ -0,0 +1,50 @@
-+if     ( xlen == 32 ) {
-+  abort();
-+}
-+else if( xlen == 64 ) {
+@@ -0,0 +1,49 @@
++if( ( xlen == 32 ) || ( xlen == 64 ) ) {
++  int w = xlen;
++
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
 +  uint128_t x   = READ_REG( insn.rs1() );
@@ -217,14 +220,14 @@ index 00000000..ef4300fa
 +  int f_0, f_1, f_2;
 +
 +  if     ( c == 0xF ) { //    full-radix
-+    f_0 =      1;
-+    f_1 =     64; // or xlen
-+    f_2 =      0;
++    f_0 =        1;
++    f_1 =  w      ;
++    f_2 =        0;
 +  }
 +  else if( c != 0xF ) { // reduced-radix
-+    f_0 =      0;
-+    f_1 = c + 49;
-+    f_2 =      0;
++    f_0 =        0;
++    f_1 = (w-15)+c;
++    f_2 =        0;
 +  }
 +
 +  uint128_t t_0 = x * y;
@@ -234,21 +237,20 @@ index 00000000..ef4300fa
 +  uint128_t m   = ( ( uint128_t )( 1 ) << f_1 ) - 1;
 +  uint128_t r   = ( ( ( t_0 + t_1 ) >> f_2 ) & m ) + t_2;
 +
-+  WRITE_REG( insn.rd(), ( uint64_t )( r ) );
++  WRITE_REG( insn.rd(), r );
 +}
-+
-+
-+
-diff --git a/riscv/insns/sraiadd.h b/riscv/insns/sraiadd.h
-new file mode 100644
-index 00000000..a2ed1c98
---- /dev/null
-+++ b/riscv/insns/sraiadd.h
-@@ -0,0 +1,12 @@
-+if     ( xlen == 32 ) {
++else {
 +  abort();
 +}
-+else if( xlen == 64 ) {
+diff --git a/riscv/insns/sraiadd.h b/riscv/insns/sraiadd.h
+new file mode 100644
+index 00000000..510c93a4
+--- /dev/null
++++ b/riscv/insns/sraiadd.h
+@@ -0,0 +1,14 @@
++if( ( xlen == 32 ) || ( xlen == 64 ) ) {
++  int w = xlen;
++
 +   int64_t x   = READ_REG( insn.rs1() );
 +   int64_t y   = READ_REG( insn.rs2() );
 +  uint64_t imm = insn.funct7() & 0x3F;
@@ -256,6 +258,9 @@ index 00000000..a2ed1c98
 +   int64_t r   = x + ( y >> imm );
 +
 +  WRITE_REG( insn.rd(), r );
++}
++else {
++  abort();
 +}
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
 index 9a6b118d..549d1330 100644

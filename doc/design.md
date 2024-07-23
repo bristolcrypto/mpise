@@ -1,8 +1,41 @@
-Note that this is a general-purpose design, in the sense that it can be
-considered as an extension to RV32 or RV64: we use `w` to denote the
-word size, i.e., `xlen` and so 32 or 64 respectively.
+# Notes
 
-# 1. support for carry propagation.
+- This is a general-purpose design, in the sense that it could potentially
+  be considered as an extension to either RV32 or RV64 base ISAs: we use 
+  `w` to denote the word size, i.e., `xlen` and so 32 or 64 respectively.
+
+- There are 4 variants:
+
+  - `( MPISE_DESTRUCTIVE == 0 )` 3 sources and 1 destination 
+  - `( MPISE_DESTRUCTIVE == 1 )` 2 sources and 1 destination, with the destination overloaded as a 3rd source 
+  - `( MPISE_STATELESS   == 0 )` configuration for, e.g., the derived radix, comes from a  CSR       (i.e., there is    additional state)
+  - `( MPISE_STATELESS   == 1 )` configuration for, e.g., the derived radix, comes from an immediate (i.e., there is no additional state)
+
+  However, essentially the same data path applies to all of them: the only
+  difference is in where the inputs and outputs go to and from.  Including
+  all such variants is important because their different properties impact
+  on how they are used and so, e.g., efficiency of resulting software; we
+  want to be able to evaluate this.
+
+- We reserve a placeholder CSR to support stateful variants of the ISE,
+  selecting the first available unprivileged, custom read/write CSR:
+  this is at address `0x800`.
+
+- Some variants permit a larger radix selector than others.  Simply to 
+  make the (prototype) design and implementation more uniform, we will
+  assume a 4-bit selector 
+  `0 <= c < 2^4 = 16`
+  for all variants.  Having done so, we then assume
+ 
+  ```
+  c == 15 => use    full-radix                               
+          => implied radix is `r = 64`
+
+  c != 15 => use reduced-radix with implied radix of `(w-15)+c`
+          => implied radix is `49 <= r < 64`
+  ```
+
+# ISE class 1: support for carry propagation.
 
 - generic.
 
@@ -81,25 +114,7 @@ word size, i.e., `xlen` and so 32 or 64 respectively.
   }  
   ```
 
-# 2. support for multiply-add (for full- and reduced-radix).
-
-- We reserve a placeholder CSR to support stateful variants of the ISE,
-  selecting the first available unprivileged, custom read/write CSR:
-  this is at address `0x800`.
-
-- Some variants permit a larger radix selector than others.  Simply to 
-  make the (prototype) design and implementation more uniform, we will
-  assume a 4-bit selector 
-  `0 <= c < 2^4 = 16`
-  for all variants.  Having done so, we then assume
- 
-  ```
-  c == 15 => use    full-radix                               
-          => implied radix is `r = 64`
-
-  c != 15 => use reduced-radix with implied radix of `(w-15)+c`
-          => implied radix is `49 <= r < 64`
-  ```
+# ISE class 2: support for multiply-add (for full- and reduced-radix).
 
 - generic.
    
@@ -130,23 +145,23 @@ word size, i.e., `xlen` and so 32 or 64 respectively.
   where
 
   ```
-  f_0(c) =  0       if c != 15 (i.e., c means reduced-radix)
-            1       if c == 15 (i.e., c means    full-radix)
+  f_0(c) =  1       if c == 15 (i.e., c means    full-radix)
+            0       if c != 15 (i.e., c means reduced-radix)
 
-  f_1(c) = (w-15)+c if c != 15 (i.e., c means reduced-radix)
-            w       if c == 15 (i.e., c means    full-radix)
+  f_1(c) =  w       if c == 15 (i.e., c means    full-radix)
+           (w-15)+c if c != 15 (i.e., c means reduced-radix)
 
-  f_2(c) =  0       if c != 15 (i.e., c means reduced-radix)
-            0       if c == 15 (i.e., c means    full-radix)
+  f_2(c) =  0       if c == 15 (i.e., c means    full-radix)
+            0       if c != 15 (i.e., c means reduced-radix)
 
-  f_3(c) =  0       if c != 15 (i.e., c means reduced-radix)
-            1       if c == 15 (i.e., c means    full-radix)
+  f_3(c) =  1       if c == 15 (i.e., c means    full-radix)
+            0       if c != 15 (i.e., c means reduced-radix)
 
-  f_4(c) =  w       if c != 15 (i.e., c means reduced-radix)
-            w       if c == 15 (i.e., c means    full-radix)
+  f_4(c) =  w       if c == 15 (i.e., c means    full-radix)
+            w       if c != 15 (i.e., c means reduced-radix)
 
-  f_5(c) = (w-15)+c if c != 15 (i.e., c means reduced-radix)
-            w       if c == 15 (i.e., c means    full-radix)
+  f_5(c) =  w       if c == 15 (i.e., c means    full-radix)
+           (w-15)+c if c != 15 (i.e., c means reduced-radix)
   ```
 
 - only if `( MPISE_DESTRUCTIVE == 0 )` and `( MPISE_STATELESS == 0 )`.
