@@ -1,3 +1,7 @@
+Note that this is a general-purpose design, in the sense that it can be
+considered as an extension to RV32 or RV64: we use `w` to denote the
+word size, i.e., `xlen` and so 32 or 64 respectively.
+
 # 1. support for carry propagation.
 
 - generic.
