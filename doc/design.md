@@ -35,7 +35,7 @@
           => implied radix is `49 <= r < 64`
   ```
 
-# ISE class 1: support for carry propagation.
+# ISE class 1: support for carry propagation
 
 - generic.
 
@@ -114,7 +114,7 @@
   }  
   ```
 
-# ISE class 2: support for multiply-add (for full- and reduced-radix).
+# ISE class 2: support for multiply-add (for full- and reduced-radix)
 
 - generic.
    
