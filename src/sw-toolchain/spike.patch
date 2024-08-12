@@ -6,29 +6,30 @@ index 00000000..32ce9d92
 @@ -0,0 +1 @@
 +#include "arith.h"
 diff --git a/riscv/decode.h b/riscv/decode.h
-index 7028c855..addb4e89 100644
+index f36c04e5..734584b3 100644
 --- a/riscv/decode.h
 +++ b/riscv/decode.h
-@@ -80,6 +80,11 @@ public:
+@@ -79,6 +79,11 @@ public:
    insn_t(insn_bits_t bits) : b(bits) {}
-   insn_bits_t bits() { return b & ~((UINT64_MAX) << (length() * 8)); }
+   insn_bits_t bits() { return b; }
    int length() { return insn_length(b); }
 +  // ++ mpise
 +  uint64_t funct7() { return x(25, 7); }
 +  uint64_t funct3() { return x(12, 3); }
 +  uint64_t funct2() { return x(25, 2); }
 +  // -- mpise
-   int64_t i_imm() { return int64_t(b) >> 20; }
+   int64_t i_imm() { return xs(20, 12); }
    int64_t shamt() { return x(20, 6); }
    int64_t s_imm() { return x(7, 5) + (xs(25, 7) << 5); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index b2162963..a4822cb7 100644
+index 675b4f64..62af1951 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
-@@ -2795,6 +2795,45 @@
- #define MASK_VFWREDSUM_VS  0xfc00707f
- #define MATCH_VPOPC_M 0x40082057
- #define MASK_VPOPC_M  0xfc0ff07f
+@@ -2418,7 +2418,45 @@
+ #define MASK_XPERM4 0xfe00707f
+ #define MATCH_XPERM8 0x28004033
+ #define MASK_XPERM8 0xfe00707f
+-
 +// ++ mpise
 +#define MATCH_SRAIADD 0x000100B
 +#define  MASK_SRAIADD 0x000707F
@@ -71,20 +72,21 @@ index b2162963..a4822cb7 100644
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
-@@ -3071,6 +3110,9 @@
+@@ -2875,7 +2913,9 @@
  #define CSR_MHPMCOUNTER29H 0xb9d
  #define CSR_MHPMCOUNTER30H 0xb9e
  #define CSR_MHPMCOUNTER31H 0xb9f
+-
 +// ++ mpise
 +#define CSR_MACC           0x800
 +// -- mpise
  #define CAUSE_MISALIGNED_FETCH 0x0
  #define CAUSE_FETCH_ACCESS 0x1
  #define CAUSE_ILLEGAL_INSTRUCTION 0x2
-@@ -4349,6 +4391,12 @@ DECLARE_INSN(vse1_v, MATCH_VSE1_V, MASK_VSE1_V)
- DECLARE_INSN(vfredsum_vs, MATCH_VFREDSUM_VS, MASK_VFREDSUM_VS)
- DECLARE_INSN(vfwredsum_vs, MATCH_VFWREDSUM_VS, MASK_VFWREDSUM_VS)
- DECLARE_INSN(vpopc_m, MATCH_VPOPC_M, MASK_VPOPC_M)
+@@ -3961,6 +4001,12 @@ DECLARE_INSN(xperm16, MATCH_XPERM16, MASK_XPERM16)
+ DECLARE_INSN(xperm32, MATCH_XPERM32, MASK_XPERM32)
+ DECLARE_INSN(xperm4, MATCH_XPERM4, MASK_XPERM4)
+ DECLARE_INSN(xperm8, MATCH_XPERM8, MASK_XPERM8)
 +// ++ mpise
 +DECLARE_INSN(cacc,    MATCH_CACC,    MASK_CACC)
 +DECLARE_INSN(sraiadd, MATCH_SRAIADD, MASK_SRAIADD)
@@ -94,7 +96,7 @@ index b2162963..a4822cb7 100644
  #endif
  #ifdef DECLARE_CSR
  DECLARE_CSR(fflags, CSR_FFLAGS)
-@@ -4627,6 +4675,9 @@ DECLARE_CSR(mhpmcounter28h, CSR_MHPMCOUNTER28H)
+@@ -4419,6 +4465,9 @@ DECLARE_CSR(mhpmcounter28h, CSR_MHPMCOUNTER28H)
  DECLARE_CSR(mhpmcounter29h, CSR_MHPMCOUNTER29H)
  DECLARE_CSR(mhpmcounter30h, CSR_MHPMCOUNTER30H)
  DECLARE_CSR(mhpmcounter31h, CSR_MHPMCOUNTER31H)
@@ -263,10 +265,10 @@ index 00000000..510c93a4
 +  abort();
 +}
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index 9a6b118d..549d1330 100644
+index bc512bfa..ba79a54a 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
-@@ -39,6 +39,7 @@ riscv_precompiled_hdrs = \
+@@ -49,6 +49,7 @@ riscv_precompiled_hdrs = \
  	insn_template.h \
  
  riscv_srcs = \
@@ -274,22 +276,22 @@ index 9a6b118d..549d1330 100644
  	processor.cc \
  	execute.cc \
  	dts.cc \
-@@ -1273,6 +1274,10 @@ riscv_insn_svinval = \
- 	hinval_vvma \
- 	hinval_gvma \
+@@ -1083,6 +1084,10 @@ riscv_insn_ext_zicfiss = \
+ 	c_sspush_x1 \
+ 	c_sspopchk_x5 \
  
 +# ++ mpise
 +riscv_insn_mpise = cacc sraiadd macchu macclu
 +# -- mpise
 +
- riscv_insn_list = \
- 	$(riscv_insn_ext_a) \
- 	$(riscv_insn_ext_c) \
-@@ -1289,6 +1294,7 @@ riscv_insn_list = \
- 	$(riscv_insn_ext_p) \
- 	$(riscv_insn_priv) \
- 	$(riscv_insn_svinval) \
-+	$(riscv_insn_mpise) \
+ riscv_insn_ext_zvk = \
+ 	$(riscv_insn_ext_zvbb) \
+ 	$(riscv_insn_ext_zvbc) \
+@@ -1093,6 +1098,7 @@ riscv_insn_ext_zvk = \
+ 	$(riscv_insn_ext_zvksh) \
  
- riscv_gen_srcs = \
- 	$(addsuffix .cc,$(riscv_insn_list))
+ riscv_insn_list = \
++	$(riscv_insn_mpise) \
+ 	$(riscv_insn_ext_i) \
+ 	$(riscv_insn_ext_c) \
+ 	$(riscv_insn_ext_f) \

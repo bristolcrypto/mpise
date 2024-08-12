@@ -20,7 +20,8 @@ export PK_INSTALL="${REPO_HOME}/build/riscv"
 
 export SPIKE_REPO="${REPO_HOME}/build/riscv-isa-sim"
 export SPIKE_BUILD="${SPIKE_REPO}/build"
-export SPIKE_COMMIT="c6ec6f3582eb2ae106dff95e569b7da927910629"
+#export SPIKE_COMMIT="c6ec6f3582eb2ae106dff95e569b7da927910629" # old
+export SPIKE_COMMIT="bfe9173c284594cfa73c99eb0bcbd0a4e67d1076" # new, fixes cstdint
 export SPIKE_BRANCH="mpise"
 export SPIKE_PATCH="${PWD}/spike.patch"
 export SPIKE_INSTALL="${REPO_HOME}/build/riscv"
