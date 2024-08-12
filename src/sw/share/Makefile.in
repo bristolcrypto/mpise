@@ -1,0 +1,72 @@
+# Copyright (C) 2021 SCARV project <info@scarv.org>
+#
+# Use of this source code is restricted per the MIT license, a copy of which 
+# can be found at https://opensource.org/licenses/MIT (or should be included 
+# as LICENSE.txt within the associated archive or repository).
+
+ifndef REPO_HOME
+  $(error "execute 'source ./bin/conf.sh' to configure environment")
+endif
+ifndef REPO_VERSION
+  $(error "execute 'source ./bin/conf.sh' to configure environment")
+endif
+
+ifndef RISCV
+  $(error "set RISCV environment variable to point at toolchain installation")
+endif
+
+# =============================================================================
+
+ifeq "${ARCH}" "rv32"
+include ${REPO_HOME}/src/sw/share/arch/rv32/Makefile.in
+endif
+ifeq "${ARCH}" "rv64"
+include ${REPO_HOME}/src/sw/share/arch/rv64/Makefile.in
+endif
+
+export GCC_FLAGS += -DMPISE_DESTRUCTIVE="${MPISE_DESTRUCTIVE}" -DMPISE_STATELESS="${MPISE_STATELESS}"
+
+ifeq "${ARCH}" "rv32"
+export GCC_FLAGS += -DMPISE_XLEN="32"
+endif
+ifeq "${ARCH}" "rv64"
+export GCC_FLAGS += -DMPISE_XLEN="64"
+endif
+ifeq "${TYPE}" "isa"
+export GCC_FLAGS += -DMPISE_ISE="0"
+endif
+ifeq "${TYPE}" "ise"
+export GCC_FLAGS += -DMPISE_ISE="1"
+endif
+
+# -----------------------------------------------------------------------------
+
+export  SOURCES   += $(wildcard ${REPO_HOME}/src/sw/share/*.c)
+export  SOURCES   += $(wildcard ${REPO_HOME}/src/sw/share/arch/${ARCH}/*.c)
+
+export INCLUDES   +=            ${REPO_HOME}/src/sw/share/
+export INCLUDES   +=            ${REPO_HOME}/src/sw/share/arch/${ARCH}
+
+export  TARGETS   += ${REPO_HOME}/build/${ALG}
+export  TARGETS   += ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
+export  TARGETS   += ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.asm
+
+# -----------------------------------------------------------------------------
+
+${REPO_HOME}/build/${ALG} :
+	@mkdir --parents ${@}
+
+${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf : ${SOURCES} 
+	@${RISCV}/bin/${GCC_PREFIX}-gcc ${GCC_FLAGS} ${GCC_PATHS} $(addprefix -I ,${INCLUDES}) -Wall -std='gnu99' -O3 -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
+
+${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.asm : ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
+	@${RISCV}/bin/${GCC_PREFIX}-objdump --disassemble-all ${<} > ${@}
+
+# -----------------------------------------------------------------------------
+
+build :                         ${TARGETS}
+
+clean : 
+	@rm --force --recursive ${TARGETS}
+
+# =============================================================================

@@ -19,13 +19,13 @@ void gfp_mul64_ise(uint64_t *r, const uint64_t *a, const uint64_t b);
 
 void gfp_inv(uint64_t *r, const uint64_t *a);
 
-#if (ISE)
+#if   defined( MPISE_ISE ) && ( MPISE_ISE == 1 )
 #define gfp_mul         gfp_mul_ise
 #define gfp_sqr(r, a)   gfp_mul_ise(r, a, a)
 #define gfp_add         gfp_add_ise
 #define gfp_sub         gfp_sub_ise
 #define gfp_mul64       gfp_mul64_ise
-#elif (ISA)
+#elif defined( MPISE_ISE ) && ( MPISE_ISE == 0 )
 #define gfp_mul         gfp_mul_isa
 #define gfp_sqr         gfp_sqr_isa
 #define gfp_add         gfp_add_isa

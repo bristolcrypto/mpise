@@ -278,6 +278,10 @@ void test_ecdh()
 
 int main()
 {
+  #if defined( MPISE_ISE ) && ( MPISE_ISE == 1 ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
+  asm( "li t0, 0x2 ; csrrw t1, 0x800, t0" : : : "t0", "t1" ); // imm = c = 2 => radix = (w-15)+c = (64-15)+2 = 51
+  #endif
+
   test_ecdh();
   test_gfp_arith();
   test_curve_arith();

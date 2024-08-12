@@ -97,9 +97,13 @@
   - execute `${COMPONENT}-update.sh` to produce an updated patch,
   - optionally commit and push the updated patch.
 
-- Software simulation with `spike` and `pk` 
+- Execute software simulation using `spike` via
+
   ```sh
-  make sw-run ALG=x25519 RADIX=[full/reduced] TYPE=[ISA/ISE]
+  make sw-clean sw-run ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="full"
+  make sw-clean sw-run ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="full"
+  make sw-clean sw-run ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="reduced"
+  make sw-clean sw-run ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="reduced"
   ```
 
 <!--- ==================================================================== --->

@@ -10,11 +10,10 @@ endif
 
 # =============================================================================
 
-export SW_WORK_DIR ?= ${REPO_HOME}/build/sw/${ALG}_${RADIX}
-
-export ALG      ?= bls12-381
-export RADIX    ?= full
-export TYPE     ?= ISA
+export ALG   ?= unit
+export ARCH  ?= rv64
+export TYPE  ?= isa
+export RADIX ?= full
 
 # =============================================================================
 
@@ -26,10 +25,15 @@ sw-toolchain-build :
 sw-toolchain-clean :
 	@make --directory="${REPO_HOME}/src/sw-toolchain" clean
 
-sw-run:
-	@make --directory="${REPO_HOME}/src/sw/${ALG}/${RADIX}-radix" all
+# -----------------------------------------------------------------------------
 
-sw-clean:
-	@make --directory="${REPO_HOME}/src/sw/${ALG}/${RADIX}-radix" clean
+sw-build :
+	@make --directory="${REPO_HOME}/src/sw/${ALG}" build
+
+sw-run   :
+	@make --directory="${REPO_HOME}/src/sw/${ALG}" run
+
+sw-clean :
+	@make --directory="${REPO_HOME}/src/sw/${ALG}" clean
 
 # =============================================================================

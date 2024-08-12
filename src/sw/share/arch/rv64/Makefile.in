@@ -4,34 +4,20 @@
 # can be found at https://opensource.org/licenses/MIT (or should be included 
 # as LICENSE.txt within the associated archive or repository).
 
-ifndef REPO_HOME
-  $(error "execute 'source ./bin/conf.sh' to configure environment")
-endif
-ifndef REPO_VERSION
-  $(error "execute 'source ./bin/conf.sh' to configure environment")
-endif
-
-ifndef RISCV
-  $(error "set RISCV environment variable to point at toolchain installation")
-endif
-
 # =============================================================================
 
-export GCC_PREFIX = ${RISCV}/bin/riscv64-unknown-elf
+export GCC_PREFIX  = riscv64-unknown-elf
 
-export GCC_FLAGS  = -march='rv64gc' -mabi='lp64'
-export GCC_PATHS  = 
-export GCC_LIBS   = 
+export GCC_FLAGS  += -march='rv64gc' -mabi='lp64'
+export GCC_PATHS  += 
+export GCC_LIBS   += 
 
 # -----------------------------------------------------------------------------
 
 run   : build
-	@${REPO_HOME}/build/sw-toolchain/${ALG}/bin/spike    --isa='rv64gc_zbb_zbkb_zbkx' ${REPO_HOME}/build/sw-toolchain/${ALG}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/driver-${API}_${ARCH}_${IMP}.elf
+	@${RISCV}/bin/spike    --isa='rv64gc_zbb_zbkb_zbkx' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
 
 debug : build
-	@${REPO_HOME}/build/sw-toolchain/${ALG}/bin/spike -d --isa='rv64gc_zbb_zbkb_zbkx' ${REPO_HOME}/build/sw-toolchain/${ALG}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/driver-${API}_${ARCH}_${IMP}.elf
-
-scan  :
-	@PYTHONPATH="./share" python3 ./${ALG}/scan.py --nist --rv64
+	@${RISCV}/bin/spike -d --isa='rv64gc_zbb_zbkb_zbkx' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
 
 # =============================================================================
