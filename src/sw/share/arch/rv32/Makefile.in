@@ -15,9 +15,9 @@ export GCC_LIBS   +=
 # -----------------------------------------------------------------------------
 
 run   : build
-	@${RISCV}/bin/spike    --isa='rv32gc_zbb_zbkb_zbkx' ${RISCV}/riscv32-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
+	@${RISCV}/bin/spike    --isa='rv32gc_zicsr_zicntr' ${RISCV}/riscv32-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
 
 debug : build
-	@${RISCV}/bin/spike -d --isa='rv32gc_zbb_zbkb_zbkx' ${RISCV}/riscv32-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
+	@${RISCV}/bin/spike -d --isa='rv32gc_zicsr_zicntr' ${RISCV}/riscv32-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
 
 # =============================================================================
