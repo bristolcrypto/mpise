@@ -15,14 +15,13 @@ void test_macclu() {
     limb_t y = VECTOR_MACCLU[ i ].y;
     limb_t z = VECTOR_MACCLU[ i ].z;
 
-    #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    #if defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
     r = z;
     #endif
 
-    if( VECTOR_MACCLU[ i ].c != 2 ) {
+    if( ( VECTOR_MACCLU[ i ].c != 0 ) && ( VECTOR_MACCLU[ i ].c != 2 ) ) { // only deal with 64-bit (full) or 51-bit (reduced)
       abort();
     }
-
     if( _test_macclu( r, x, y, z ) != VECTOR_MACCLU[ i ].r ) {
       abort();
     }

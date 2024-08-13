@@ -5,6 +5,19 @@ index 00000000..32ce9d92
 +++ b/riscv/arith.cc
 @@ -0,0 +1 @@
 +#include "arith.h"
+diff --git a/riscv/csr_init.cc b/riscv/csr_init.cc
+index d72c9250..b78622d5 100644
+--- a/riscv/csr_init.cc
++++ b/riscv/csr_init.cc
+@@ -379,4 +379,8 @@ void state_t::csr_init(processor_t* const proc, reg_t max_isa)
+ 
+   const reg_t srmcfg_mask = SRMCFG_MCID | SRMCFG_RCID;
+   add_const_ext_csr(EXT_SSQOSID, CSR_SRMCFG, std::make_shared<srmcfg_csr_t>(proc, CSR_SRMCFG, srmcfg_mask, 0));
++
++  #if defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
++  add_csr( CSR_MACC, std::make_shared<basic_csr_t>( proc, CSR_MACC, 0 ) );  
++  #endif
+ }
 diff --git a/riscv/decode.h b/riscv/decode.h
 index f36c04e5..734584b3 100644
 --- a/riscv/decode.h
@@ -22,7 +35,7 @@ index f36c04e5..734584b3 100644
    int64_t shamt() { return x(20, 6); }
    int64_t s_imm() { return x(7, 5) + (xs(25, 7) << 5); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 675b4f64..62af1951 100644
+index 675b4f64..34803817 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -2418,7 +2418,45 @@
@@ -96,12 +109,14 @@ index 675b4f64..62af1951 100644
  #endif
  #ifdef DECLARE_CSR
  DECLARE_CSR(fflags, CSR_FFLAGS)
-@@ -4419,6 +4465,9 @@ DECLARE_CSR(mhpmcounter28h, CSR_MHPMCOUNTER28H)
+@@ -4419,6 +4465,11 @@ DECLARE_CSR(mhpmcounter28h, CSR_MHPMCOUNTER28H)
  DECLARE_CSR(mhpmcounter29h, CSR_MHPMCOUNTER29H)
  DECLARE_CSR(mhpmcounter30h, CSR_MHPMCOUNTER30H)
  DECLARE_CSR(mhpmcounter31h, CSR_MHPMCOUNTER31H)
 +// ++ mpise
++#if defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
 +DECLARE_CSR(macc, CSR_MACC)
++#endif
 +// -- mpise
  #endif
  #ifdef DECLARE_CAUSE
@@ -136,7 +151,7 @@ index 00000000..6fa325a4
 +}
 diff --git a/riscv/insns/macchu.h b/riscv/insns/macchu.h
 new file mode 100644
-index 00000000..d02fa05e
+index 00000000..ea5f7fe5
 --- /dev/null
 +++ b/riscv/insns/macchu.h
 @@ -0,0 +1,49 @@
@@ -157,7 +172,7 @@ index 00000000..d02fa05e
 +
 +  #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 +  // !stateless
-+  int c = p->get_csr( 0x800, insn, false ) & 0xF;
++  int c = p->get_csr( CSR_MACC ) & 0xF;
 +  #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 +  //  stateless
 +  int c = ( ( insn.funct2() & 0x3 ) << 2 ) |
@@ -191,7 +206,7 @@ index 00000000..d02fa05e
 +}
 diff --git a/riscv/insns/macclu.h b/riscv/insns/macclu.h
 new file mode 100644
-index 00000000..4382feed
+index 00000000..8f8428f6
 --- /dev/null
 +++ b/riscv/insns/macclu.h
 @@ -0,0 +1,49 @@
@@ -212,7 +227,7 @@ index 00000000..4382feed
 +
 +  #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 +  // !stateless
-+  int c = p->get_csr( 0x800, insn, false ) & 0xF;
++  int c = p->get_csr( CSR_MACC ) & 0xF;
 +  #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 +  //  stateless
 +  int c = ( ( insn.funct2() & 0x3 ) << 2 ) |
