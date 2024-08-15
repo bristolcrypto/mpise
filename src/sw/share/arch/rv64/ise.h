@@ -33,7 +33,7 @@
 .insn r4 CUSTOM_1, 0, 0, \rd, \rs1, \rs2, \rs3
 .endm
 .macro macchu rd, rs1, rs2, rs3
-.insn r4 CUSTOM_1, 1, 0  \rd, \rs1, \rs2, \rs3
+.insn r4 CUSTOM_1, 1, 0, \rd, \rs1, \rs2, \rs3
 .endm
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 // !destructive &&  stateless

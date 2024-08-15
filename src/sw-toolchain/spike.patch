@@ -6,17 +6,19 @@ index 00000000..32ce9d92
 @@ -0,0 +1 @@
 +#include "arith.h"
 diff --git a/riscv/csr_init.cc b/riscv/csr_init.cc
-index d72c9250..b78622d5 100644
+index d72c9250..a727660d 100644
 --- a/riscv/csr_init.cc
 +++ b/riscv/csr_init.cc
-@@ -379,4 +379,8 @@ void state_t::csr_init(processor_t* const proc, reg_t max_isa)
+@@ -379,4 +379,10 @@ void state_t::csr_init(processor_t* const proc, reg_t max_isa)
  
    const reg_t srmcfg_mask = SRMCFG_MCID | SRMCFG_RCID;
    add_const_ext_csr(EXT_SSQOSID, CSR_SRMCFG, std::make_shared<srmcfg_csr_t>(proc, CSR_SRMCFG, srmcfg_mask, 0));
 +
++  // ++ mpise
 +  #if defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
-+  add_csr( CSR_MACC, std::make_shared<basic_csr_t>( proc, CSR_MACC, 0 ) );  
++  add_csr( CSR_MACC, macc = std::make_shared<basic_csr_t>( proc, CSR_MACC, 0 ) );  
 +  #endif
++  // -- mpise
  }
 diff --git a/riscv/decode.h b/riscv/decode.h
 index f36c04e5..734584b3 100644
@@ -279,6 +281,23 @@ index 00000000..510c93a4
 +else {
 +  abort();
 +}
+diff --git a/riscv/processor.h b/riscv/processor.h
+index df77fc6a..d34a97f2 100644
+--- a/riscv/processor.h
++++ b/riscv/processor.h
+@@ -171,6 +171,12 @@ struct state_t
+ 
+   csr_t_p ssp;
+ 
++  // ++ mpise
++  #if defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
++  csr_t_p macc;
++  #endif
++  // -- mpise
++
+   bool serialized; // whether timer CSRs are in a well-defined state
+ 
+   // When true, execute a single instruction and then enter debug mode.  This
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
 index bc512bfa..ba79a54a 100644
 --- a/riscv/riscv.mk.in

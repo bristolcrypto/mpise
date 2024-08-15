@@ -16,17 +16,19 @@
 // !destructive
 #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 // !destructive && !stateless
+  macclu \Z, \A, \B, \S
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 // !destructive &&  stateless
-  macclu \Z, \A, \B, \S, 15
+  macclu \Z, \A, \B, \S, 15 // imm = c = 15 => radix = (w-15)+c = (64-15)+15 = 64
 #endif
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 //  destructive
 #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 //  destructive && !stateless
+  macclu \Z, \A, \B
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 //  destructive &&  stateless
-  macclu \Z, \A, \B,     15
+  macclu \Z, \A, \B,     15 // imm = c = 15 => radix = (w-15)+c = (64-15)+15 = 64
 #endif
 #endif
 .endm
@@ -36,17 +38,19 @@
 // !destructive
 #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 // !destructive && !stateless
+  macchu \Z, \A, \B, \S
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 // !destructive &&  stateless
-  macchu \Z, \A, \B, \S, 15
+  macchu \Z, \A, \B, \S, 15 // imm = c = 15 => radix = (w-15)+c = (64-15)+15 = 64
 #endif
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 //  destructive
 #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 //  destructive && !stateless
+  macchu \Z, \A, \B
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 //  destructive &&  stateless
-  macchu \Z, \A, \B,     15
+  macchu \Z, \A, \B,     15 // imm = c = 15 => radix = (w-15)+c = (64-15)+15 = 64
 #endif
 #endif
 .endm
