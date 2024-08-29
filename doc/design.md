@@ -109,7 +109,7 @@
     x       <- GPR[rs1]
     y       <- GPR[rs2]
     z       <- GPR[rd ]
-    r       <- ((x + y) >> 64) + z
+    r       <- ((x + y) >> w) + z
     GPR[rd] <- r
   }  
   ```
