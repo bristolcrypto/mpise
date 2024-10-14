@@ -174,10 +174,10 @@
   | macchu      | R4 : 3R  ->1R | 0        |            1 | 1 = 0101011 |
   +=============+===============+==========+==============+=============+
 
-  R4 : rrrr r00r rrrr rrrr rii0 rrrr r101 1011
+  R4 : rrrr r00r rrrr rrrr r000 rrrr r101 1011
   #define MATCH_MACCLU 0x000002B
   #define  MASK_MACCLU 0x000107F
-  R4 : rrrr r00r rrrr rrrr rii1 rrrr r101 1011
+  R4 : rrrr r00r rrrr rrrr r001 rrrr r101 1011
   #define MATCH_MACCHU 0x000102B
   #define  MASK_MACCHU 0x000107F
 
