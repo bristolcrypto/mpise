@@ -33,6 +33,9 @@ sw-build :
 sw-run   :
 	@make --directory="${REPO_HOME}/src/sw/${ALG}" run
 
+sw-debug :
+	@make --directory="${REPO_HOME}/src/sw/${ALG}" debug
+
 sw-clean :
 	@make --directory="${REPO_HOME}/src/sw/${ALG}" clean
 
