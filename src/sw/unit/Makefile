@@ -1,5 +1,7 @@
-export  SOURCES = main.c main.S
-export  HEADERS = main.h
-export INCLUDES =
+unittest : unittest.c unittest.h
+	@gcc -std=gnu99 -O3 -o ${@} ${<}
 
-include ${REPO_HOME}/src/sw/share/Makefile.in
+all   :             unittest
+
+clean :
+	@rm --force unittest
