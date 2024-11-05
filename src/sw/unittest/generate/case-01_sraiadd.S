@@ -1,0 +1,65 @@
+#include "ise.h"
+.global test
+test:
+li  t0, 0xC44DC37D0E160DD4
+li  t1, 0xBDDDD07BACC7E834
+li  t2, 0x548CF9C2D970C5FA
+sraiadd t0, t1, t2, 3
+li  t4, 0xC86F6FB407F600F3
+bne t4, t0, fail
+li  t0, 0x73DFBF5589A3B128
+li  t1, 0x1C42714150D9B58F
+li  t2, 0xCD336E45479BA127
+sraiadd t0, t1, t2, 5
+li  t4, 0x1AAC0CB37B169298
+bne t4, t0, fail
+li  t0, 0x0805C1DD7C44E4CD
+li  t1, 0xEF7DDBB8287116B4
+li  t2, 0x797E5054C8E45B25
+sraiadd t0, t1, t2, 8
+li  t4, 0xEFF75A087D39FB0F
+bne t4, t0, fail
+li  t0, 0xEB0E94D00320E5FD
+li  t1, 0xD2110F48207368B7
+li  t2, 0xF8FDD369513C8E15
+sraiadd t0, t1, t2, 15
+li  t4, 0xD2110143C7460B30
+bne t4, t0, fail
+li  t0, 0x593E83E00B6A8D5A
+li  t1, 0xF80B3D383486D506
+li  t2, 0xD16A9E16620E6F99
+sraiadd t0, t1, t2, 9
+li  t4, 0xF7F3F2873FB7DC3D
+bne t4, t0, fail
+li  t0, 0xA72F621DBDB8AEA3
+li  t1, 0xFBACE0284CC0BA94
+li  t2, 0x2E6567B6AD665FC1
+sraiadd t0, t1, t2, 10
+li  t4, 0xFBB879823A6C142B
+bne t4, t0, fail
+li  t0, 0x1FCDAE1F789BA84F
+li  t1, 0xA6C848FEE4411BAC
+li  t2, 0x21A5D12EDE0E0405
+sraiadd t0, t1, t2, 7
+li  t4, 0xA70B94A141FD37B4
+bne t4, t0, fail
+li  t0, 0xC67C7E29FA1093FB
+li  t1, 0x943E161412B38E36
+li  t2, 0x4E76E03979281E4E
+sraiadd t0, t1, t2, 7
+li  t4, 0x94DB03D485A5DE72
+bne t4, t0, fail
+li  t0, 0x502FAE8B20139083
+li  t1, 0x843B946CC7839CAA
+li  t2, 0xF52B6CDB0A569463
+sraiadd t0, t1, t2, 1
+li  t4, 0x7ED14ADA4CAEE6DB
+bne t4, t0, fail
+li  t0, 0x04CD67C1678049E6
+li  t1, 0x61D2EA22F46BEC81
+li  t2, 0x118A31CB67345B47
+sraiadd t0, t1, t2, 10
+li  t4, 0x61D74CAF6745B997
+bne t4, t0, fail
+pass: li a0, 1 ; ret
+fail: li a0, 0 ; ret

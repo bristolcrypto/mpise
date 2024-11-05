@@ -1,0 +1,75 @@
+#include "ise.h"
+.global test
+test:
+li  t0, 0x0092597192F650A2
+li  t1, 0xE7F6DD1BCF1BCD94
+li  t2, 0x2A58B3EB77F212B4
+li  t3, 0xC1FE7FF90E3AD0EC
+csrrwi x0, 0x800, 6 ; macchu t0, t1, t2, t3
+li  t4, 0x7FBED30DEEC440BD
+bne t4, t0, fail
+li  t0, 0x88F7592719EDD0AE
+li  t1, 0x61F1316FDE69BE11
+li  t2, 0xA8A33CCB4A2903E0
+li  t3, 0xCC49A7C6A848E673
+csrrwi x0, 0x800, 9 ; macchu t0, t1, t2, t3
+li  t4, 0xED78B953423EB979
+bne t4, t0, fail
+li  t0, 0xEEA7350778F3CFB9
+li  t1, 0x7D5E8BB9B94900F6
+li  t2, 0xB9A9F6F2A7E69331
+li  t3, 0x9F10468BA5EA0BE8
+csrrwi x0, 0x800, 14 ; macchu t0, t1, t2, t3
+li  t4, 0x54E96531EEA87D43
+bne t4, t0, fail
+li  t0, 0x4B8598A3CA170E97
+li  t1, 0x62044731936592B8
+li  t2, 0x2ACA7983B9C1B740
+li  t3, 0x3E45AF54957B1C61
+csrrwi x0, 0x800, 13 ; macchu t0, t1, t2, t3
+li  t4, 0x7FCE95A7A6877CBE
+bne t4, t0, fail
+li  t0, 0x146E9E1DF0DCC89A
+li  t1, 0x1E2834A52015196F
+li  t2, 0x34F3E47CDA2F2714
+li  t3, 0xED8632EAEA38DD32
+csrrwi x0, 0x800, 10 ; macchu t0, t1, t2, t3
+li  t4, 0xB522EBABD47BEF4B
+bne t4, t0, fail
+li  t0, 0xA2EEF48665DDFD81
+li  t1, 0xA2CF7ED32FA8415C
+li  t2, 0x63E4AB64EAAC22CE
+li  t3, 0x4F49CE8331900209
+csrrwi x0, 0x800, 8 ; macchu t0, t1, t2, t3
+li  t4, 0x131FBB36F5B0F8D7
+bne t4, t0, fail
+li  t0, 0xB01E13629DD34D60
+li  t1, 0x4B9B5960140EC882
+li  t2, 0xD551DE16964B81A5
+li  t3, 0xE3C84E2CAC289BF8
+csrrwi x0, 0x800, 5 ; macchu t0, t1, t2, t3
+li  t4, 0xE584BC9A0009EA89
+bne t4, t0, fail
+li  t0, 0x6D17D54C51130859
+li  t1, 0x21341DE9673A63D4
+li  t2, 0xFAE09AEB867B359A
+li  t3, 0xEE44F462A4FA0312
+csrrwi x0, 0x800, 10 ; macchu t0, t1, t2, t3
+li  t4, 0xFF85D162CF0915C4
+bne t4, t0, fail
+li  t0, 0xCB64B4EAEDF70116
+li  t1, 0xE1B697CC82DE84E2
+li  t2, 0xC6FB83A1C94DA72C
+li  t3, 0x376C49E725B7CEC6
+csrrwi x0, 0x800, 0 ; macchu t0, t1, t2, t3
+li  t4, 0xB52B55C554BC815F
+bne t4, t0, fail
+li  t0, 0xBE3C157F86995E5E
+li  t1, 0x7171FB3EE52D30D9
+li  t2, 0xA6D53D6EC76B34B4
+li  t3, 0xF2E57A77013582EF
+csrrwi x0, 0x800, 3 ; macchu t0, t1, t2, t3
+li  t4, 0xD9651BB971D8D9A2
+bne t4, t0, fail
+pass: li a0, 1 ; ret
+fail: li a0, 0 ; ret

@@ -1,0 +1,99 @@
+bbl loader
+!! MPISE_XLEN        = 64
+!! MPISE_DESTRUCTIVE = 0
+!! MPISE_STATELESS   = 0
+// #include "ise.h"
+// .global test
+// test:
+## [0] macchu > rd=0x0092597192F650A2,rs1=0xE7F6DD1BCF1BCD94,rs2=0x2A58B3EB77F212B4,rs3=0xC1FE7FF90E3AD0EC,imm=6
+// li  t0, 0x0092597192F650A2
+// li  t1, 0xE7F6DD1BCF1BCD94
+// li  t2, 0x2A58B3EB77F212B4
+// li  t3, 0xC1FE7FF90E3AD0EC
+// csrrwi x0, 0x800, 6 ; macchu t0, t1, t2, t3
+## [0] macchu < rd=0x7FBED30DEEC440BD
+// li  t4, 0x7FBED30DEEC440BD
+// bne t4, t0, fail
+## [1] macchu > rd=0x88F7592719EDD0AE,rs1=0x61F1316FDE69BE11,rs2=0xA8A33CCB4A2903E0,rs3=0xCC49A7C6A848E673,imm=9
+// li  t0, 0x88F7592719EDD0AE
+// li  t1, 0x61F1316FDE69BE11
+// li  t2, 0xA8A33CCB4A2903E0
+// li  t3, 0xCC49A7C6A848E673
+// csrrwi x0, 0x800, 9 ; macchu t0, t1, t2, t3
+## [1] macchu < rd=0xED78B953423EB979
+// li  t4, 0xED78B953423EB979
+// bne t4, t0, fail
+## [2] macchu > rd=0xEEA7350778F3CFB9,rs1=0x7D5E8BB9B94900F6,rs2=0xB9A9F6F2A7E69331,rs3=0x9F10468BA5EA0BE8,imm=14
+// li  t0, 0xEEA7350778F3CFB9
+// li  t1, 0x7D5E8BB9B94900F6
+// li  t2, 0xB9A9F6F2A7E69331
+// li  t3, 0x9F10468BA5EA0BE8
+// csrrwi x0, 0x800, 14 ; macchu t0, t1, t2, t3
+## [2] macchu < rd=0x54E96531EEA87D43
+// li  t4, 0x54E96531EEA87D43
+// bne t4, t0, fail
+## [3] macchu > rd=0x4B8598A3CA170E97,rs1=0x62044731936592B8,rs2=0x2ACA7983B9C1B740,rs3=0x3E45AF54957B1C61,imm=13
+// li  t0, 0x4B8598A3CA170E97
+// li  t1, 0x62044731936592B8
+// li  t2, 0x2ACA7983B9C1B740
+// li  t3, 0x3E45AF54957B1C61
+// csrrwi x0, 0x800, 13 ; macchu t0, t1, t2, t3
+## [3] macchu < rd=0x7FCE95A7A6877CBE
+// li  t4, 0x7FCE95A7A6877CBE
+// bne t4, t0, fail
+## [4] macchu > rd=0x146E9E1DF0DCC89A,rs1=0x1E2834A52015196F,rs2=0x34F3E47CDA2F2714,rs3=0xED8632EAEA38DD32,imm=10
+// li  t0, 0x146E9E1DF0DCC89A
+// li  t1, 0x1E2834A52015196F
+// li  t2, 0x34F3E47CDA2F2714
+// li  t3, 0xED8632EAEA38DD32
+// csrrwi x0, 0x800, 10 ; macchu t0, t1, t2, t3
+## [4] macchu < rd=0xB522EBABD47BEF4B
+// li  t4, 0xB522EBABD47BEF4B
+// bne t4, t0, fail
+## [5] macchu > rd=0xA2EEF48665DDFD81,rs1=0xA2CF7ED32FA8415C,rs2=0x63E4AB64EAAC22CE,rs3=0x4F49CE8331900209,imm=8
+// li  t0, 0xA2EEF48665DDFD81
+// li  t1, 0xA2CF7ED32FA8415C
+// li  t2, 0x63E4AB64EAAC22CE
+// li  t3, 0x4F49CE8331900209
+// csrrwi x0, 0x800, 8 ; macchu t0, t1, t2, t3
+## [5] macchu < rd=0x131FBB36F5B0F8D7
+// li  t4, 0x131FBB36F5B0F8D7
+// bne t4, t0, fail
+## [6] macchu > rd=0xB01E13629DD34D60,rs1=0x4B9B5960140EC882,rs2=0xD551DE16964B81A5,rs3=0xE3C84E2CAC289BF8,imm=5
+// li  t0, 0xB01E13629DD34D60
+// li  t1, 0x4B9B5960140EC882
+// li  t2, 0xD551DE16964B81A5
+// li  t3, 0xE3C84E2CAC289BF8
+// csrrwi x0, 0x800, 5 ; macchu t0, t1, t2, t3
+## [6] macchu < rd=0xE584BC9A0009EA89
+// li  t4, 0xE584BC9A0009EA89
+// bne t4, t0, fail
+## [7] macchu > rd=0x6D17D54C51130859,rs1=0x21341DE9673A63D4,rs2=0xFAE09AEB867B359A,rs3=0xEE44F462A4FA0312,imm=10
+// li  t0, 0x6D17D54C51130859
+// li  t1, 0x21341DE9673A63D4
+// li  t2, 0xFAE09AEB867B359A
+// li  t3, 0xEE44F462A4FA0312
+// csrrwi x0, 0x800, 10 ; macchu t0, t1, t2, t3
+## [7] macchu < rd=0xFF85D162CF0915C4
+// li  t4, 0xFF85D162CF0915C4
+// bne t4, t0, fail
+## [8] macchu > rd=0xCB64B4EAEDF70116,rs1=0xE1B697CC82DE84E2,rs2=0xC6FB83A1C94DA72C,rs3=0x376C49E725B7CEC6,imm=0
+// li  t0, 0xCB64B4EAEDF70116
+// li  t1, 0xE1B697CC82DE84E2
+// li  t2, 0xC6FB83A1C94DA72C
+// li  t3, 0x376C49E725B7CEC6
+// csrrwi x0, 0x800, 0 ; macchu t0, t1, t2, t3
+## [8] macchu < rd=0xB52B55C554BC815F
+// li  t4, 0xB52B55C554BC815F
+// bne t4, t0, fail
+## [9] macchu > rd=0xBE3C157F86995E5E,rs1=0x7171FB3EE52D30D9,rs2=0xA6D53D6EC76B34B4,rs3=0xF2E57A77013582EF,imm=3
+// li  t0, 0xBE3C157F86995E5E
+// li  t1, 0x7171FB3EE52D30D9
+// li  t2, 0xA6D53D6EC76B34B4
+// li  t3, 0xF2E57A77013582EF
+// csrrwi x0, 0x800, 3 ; macchu t0, t1, t2, t3
+## [9] macchu < rd=0xD9651BB971D8D9A2
+// li  t4, 0xD9651BB971D8D9A2
+// bne t4, t0, fail
+// pass: li a0, 1 ; ret
+// fail: li a0, 0 ; ret

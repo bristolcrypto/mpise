@@ -1,0 +1,89 @@
+bbl loader
+!! MPISE_XLEN        = 64
+!! MPISE_DESTRUCTIVE = 1
+!! MPISE_STATELESS   = 0
+// #include "ise.h"
+// .global test
+// test:
+## [0] sraiadd > rd=0x877EAA7E36065352,rs1=0x663C3C6FB92100D3,rs2=0x1EA561B8029F30B9,imm=1
+// li  t0, 0x877EAA7E36065352
+// li  t1, 0x663C3C6FB92100D3
+// li  t2, 0x1EA561B8029F30B9
+// sraiadd t0, t1, t2, 1
+## [0] sraiadd < rd=0x758EED4BBA70992F
+// li  t4, 0x758EED4BBA70992F
+// bne t4, t0, fail
+## [1] sraiadd > rd=0x811B5623BAD664FB,rs1=0xB1DDD070035B5167,rs2=0xA03B9C718D35DAA0,imm=4
+// li  t0, 0x811B5623BAD664FB
+// li  t1, 0xB1DDD070035B5167
+// li  t2, 0xA03B9C718D35DAA0
+// sraiadd t0, t1, t2, 4
+## [1] sraiadd < rd=0xABE18A371C2EAF11
+// li  t4, 0xABE18A371C2EAF11
+// bne t4, t0, fail
+## [2] sraiadd > rd=0xE0F5623BD74C58D8,rs1=0x73ED642F4F855383,rs2=0x00F42251470D80C7,imm=1
+// li  t0, 0xE0F5623BD74C58D8
+// li  t1, 0x73ED642F4F855383
+// li  t2, 0x00F42251470D80C7
+// sraiadd t0, t1, t2, 1
+## [2] sraiadd < rd=0x74677557F30C13E6
+// li  t4, 0x74677557F30C13E6
+// bne t4, t0, fail
+## [3] sraiadd > rd=0xF3D34E9BC328D724,rs1=0x165B53AE9C7B155A,rs2=0x77DF9A3FE310A5E7,imm=2
+// li  t0, 0xF3D34E9BC328D724
+// li  t1, 0x165B53AE9C7B155A
+// li  t2, 0x77DF9A3FE310A5E7
+// sraiadd t0, t1, t2, 2
+## [3] sraiadd < rd=0x34533A3E953F3ED3
+// li  t4, 0x34533A3E953F3ED3
+// bne t4, t0, fail
+## [4] sraiadd > rd=0x545445E201DC7887,rs1=0xACFC2C3344478C31,rs2=0xEBBAB5076E5341FA,imm=7
+// li  t0, 0x545445E201DC7887
+// li  t1, 0xACFC2C3344478C31
+// li  t2, 0xEBBAB5076E5341FA
+// sraiadd t0, t1, t2, 7
+## [4] sraiadd < rd=0xACD3A19D532432B4
+// li  t4, 0xACD3A19D532432B4
+// bne t4, t0, fail
+## [5] sraiadd > rd=0xFA8D90C2AE45F50A,rs1=0x64B3D5E83308E87B,rs2=0xE5083B961AA37967,imm=6
+// li  t0, 0xFA8D90C2AE45F50A
+// li  t1, 0x64B3D5E83308E87B
+// li  t2, 0xE5083B961AA37967
+// sraiadd t0, t1, t2, 6
+## [5] sraiadd < rd=0x6447F6D68B737660
+// li  t4, 0x6447F6D68B737660
+// bne t4, t0, fail
+## [6] sraiadd > rd=0x2615E8CBA972A3BA,rs1=0x0F508A5FA0072331,rs2=0x7F80C6DA8A5EA7CE,imm=2
+// li  t0, 0x2615E8CBA972A3BA
+// li  t1, 0x0F508A5FA0072331
+// li  t2, 0x7F80C6DA8A5EA7CE
+// sraiadd t0, t1, t2, 2
+## [6] sraiadd < rd=0x2F30BC16429ECD24
+// li  t4, 0x2F30BC16429ECD24
+// bne t4, t0, fail
+## [7] sraiadd > rd=0x8A93C39C65E79D6D,rs1=0x5F03C599E0E62014,rs2=0xDFC5FC04E4E0E4B9,imm=1
+// li  t0, 0x8A93C39C65E79D6D
+// li  t1, 0x5F03C599E0E62014
+// li  t2, 0xDFC5FC04E4E0E4B9
+// sraiadd t0, t1, t2, 1
+## [7] sraiadd < rd=0x4EE6C39C53569270
+// li  t4, 0x4EE6C39C53569270
+// bne t4, t0, fail
+## [8] sraiadd > rd=0xFD4E0C35FEF3418C,rs1=0xCEE3922AFBA7B74E,rs2=0x1A6EA9A7CED4D7E0,imm=10
+// li  t0, 0xFD4E0C35FEF3418C
+// li  t1, 0xCEE3922AFBA7B74E
+// li  t2, 0x1A6EA9A7CED4D7E0
+// sraiadd t0, t1, t2, 10
+## [8] sraiadd < rd=0xCEEA2DD5659B6C83
+// li  t4, 0xCEEA2DD5659B6C83
+// bne t4, t0, fail
+## [9] sraiadd > rd=0x72C4C8027D2B17D3,rs1=0x6DDDB49AA311A6BA,rs2=0x6C86CCBFA6FE02AE,imm=15
+// li  t0, 0x72C4C8027D2B17D3
+// li  t1, 0x6DDDB49AA311A6BA
+// li  t2, 0x6C86CCBFA6FE02AE
+// sraiadd t0, t1, t2, 15
+## [9] sraiadd < rd=0x6DDE8DA83C90F4B6
+// li  t4, 0x6DDE8DA83C90F4B6
+// bne t4, t0, fail
+// pass: li a0, 1 ; ret
+// fail: li a0, 0 ; ret

@@ -1,0 +1,75 @@
+#include "ise.h"
+.global test
+test:
+li  t0, 0x68C41520AEF5BE3A
+li  t1, 0xEEFDF8DD58A65372
+li  t2, 0x71ABB6DEBEE3E3E7
+li  t3, 0xC837DDCB4EB7C752
+csrrwi x0, 0x800, 7 ; macclu t0, t1, t2
+li  t4, 0x696260BDC31F2018
+bne t4, t0, fail
+li  t0, 0xC5AF7906E1DDDEF3
+li  t1, 0x2A01566D64E134D4
+li  t2, 0x9A3214525D9B60DB
+li  t3, 0xA2A15DE55C1BBBC4
+csrrwi x0, 0x800, 9 ; macclu t0, t1, t2
+li  t4, 0xC8CACEE4A2B1904F
+bne t4, t0, fail
+li  t0, 0xAE4B508FE9CE3FDA
+li  t1, 0x817476B9E44EECD5
+li  t2, 0xCEA0FA5FAD8C12F2
+li  t3, 0x1BC3C5BB517448A4
+csrrwi x0, 0x800, 6 ; macclu t0, t1, t2
+li  t4, 0xAE60B497BE8D1B34
+bne t4, t0, fail
+li  t0, 0xB11384CC6758C4AF
+li  t1, 0xCDEC6008A566B487
+li  t2, 0x787FC43CCF14FC33
+li  t3, 0x2378715BF12DCFD3
+csrrwi x0, 0x800, 10 ; macclu t0, t1, t2
+li  t4, 0xB160CCF9B80F9F94
+bne t4, t0, fail
+li  t0, 0x02944A227F4E7BEB
+li  t1, 0x31093D37455593FB
+li  t2, 0xF78D4D359E46C4BE
+li  t3, 0xFBE9A776B27F6600
+csrrwi x0, 0x800, 5 ; macclu t0, t1, t2
+li  t4, 0x02AEF2EFDAC07C35
+bne t4, t0, fail
+li  t0, 0x5BDC04812C39FD24
+li  t1, 0x35CE527A883B3FC1
+li  t2, 0xB75F0263D6356153
+li  t3, 0xBDE62B82986DF45A
+csrrwi x0, 0x800, 12 ; macclu t0, t1, t2
+li  t4, 0x6149150C538CC9B7
+bne t4, t0, fail
+li  t0, 0x31036AEF2BAF28C6
+li  t1, 0xAC97686BCF3AB873
+li  t2, 0xB781A7D717E6F712
+li  t3, 0x4950EFE1389C148E
+csrrwi x0, 0x800, 14 ; macclu t0, t1, t2
+li  t4, 0x697A2A5E721915DC
+bne t4, t0, fail
+li  t0, 0xACE300D4975C3C66
+li  t1, 0x4080147EF4A89B4D
+li  t2, 0xF73E1F5D83C1E89D
+li  t3, 0x6D2B655A41E63439
+csrrwi x0, 0x800, 8 ; macclu t0, t1, t2
+li  t4, 0xAEA018F7EB8E429F
+bne t4, t0, fail
+li  t0, 0x35745EB14603FD3D
+li  t1, 0x7ABF3162A1967603
+li  t2, 0x844E5EBE413747DB
+li  t3, 0x15F5AA4FA5A93C39
+csrrwi x0, 0x800, 2 ; macclu t0, t1, t2
+li  t4, 0x357894665A1AC6CE
+bne t4, t0, fail
+li  t0, 0x3A900426D38177A4
+li  t1, 0xB2CBF8208CFCE0B3
+li  t2, 0xB1B34D1A8B8D1EC0
+li  t3, 0xDADF812AEECDB685
+csrrwi x0, 0x800, 1 ; macclu t0, t1, t2
+li  t4, 0x3A928B8D2715F7E4
+bne t4, t0, fail
+pass: li a0, 1 ; ret
+fail: li a0, 0 ; ret
