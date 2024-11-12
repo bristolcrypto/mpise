@@ -53,15 +53,15 @@ typedef uint64_t reg_t;
 #define EMIT_CACC         printf( MARKER_CODE "cacc t0, t1, t2, t3" "\n" );
 #define INSN_CACC         asm( "cacc %0, %1, %2, %3" : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) );
 #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
-#define EMIT_MACCLU       printf( MARKER_CODE "csrrwi x0, 0x800, " FORMAT_DEC " ; " "macclu t0, t1, t2, t3"              "\n", imm );
-#define INSN_MACCLU(imm)  asm( "csrrwi x0, 0x800, " # imm " ; " "macclu %0, %1, %2, %3"         : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
-#define EMIT_MACCHU       printf( MARKER_CODE "csrrwi x0, 0x800, " FORMAT_DEC " ; " "macchu t0, t1, t2, t3"              "\n", imm );
-#define INSN_MACCHU(imm)  asm( "csrrwi x0, 0x800, " # imm " ; " "macchu %0, %1, %2, %3"         : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
+#define EMIT_MACCLU       printf( MARKER_CODE "maccwri " FORMAT_DEC " ; " "macclu t0, t1, t2, t3"              "\n", imm );
+#define INSN_MACCLU(imm)  asm( "maccwri " # imm " ; " "macclu %0, %1, %2, %3"         : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
+#define EMIT_MACCHU       printf( MARKER_CODE "maccwri " FORMAT_DEC " ; " "macchu t0, t1, t2, t3"              "\n", imm );
+#define INSN_MACCHU(imm)  asm( "maccwri " # imm " ; " "macchu %0, %1, %2, %3"         : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
-#define EMIT_MACCLU       printf( MARKER_CODE                                       "macclu t0, t1, t2, t3, " FORMAT_DEC "\n", imm );
-#define INSN_MACCLU(imm)  asm(                                  "macclu %0, %1, %2, %3, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
-#define EMIT_MACCHU       printf( MARKER_CODE                                       "macchu t0, t1, t2, t3, " FORMAT_DEC "\n", imm );
-#define INSN_MACCHU(imm)  asm(                                  "macchu %0, %1, %2, %3, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
+#define EMIT_MACCLU       printf( MARKER_CODE                             "macclu t0, t1, t2, t3, " FORMAT_DEC "\n", imm );
+#define INSN_MACCLU(imm)  asm(                        "macclu %0, %1, %2, %3, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
+#define EMIT_MACCHU       printf( MARKER_CODE                             "macchu t0, t1, t2, t3, " FORMAT_DEC "\n", imm );
+#define INSN_MACCHU(imm)  asm(                        "macchu %0, %1, %2, %3, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
 #endif
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 #define EMIT_SRAIADD      printf( MARKER_CODE "sraiadd t0, t1, t2, " FORMAT_DEC "\n", imm );
@@ -69,15 +69,15 @@ typedef uint64_t reg_t;
 #define EMIT_CACC         printf( MARKER_CODE "cacc t0, t1, t2"     "\n" );
 #define INSN_CACC         asm( "cacc %0, %1, %2"     : "+r"(rd) : "r"(rs1), "r"(rs2)           );
 #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
-#define EMIT_MACCLU       printf( MARKER_CODE "csrrwi x0, 0x800, " FORMAT_DEC " ; " "macclu t0, t1, t2"                  "\n", imm );
-#define INSN_MACCLU(imm)  asm( "csrrwi x0, 0x800, " # imm " ; " "macclu %0, %1, %2"             : "+r"(rd) : "r"(rs1), "r"(rs2)           ); 
-#define EMIT_MACCHU       printf( MARKER_CODE "csrrwi x0, 0x800, " FORMAT_DEC " ; " "macchu t0, t1, t2"                  "\n", imm );
-#define INSN_MACCHU(imm)  asm( "csrrwi x0, 0x800, " # imm " ; " "macchu %0, %1, %2"             : "+r"(rd) : "r"(rs1), "r"(rs2)           ); 
+#define EMIT_MACCLU       printf( MARKER_CODE "maccwri " FORMAT_DEC " ; " "macclu t0, t1, t2"                  "\n", imm );
+#define INSN_MACCLU(imm)  asm( "maccwri " # imm " ; " "macclu %0, %1, %2"             : "+r"(rd) : "r"(rs1), "r"(rs2)           ); 
+#define EMIT_MACCHU       printf( MARKER_CODE "maccwri " FORMAT_DEC " ; " "macchu t0, t1, t2"                  "\n", imm );
+#define INSN_MACCHU(imm)  asm( "maccwri " # imm " ; " "macchu %0, %1, %2"             : "+r"(rd) : "r"(rs1), "r"(rs2)           ); 
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
-#define EMIT_MACCLU       printf( MARKER_CODE                                       "macclu t0, t1, t2, "     FORMAT_DEC "\n", imm );
-#define INSN_MACCLU(imm)  asm(                                  "macclu %0, %1, %2, "     # imm : "+r"(rd) : "r"(rs1), "r"(rs2)           ); 
-#define EMIT_MACCHU       printf( MARKER_CODE                                       "macchu t0, t1, t2, "     FORMAT_DEC "\n", imm );
-#define INSN_MACCHU(imm)  asm(                                  "macchu %0, %1, %2, "     # imm : "+r"(rd) : "r"(rs1), "r"(rs2)           ); 
+#define EMIT_MACCLU       printf( MARKER_CODE                             "macclu t0, t1, t2, "     FORMAT_DEC "\n", imm );
+#define INSN_MACCLU(imm)  asm(                        "macclu %0, %1, %2, "     # imm : "+r"(rd) : "r"(rs1), "r"(rs2)           ); 
+#define EMIT_MACCHU       printf( MARKER_CODE                             "macchu t0, t1, t2, "     FORMAT_DEC "\n", imm );
+#define INSN_MACCHU(imm)  asm(                        "macchu %0, %1, %2, "     # imm : "+r"(rd) : "r"(rs1), "r"(rs2)           ); 
 #endif
 #endif
 

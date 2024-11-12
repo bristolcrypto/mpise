@@ -6,7 +6,21 @@
 
 // ============================================================================
 
-// 1. support for carry propagation
+// 1. support for CSR access
+
+#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
+//                 !stateless
+.macro maccwri imm
+// issue    CSR update
+csrrwi x0, 0x801, \imm
+// complete CSR update => stall to cater for CVA6 pipeline
+.rept 10
+nop
+.endr
+.endm
+#endif
+
+// 2. support for carry propagation
 
 .macro sraiadd  rd, rs1, rs2, imm
 .insn r  CUSTOM_0, 1, ( \imm & 0x7F ) << 0, \rd, \rs1, \rs2
@@ -24,7 +38,7 @@
 .endm
 #endif
 
-// 2. support for multiply-add
+// 3. support for multiply-add
 
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )

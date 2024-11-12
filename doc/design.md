@@ -19,7 +19,7 @@
 
 - We reserve a placeholder CSR to support stateful variants of the ISE,
   selecting the first available unprivileged, custom read/write CSR:
-  this is at address `0x800`.
+  this is at address `0x801`.
 
 - Some variants permit a larger radix selector than others.  Simply to 
   make the (prototype) design and implementation more uniform, we will
