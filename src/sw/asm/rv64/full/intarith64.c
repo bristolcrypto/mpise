@@ -201,7 +201,7 @@ void mpi64_int_mul(uint64_t *r, const uint64_t *a, const uint64_t *b, int len)
 }
 
 
-// Squaring of a multi-precision integer that is given as an array of 32-bit
+// Squaring of a multi-precision integer that is given as an array of 64-bit
 // words. The first two nested loops compute all partial-products of the form
 // a[j]*a[k] with j != k, which are the partial-products that appear twice in
 // the final result and need to be doubled. Then, in a separate third loop, the
@@ -258,10 +258,10 @@ void mpi64_int_sqr(uint64_t *r, const uint64_t *a, int len)
 }
 
 
-// Squaring of a multi-precision integer that is given as an array of 32-bit
+// Squaring of a multi-precision integer that is given as an array of 64-bit
 // words. This version integrates the doubling of the partial-products that
 // need to be doubled into the two nested loops, i.e. there is no third loop
-// like in `mpi32_int_sqr`. The partial products that need to be doubled are
+// like in `mpi64_int_sqr`. The partial products that need to be doubled are
 // first summed up into three accu registers (in the inner loops) and then the
 // accu is doubled and added to the result-array. The partial-products of the
 // form a[i]*a[i] (i.e. those partial-products that are not doubled) are not
@@ -270,7 +270,7 @@ void mpi64_int_sqr(uint64_t *r, const uint64_t *a, int len)
 // and addition of a[i]*a[i] is done in the same way as for all other partial
 // products in the inner loop.
 
-// This version is slower than `mpi32_int_sqr`, but has the advantage that it
+// This version is slower than `mpi64_int_sqr`, but has the advantage that it
 // can be used for Montgomery squaring based on the Finely Integrated Product
 // Scanning (FIPS) method.
 
@@ -342,7 +342,7 @@ void mpi64_int_sqr_V2(uint64_t *r, const uint64_t *a, int len)
 
 
 // Simple test program for multiplication of two multi-precision integers that
-// are given as arrays of 32-bit words.
+// are given as arrays of 64-bit words.
 
 void mpi64_test_int_mul(void)
 {
