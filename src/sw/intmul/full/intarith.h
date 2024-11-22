@@ -11,7 +11,7 @@ int  mpi64_int_cmp(const uint64_t *a, const uint64_t *b, int len);
 void mpi64_int_mul(uint64_t *r, const uint64_t *a, const uint64_t *b, int len);
 void mpi64_int_sqr(uint64_t *r, const uint64_t *a, int len);
 void mpi64_int_sqr_V2(uint64_t *r, const uint64_t *a, int len);
-void mpi64_test_int_mul(void);
+void mpi64_test_mul(void);
 
 // Assembly implementations
 void int_mul4x4_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, int len);

@@ -340,7 +340,7 @@ void mpi64_int_sqr_V2(uint64_t *r, const uint64_t *a, int len)
 // Simple test program for multiplication of two multi-precision integers that
 // are given as arrays of 64-bit words.
 
-void mpi64_test_int_mul(void)
+void mpi64_test_mul(void)
 {
   uint64_t a64[8] = { 0x0123456789ABCDEFULL, 0x0123456789ABCDEFULL, \
                       0x0123456789ABCDEFULL, 0x0123456789ABCDEFULL, \
@@ -375,3 +375,10 @@ void mpi64_test_int_mul(void)
   */
 }
 
+/*
+int main(void)
+{
+  mpi64_test_mul();
+  return 0;
+}
+*/
