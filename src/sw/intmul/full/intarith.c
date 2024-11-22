@@ -1,10 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "intarith64.h"
-
-
-// Assembly function
-extern void mul4x4_rv64m(uint64_t *r, const uint64_t *a, const uint64_t *b, int len);
+#include "intarith.h"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,9 +129,9 @@ void __attribute__((noinline)) mpi64_print(const char *c, const uint64_t *a, \
     printf("%s", c);
   }
   for (i = len - 1; i > 0; i--) {
-    printf("%016llx", (uint64_t) a[i]);
+    printf("%016llx", (unsigned long long) a[i]);
   }
-  printf("%016llx\n", (uint64_t) a[0]);
+  printf("%016llx\n", (unsigned long long) a[0]);
 }
 
 
@@ -364,7 +360,7 @@ void mpi64_test_int_mul(void)
   mpi64_print("r64 = ", r64, 16);
   
   for (i = 0; i < 16; i++) r64[i] = 0;
-  mul4x4_rv64m(r64, a64, b64, 8);
+  int_mul4x4_isa(r64, a64, b64, 8);
   mpi64_print("r64 = ", r64, 16);
   
   // expected output:
@@ -379,9 +375,3 @@ void mpi64_test_int_mul(void)
   */
 }
 
-
-int main(void)
-{
-  mpi64_test_int_mul();
-  return 0;
-}

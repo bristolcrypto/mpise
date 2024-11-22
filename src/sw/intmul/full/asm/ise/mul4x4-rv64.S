@@ -1,3 +1,5 @@
+#include "ise_al.h"
+
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
@@ -6,12 +8,11 @@
 #define bptr a2
 // Register `len` holds the length of operands `a`, `b`
 #define len  a3
-// Registers `tmp0` and `tmp1` hold intermediate values
-#define tmp0 t0
-#define tmp1 t1
+// Registers `tmp` holds an intermediate value (MACC1X1)
+#define tmp  t0
 // Registers `ictr` and `octr` hold loop-counter values
-#define ictr t2
-#define octr t3
+#define ictr t1
+#define octr t2
 // Registers `aw00` to `aw03` hold words of operand `a`
 #define aw00 a4
 #define aw01 a5
@@ -28,7 +29,7 @@
 #define rw02 s6
 #define rw03 s7
 #define rw04 s8
-#define rw05 s9
+#define rw05 t3
 #define rw06 t4
 #define rw07 t5
 #define rw08 t6
@@ -39,49 +40,52 @@
 
 
 // The macro `MACC1X1` multiplies the word `aiw` by `bjw` and adds the double-
-// length product to the triple-length accumulator `rex`:`rhi`:`rlo`. The words
-// `tlo` and `thi` hold temporary results.
+// length product to the triple-length accumulator `rex|rhi|rlo`. The word
+// `tmp` holds a temporary result.
 
-.macro MACC1X1 rex:req, rhi:req, rlo:req, aiw:req, bjw:req, thi:req, tlo:req
-    mul     \tlo, \aiw, \bjw
-    mulhu   \thi, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \thi, \thi, \tlo
-    add     \rhi, \rhi, \thi
-    sltu    \thi, \rhi, \thi
-    add     \rex, \rex, \thi
+.macro MACC1X1 rex:req, rhi:req, rlo:req, aiw:req, bjw:req, tmp:req
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      \tmp, \rlo
+#endif
+    maddhu  \tmp, \aiw, \bjw, \rlo
+    maddlu  \rlo, \aiw, \bjw, \rlo
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    cacc    \rex, \rhi, \tmp
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    cacc    \rex, \rhi, \tmp, \rex
+#endif
+    add     \rhi, \rhi, \tmp
 .endm
 
 
 
 .macro MACC4x4
-    MACC1X1 rw02, rw01, rw00, aw00, bw00, tmp1, tmp0
-    MACC1X1 rw03, rw02, rw01, aw00, bw01, tmp1, tmp0
-    MACC1X1 rw03, rw02, rw01, aw01, bw00, tmp1, tmp0
-    MACC1X1 rw04, rw03, rw02, aw00, bw02, tmp1, tmp0
-    MACC1X1 rw04, rw03, rw02, aw01, bw01, tmp1, tmp0
-    MACC1X1 rw04, rw03, rw02, aw02, bw00, tmp1, tmp0
-    MACC1X1 rw05, rw04, rw03, aw00, bw03, tmp1, tmp0
-    MACC1X1 rw05, rw04, rw03, aw01, bw02, tmp1, tmp0
-    MACC1X1 rw05, rw04, rw03, aw02, bw01, tmp1, tmp0
-    MACC1X1 rw05, rw04, rw03, aw03, bw00, tmp1, tmp0
-    MACC1X1 rw06, rw05, rw04, aw01, bw03, tmp1, tmp0
-    MACC1X1 rw06, rw05, rw04, aw02, bw02, tmp1, tmp0
-    MACC1X1 rw06, rw05, rw04, aw03, bw01, tmp1, tmp0
-    MACC1X1 rw07, rw06, rw05, aw02, bw03, tmp1, tmp0
-    MACC1X1 rw07, rw06, rw05, aw03, bw02, tmp1, tmp0
-    MACC1X1 rw08, rw07, rw06, aw03, bw03, tmp1, tmp0
+    MACC1X1 rw02, rw01, rw00, aw00, bw00, tmp
+    MACC1X1 rw03, rw02, rw01, aw00, bw01, tmp
+    MACC1X1 rw03, rw02, rw01, aw01, bw00, tmp
+    MACC1X1 rw04, rw03, rw02, aw00, bw02, tmp
+    MACC1X1 rw04, rw03, rw02, aw01, bw01, tmp
+    MACC1X1 rw04, rw03, rw02, aw02, bw00, tmp
+    MACC1X1 rw05, rw04, rw03, aw00, bw03, tmp
+    MACC1X1 rw05, rw04, rw03, aw01, bw02, tmp
+    MACC1X1 rw05, rw04, rw03, aw02, bw01, tmp
+    MACC1X1 rw05, rw04, rw03, aw03, bw00, tmp
+    MACC1X1 rw06, rw05, rw04, aw01, bw03, tmp
+    MACC1X1 rw06, rw05, rw04, aw02, bw02, tmp
+    MACC1X1 rw06, rw05, rw04, aw03, bw01, tmp
+    MACC1X1 rw07, rw06, rw05, aw02, bw03, tmp
+    MACC1X1 rw07, rw06, rw05, aw03, bw02, tmp
+    MACC1X1 rw08, rw07, rw06, aw03, bw03, tmp
 .endm
 
 
 
 
 
-// The macro `PROLOGUE` pushes 10 callee-saved registers on the stack.
+// The macro `PROLOGUE` pushes 9 callee-saved registers on the stack.
 
 .macro PROLOGUE
-    addi    sp, sp, -80
+    addi    sp, sp, -72
     sd      s0, (sp)
     sd      s1, 8(sp)
     sd      s2, 16(sp)
@@ -91,11 +95,10 @@
     sd      s6, 48(sp)
     sd      s7, 56(sp)
     sd      s8, 64(sp)
-    sd      s9, 72(sp)
 .endm
 
 
-// The macro `EPILOGUE` pops 10 callee-saved registers from the stack and
+// The macro `EPILOGUE` pops 9 callee-saved registers from the stack and
 // returns to the caller.
 
 .macro EPILOGUE
@@ -108,8 +111,7 @@
     ld      s6, 48(sp)
     ld      s7, 56(sp)
     ld      s8, 64(sp)
-    ld      s9, 72(sp)
-    addi    sp, sp, 80
+    addi    sp, sp, 72
     ret
 .endm
 
@@ -184,47 +186,47 @@
 
 
 .text
-.global mul4x4_rv64m
-.type mul4x4_rv64m,%function
+.global int_mul4x4_ise
+.type int_mul4x4_ise,%function
 .balign 16
-mul4x4_rv64m:
+int_mul4x4_ise:
     PROLOGUE            // push callee-saved registers on stack
     CLRACCU
     slli    len, len, 3
     mv      octr, zero
     // START OF FIRST OUTER LOOP
-.LOUTLOOP1: 
+.LOUTLOOP1:
     mv      ictr, zero
     add     octr, octr, 32
     add     bptr, bptr, octr
     // START OF FIRST INNER LOOP
 .LINNLOOP1:     // the first inner loop is iterated $octr/16$ times
     LDM_OPA     // load four words of array `a` and put them in
-    LDM_OPB     // load four words of array `b` and put them in 
-    MACC4X4     // 
+    LDM_OPB     // load four words of array `b` and put them in
+    MACC4X4     //
     addi    ictr, ictr, 32          // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP1  // branch to start of loop if ictr != octr
-    // END OF FIRST INNER LOOP 
+    // END OF FIRST INNER LOOP
     STM_RES     // store the result-words in array `r` in RAM
-    SHRACCU     // 
+    SHRACCU     //
     sub     aptr, aptr, octr
     bne     octr, len, .LOUTLOOP1  // branch to start of loop if octr != len
     // END OF FIRST OUTER LOOP
     addi    octr, octr, -32
     // START OF SECOND OUTER LOOP
-.LOUTLOOP2: 
+.LOUTLOOP2:
     mv      ictr, zero
     add     bptr, bptr, octr
     // START OF SECOND INNER LOOP
 .LINNLOOP2:     // the second inner loop is iterated $octr/16$ times
     LDM_OPA     // load four words of array `a` and put them in
-    LDM_OPB     // load four words of array `b` and put them in 
-    MACC4X4     // 
+    LDM_OPB     // load four words of array `b` and put them in
+    MACC4X4     //
     addi    ictr, ictr, 32          // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP2  // branch to start of loop if ictr != octr
-    // END OF SECOND INNER LOOP 
+    // END OF SECOND INNER LOOP
     STM_RES     // store the result-words in array `r` in RAM
-    SHRACCU     // 
+    SHRACCU     //
     sub     aptr, aptr, octr
     addi    octr, octr, -32
     bne     octr, zero, .LOUTLOOP2  // branch to start of loop if octr != 0
@@ -234,3 +236,4 @@ mul4x4_rv64m:
 
 
 .end
+
