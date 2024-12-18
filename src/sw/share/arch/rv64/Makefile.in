@@ -8,16 +8,34 @@
 
 export GCC_PREFIX  = riscv64-unknown-elf
 
-export GCC_FLAGS  += -march='rv64gc' -mabi='lp64'
+ifeq "${SIM}" "spike"
+export GCC_FLAGS  += -march='rv64gc' -mabi='lp64d'
 export GCC_PATHS  += 
 export GCC_LIBS   += 
+endif
+ifeq "${SIM}" "verilator"
+export GCC_FLAGS  += -march='rv64gc' -mabi='lp64d'
+export GCC_PATHS  += 
+export GCC_LIBS   += 
+endif
+
+#/home/gk24545/Documents/software/riscv/bin/riscv-none-elf-gcc ../tests/custom/hello_world/hello_world.c          -I/home/gk24545/Documents/software/Github/openhwgroup/cva6_oct24/verif/sim/dv/user_extension           -T../../config/gen_from_riscv_config/linker/link.ld -static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -g ../tests/custom/common/syscalls.c ../tests/custom/common/crt.S -lgcc -I../tests/custom/env -I../tests/custom/common -o /home/gk24545/Documents/software/Github/openhwgroup/cva6_oct24/verif/sim/out_2024-12-11/directed_c_tests/hello_world.o  -march=rv64gc_zba_zbb_zbs_zbc -mabi=lp64d
 
 # -----------------------------------------------------------------------------
 
+ifeq "${SIM}" "spike"
 run   : build
-	@${RISCV}/bin/spike    --isa='rv64gc_zicsr_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
+	@${RISCV}/bin/spike    --isa='rv64gc_zicsr_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
 
 debug : build
-	@${RISCV}/bin/spike -d --isa='rv64gc_zicsr_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
+	@${RISCV}/bin/spike -d --isa='rv64gc_zicsr_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
+endif
+ifeq "${SIM}" "verilator"
+run   : build
+	@echo "TODO: execute verilator"
+
+debug : build
+	@echo "TODO: execute verilator"
+endif
 
 # =============================================================================

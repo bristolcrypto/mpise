@@ -278,7 +278,7 @@ void test_ecdh()
 
 int main()
 {
-  #if defined( MPISE_ISE ) && ( MPISE_ISE == 1 ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
+  #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
   asm( "csrrwi x0, 0x801, 0x2" ); // imm = c =  2 => radix = (w-15)+c = (64-15)+ 2 = 51
   #endif
 

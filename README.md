@@ -2,9 +2,6 @@
 
 <!--- ==================================================================== --->
 
-
-<!--- ==================================================================== --->
-
 ## Overview
 
 <!--- ==================================================================== --->
@@ -97,13 +94,18 @@
   - execute `${COMPONENT}-update.sh` to produce an updated patch,
   - optionally commit and push the updated patch.
 
-- Execute software simulation using `spike` via
+- Execute software simulation:
 
   ```sh
-  make sw-clean sw-run ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="full"
-  make sw-clean sw-run ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="full"
-  make sw-clean sw-run ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="reduced"
-  make sw-clean sw-run ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="reduced"
+  ALG="intmul" ARCH="rv64" TYPE="isa" RADIX="64" make sw-clean sw-build sw-run # ISA-based,    full-radix (i.e., 64-bit)
+  ALG="intmul" ARCH="rv64" TYPE="ise" RADIX="64" make sw-clean sw-build sw-run # ISE-based,    full-radix (i.e., 64-bit)
+  ALG="intmul" ARCH="rv64" TYPE="isa" RADIX="51" make sw-clean sw-build sw-run # ISA-based, reduced-radix (i.e., 51-bit)
+  ALG="intmul" ARCH="rv64" TYPE="ise" RADIX="51" make sw-clean sw-build sw-run # ISE-based, reduced-radix (i.e., 51-bit)
+
+  ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="64" make sw-clean sw-build sw-run # ISA-based,    full-radix (i.e., 64-bit)
+  ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="64" make sw-clean sw-build sw-run # ISE-based,    full-radix (i.e., 64-bit)
+  ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="51" make sw-clean sw-build sw-run # ISA-based, reduced-radix (i.e., 51-bit)
+  ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="51" make sw-clean sw-build sw-run # ISE-based, reduced-radix (i.e., 51-bit)
   ```
 
 <!--- ==================================================================== --->

@@ -6,18 +6,4 @@
 
 # =============================================================================
 
-export GCC_PREFIX  = riscv32-unknown-elf
-
-export GCC_FLAGS  += -march='rv32gc' -mabi='ilp32'
-export GCC_PATHS  += 
-export GCC_LIBS   += 
-
-# -----------------------------------------------------------------------------
-
-run   : build
-	@${RISCV}/bin/spike    --isa='rv32gc_zicsr_zicntr' ${RISCV}/riscv32-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
-
-debug : build
-	@${RISCV}/bin/spike -d --isa='rv32gc_zicsr_zicntr' ${RISCV}/riscv32-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
-
 # =============================================================================

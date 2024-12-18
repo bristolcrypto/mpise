@@ -1,15 +1,20 @@
-export  SOURCES   = $(wildcard ./${RADIX}/*.c) 
-export  SOURCES  += $(wildcard ./${RADIX}/asm/isa/*.S)
-export  SOURCES  += $(wildcard ./${RADIX}/asm/ise/*.S) 
-
-export  HEADERS   = $(wildcard ./${RADIX}/*.h)
-export  HEADERS  += $(wildcard ./${RADIX}/asm/isa/*.h)
-export  HEADERS  += $(wildcard ./${RADIX}/asm/ise/*.h)
-
-export INCLUDES   =            ./${RADIX} 
-export INCLUDES  +=            ./${RADIX}/asm
-
-export GCC_FLAGS  =
-export GCC_LIBS   = 
-
 include ${REPO_HOME}/src/sw/share/Makefile.in
+
+ifdef RADIX_FULL
+export BASE = ${CURDIR}/full
+endif
+
+ifdef RADIX_REDUCED
+export BASE = ${CURDIR}/reduced
+endif
+
+export INCLUDES  +=            ${BASE}
+export INCLUDES  +=            ${BASE}/asm
+
+export  HEADERS  += $(wildcard ${BASE}/*.h)
+export  HEADERS  += $(wildcard ${BASE}/asm/isa/*.h)
+export  HEADERS  += $(wildcard ${BASE}/asm/ise/*.h)
+
+export  SOURCES  += $(wildcard ${BASE}/*.c) 
+export  SOURCES  += $(wildcard ${BASE}/asm/isa/*.S)
+export  SOURCES  += $(wildcard ${BASE}/asm/ise/*.S) 

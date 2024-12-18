@@ -5,7 +5,6 @@
 // as LICENSE.txt within the associated archive or repository).
 
 // ============================================================================
-
 // 1. support for CSR access
 
 #if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
@@ -20,6 +19,7 @@ nop
 .endm
 #endif
 
+// ----------------------------------------------------------------------------
 // 2. support for carry propagation
 
 .macro sraiadd  rd, rs1, rs2, imm
@@ -38,6 +38,7 @@ nop
 .endm
 #endif
 
+// ----------------------------------------------------------------------------
 // 3. support for multiply-add
 
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )

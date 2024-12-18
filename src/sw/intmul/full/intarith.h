@@ -17,9 +17,9 @@ void mpi64_test_mul(void);
 void int_mul4x4_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, int len);
 void int_mul4x4_ise(uint64_t *r, const uint64_t *a, const uint64_t *b, int len);
 
-#if defined( MPISE_ISE ) && ( MPISE_ISE == 0 )
+#if   defined( MPISE_ISA )
 #define int_mul4x4_asm(r, a, b, len) int_mul4x4_isa((r), (a), (b), (len))
-#elif defined( MPISE_ISE ) && ( MPISE_ISE == 1 )
+#elif defined( MPISE_ISE )
 #define int_mul4x4_asm(r, a, b, len) int_mul4x4_ise((r), (a), (b), (len))
 #endif
 

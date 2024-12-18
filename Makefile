@@ -10,10 +10,11 @@ endif
 
 # =============================================================================
 
-export ALG   ?= unit
+export ALG   ?= x25519
 export ARCH  ?= rv64
 export TYPE  ?= isa
-export RADIX ?= full
+export RADIX ?=   64
+export SIM   ?= spike
 
 # =============================================================================
 
@@ -30,13 +31,13 @@ sw-toolchain-clean :
 sw-build :
 	@make --directory="${REPO_HOME}/src/sw/${ALG}" build
 
+sw-clean :
+	@make --directory="${REPO_HOME}/src/sw/${ALG}" clean
+
 sw-run   :
 	@make --directory="${REPO_HOME}/src/sw/${ALG}" run
 
 sw-debug :
 	@make --directory="${REPO_HOME}/src/sw/${ALG}" debug
-
-sw-clean :
-	@make --directory="${REPO_HOME}/src/sw/${ALG}" clean
 
 # =============================================================================
