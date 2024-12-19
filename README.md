@@ -57,7 +57,18 @@
 - Fix paths, e.g., 
   
   ```sh
+  export CVA6="${REPO_HOME}/build/cva6"
   export RISCV="${REPO_HOME}/build/riscv"
+  ```
+
+- Clone the 
+  [CVA6]()
+  core repo.
+
+  ```sh
+  git clone https://github.com/openhwgroup/cva6.git ${REPO_HOME}/build/cva6
+  cd ${REPO_HOME}/build/cva6
+  git submodule update --init --recursive  
   ```
 
 - Build a multi-architecture 
@@ -97,15 +108,15 @@
 - Execute software simulation:
 
   ```sh
-  ALG="intmul" ARCH="rv64" TYPE="isa" RADIX="64" make sw-clean sw-build sw-run # ISA-based,    full-radix (i.e., 64-bit)
-  ALG="intmul" ARCH="rv64" TYPE="ise" RADIX="64" make sw-clean sw-build sw-run # ISE-based,    full-radix (i.e., 64-bit)
-  ALG="intmul" ARCH="rv64" TYPE="isa" RADIX="51" make sw-clean sw-build sw-run # ISA-based, reduced-radix (i.e., 51-bit)
-  ALG="intmul" ARCH="rv64" TYPE="ise" RADIX="51" make sw-clean sw-build sw-run # ISE-based, reduced-radix (i.e., 51-bit)
+  ALG="intmul" ARCH="rv64" TYPE="isa" RADIX="64" PLATFORM="spike" make sw-clean sw-build sw-run # ISA-based,    full-radix (i.e., 64-bit)
+  ALG="intmul" ARCH="rv64" TYPE="ise" RADIX="64" PLATFORM="spike" make sw-clean sw-build sw-run # ISE-based,    full-radix (i.e., 64-bit)
+  ALG="intmul" ARCH="rv64" TYPE="isa" RADIX="51" PLATFORM="spike" make sw-clean sw-build sw-run # ISA-based, reduced-radix (i.e., 51-bit)
+  ALG="intmul" ARCH="rv64" TYPE="ise" RADIX="51" PLATFORM="spike" make sw-clean sw-build sw-run # ISE-based, reduced-radix (i.e., 51-bit)
 
-  ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="64" make sw-clean sw-build sw-run # ISA-based,    full-radix (i.e., 64-bit)
-  ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="64" make sw-clean sw-build sw-run # ISE-based,    full-radix (i.e., 64-bit)
-  ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="51" make sw-clean sw-build sw-run # ISA-based, reduced-radix (i.e., 51-bit)
-  ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="51" make sw-clean sw-build sw-run # ISE-based, reduced-radix (i.e., 51-bit)
+  ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="64" PLATFORM="spike" make sw-clean sw-build sw-run # ISA-based,    full-radix (i.e., 64-bit)
+  ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="64" PLATFORM="spike" make sw-clean sw-build sw-run # ISE-based,    full-radix (i.e., 64-bit)
+  ALG="x25519" ARCH="rv64" TYPE="isa" RADIX="51" PLATFORM="spike" make sw-clean sw-build sw-run # ISA-based, reduced-radix (i.e., 51-bit)
+  ALG="x25519" ARCH="rv64" TYPE="ise" RADIX="51" PLATFORM="spike" make sw-clean sw-build sw-run # ISE-based, reduced-radix (i.e., 51-bit)
   ```
 
 <!--- ==================================================================== --->

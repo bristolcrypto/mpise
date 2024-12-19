@@ -10,11 +10,11 @@ endif
 
 # =============================================================================
 
-export ALG   ?= x25519
-export ARCH  ?= rv64
-export TYPE  ?= isa
-export RADIX ?=   64
-export SIM   ?= spike
+export ALG      ?= x25519
+export ARCH     ?= rv64   # rv32, rv64
+export TYPE     ?= isa    # isa, ise
+export RADIX    ?=   64   
+export PLATFORM ?= spike  # spike, cva6-verilator, cva6-fpga
 
 # =============================================================================
 
