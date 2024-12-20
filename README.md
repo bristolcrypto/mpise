@@ -64,12 +64,16 @@
 - Clone the 
   [CVA6]()
   core repo.
+  into `${CVA6}`:
 
-  ```sh
-  git clone https://github.com/openhwgroup/cva6.git ${REPO_HOME}/build/cva6
+  ```sh     
+  git clone https://github.com/isaar-ahmad/cva6_mpise ${REPO_HOME}/build/cva6
   cd ${REPO_HOME}/build/cva6
   git submodule update --init --recursive  
   ```
+
+  noting this is a fork of the
+  `https://github.com/openhwgroup/cva6.git`.
 
 - Build a multi-architecture 
   [tool-chain](https://github.com/riscv/riscv-gnu-toolchain)
