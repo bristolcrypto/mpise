@@ -72,7 +72,8 @@ ${REPO_HOME}/build/${ALG} :
 
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf : $${SOURCES}
 	@${RISCV}/bin/${GCC_PREFIX}-gcc ${GCC_FLAGS} ${GCC_PATHS} $(addprefix -I ,${INCLUDES}) -Wall -std='gnu99' -O3 -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
-
+# Use this for verilator-based simulation
+#	${RISCV}/bin/${GCC_PREFIX}-gcc ${GCC_FLAGS} ${GCC_PATHS} $(addprefix -I ,${INCLUDES}) -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.bin : ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
 	@${RISCV}/bin/${GCC_PREFIX}-objcopy --output-target='binary' ${<} ${@}
 

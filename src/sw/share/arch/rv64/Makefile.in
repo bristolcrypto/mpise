@@ -14,13 +14,14 @@ export GCC_PATHS  +=
 export GCC_LIBS   += 
 endif
 ifeq "${PLATFORM}" "cva6-verilator"
-export GCC_FLAGS  += -march='rv64gc_zba_zbb_zbs_zbc' -mabi='lp64d' -static -mcmodel='medany' -fvisibility='hidden' -nostdlib -nostartfiles -g -T ${CVA6}/config/gen_from_riscv_config/linker/link.ld
-export GCC_PATHS  += -I ${CVA6}/verif/sim/dv/user_extension -I ${CVA6}/verif/tests/custom/env -I ${CVA6}/verif/tests/custom/common
+export GCC_FLAGS  += -march='rv64gc_zba_zbb_zbs_zbc' -mabi='lp64d' -static -mcmodel='medany' -fvisibility='hidden' -nostdlib -nostartfiles -T${CVA6}/config/gen_from_riscv_config/linker/link.ld
+export GCC_PATHS  += -I${CVA6}/verif/sim/dv/user_extension -I${CVA6}/verif/tests/custom/env -I${CVA6}/verif/tests/custom/common
 export GCC_LIBS   += -lgcc
 
 export GCC_FLAGS  += -DMPISE_STDC_RAND
 export SOURCES    += ${CVA6}/verif/tests/custom/common/syscalls.c
 export SOURCES    += ${CVA6}/verif/tests/custom/common/crt.S
+
 endif
 ifeq "${PLATFORM}" "cva6-fpga"
 export GCC_FLAGS  += -march='rv64gc_zba_zbb_zbs_zbc' -mabi='lp64d' -static -mcmodel='medany' -fvisibility='hidden' -nostdlib -nostartfiles -g -T ${CVA6}/config/gen_from_riscv_config/linker/link.ld
@@ -43,6 +44,10 @@ debug : build
 endif
 ifeq "${PLATFORM}" "cva6-verilator"
 run   : build
+	echo "Configure RISCV variable compatible with CVA6 repository before verilator simulation"
+	# export RISCV=
+	# cd ${CVA6}
+	# bash ${CVA6}/verif/sim/mpise-sim.sh ${ALG}-${ARCH}_${TYPE}
 	@$(error "can't simulate for PLATFORM=${PLATFORM}")
 
 debug : build
