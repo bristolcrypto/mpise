@@ -9,12 +9,12 @@
 export GCC_PREFIX  = riscv64-unknown-elf
 
 ifeq "${PLATFORM}" "spike"
-export GCC_FLAGS  += -march='rv64gc_zba_zbb_zbs_zbc' -mabi='lp64d'
+export GCC_FLAGS  += -march='rv64gc_zba_zbb_zbc_zbs' -mabi='lp64d'
 export GCC_PATHS  += 
 export GCC_LIBS   += 
 endif
 ifeq "${PLATFORM}" "cva6-verilator"
-export GCC_FLAGS  += -march='rv64gc_zba_zbb_zbs_zbc' -mabi='lp64d' -static -mcmodel='medany' -fvisibility='hidden' -nostdlib -nostartfiles -T${CVA6}/config/gen_from_riscv_config/linker/link.ld
+export GCC_FLAGS  += -march='rv64gc_zba_zbb_zbc_zbs' -mabi='lp64d' -static -mcmodel='medany' -fvisibility='hidden' -nostdlib -nostartfiles -T${CVA6}/config/gen_from_riscv_config/linker/link.ld
 export GCC_PATHS  += -I${CVA6}/verif/sim/dv/user_extension -I${CVA6}/verif/tests/custom/env -I${CVA6}/verif/tests/custom/common
 export GCC_LIBS   += -lgcc
 
@@ -37,17 +37,13 @@ endif
 
 ifeq "${PLATFORM}" "spike"
 run   : build
-	@${RISCV}/bin/spike    --isa='rv64gc_zicsr_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
+	@${RISCV}/bin/spike    --isa='rv64gc_zicsr_zicntr_zba_zbc_zbc_zbs_zk' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
 
 debug : build
-	@${RISCV}/bin/spike -d --isa='rv64gc_zicsr_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
+	@${RISCV}/bin/spike -d --isa='rv64gc_zicsr_zicntr_zba_zbc_zbc_zbs_zk' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
 endif
 ifeq "${PLATFORM}" "cva6-verilator"
 run   : build
-	echo "Configure RISCV variable compatible with CVA6 repository before verilator simulation"
-	# export RISCV=
-	# cd ${CVA6}
-	# bash ${CVA6}/verif/sim/mpise-sim.sh ${ALG}-${ARCH}_${TYPE}
 	@$(error "can't simulate for PLATFORM=${PLATFORM}")
 
 debug : build
