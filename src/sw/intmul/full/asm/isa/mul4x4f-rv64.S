@@ -34,10 +34,6 @@
 #define rw08 t6
 
 
-
-
-
-
 // The macro `MACC1X1` multiplies the word `aiw` by `bjw` and adds the double-
 // length product to the triple-length accumulator `rex|rhi|rlo`. The two words
 // `tlo` and `thi` hold temporary results.
@@ -52,7 +48,6 @@
     sltu    \thi, \rhi, \thi
     add     \rex, \rex, \thi
 .endm
-
 
 
 .macro MACC4x4
@@ -73,9 +68,6 @@
     MACC1X1 rw07, rw06, rw05, aw03, bw02, tmp1, tmp0
     MACC1X1 rw08, rw07, rw06, aw03, bw03, tmp1, tmp0
 .endm
-
-
-
 
 
 // The macro `PROLOGUE` pushes 10 callee-saved registers on the stack.
@@ -176,18 +168,16 @@
 .endm
 
 
-
-
-
-
-
-
+// Multiple-precision multiplication using full-radix representation
+// -----------------------------------------------------------------
+// Operand-scanning method combined with hybrid technique where 4 words of the
+// two operands are processed in each iteration of the inner loop.
 
 .text
-.global int_mul4x4_isa
-.type int_mul4x4_isa,%function
+.global mpi_mul_4x4fr_isa
+.type mpi_mul_4x4fr_isa,%function
 .balign 16
-int_mul4x4_isa:
+mpi_mul_4x4fr_isa:
     PROLOGUE            // push callee-saved registers on stack
     CLRACCU
     slli    len, len, 3
@@ -210,11 +200,13 @@ int_mul4x4_isa:
     sub     aptr, aptr, octr
     bne     octr, len, .LOUTLOOP1  // branch to start of loop if octr != len
     // END OF FIRST OUTER LOOP
-    addi    octr, octr, -32
+    add     aptr, aptr, len        // set aptr to address of a[len}
+    add     bptr, bptr, len        // set bptr to address of b[len}
+    addi    octr, octr, -32        // second outer loop is iterated len-1 times
     // START OF SECOND OUTER LOOP
 .LOUTLOOP2:
     mv      ictr, zero
-    add     bptr, bptr, octr
+    sub     aptr, aptr, octr
     // START OF SECOND INNER LOOP
 .LINNLOOP2:     // the second inner loop is iterated $octr/16$ times
     LDM_OPA     // load four words of array `a` and put them in
@@ -225,7 +217,7 @@ int_mul4x4_isa:
     // END OF SECOND INNER LOOP
     STM_RES     // store the result-words in array `r` in RAM
     SHRACCU     //
-    sub     aptr, aptr, octr
+    add     bptr, bptr, octr
     addi    octr, octr, -32
     bne     octr, zero, .LOUTLOOP2  // branch to start of loop if octr != 0
     // END OF SECOND OUTER LOOP

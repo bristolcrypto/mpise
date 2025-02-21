@@ -1,3 +1,12 @@
+#ifdef RADIX
+#define LIMBBITS RADIX
+#else  // for testing!
+#define LIMBBITS 60
+#endif
+
+#define LIMBMASK (0xFFFFFFFFFFFFFFFFULL >> (64 - (LIMBBITS)))
+
+
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
@@ -39,11 +48,6 @@
 #define rw6h ra
 
 
-
-
-
-
-
 // The macro `MACC1X1` multiplies the word `aiw` by `bjw` and adds the double-
 // length product to the double-length accumulator `rhi|rlo`. The two words
 // `tlo` and `thi` hold temporary results.
@@ -56,7 +60,6 @@
     add     \thi, \thi, \tlo
     add     \rhi, \rhi, \thi
 .endm
-
 
 
 .macro MACL4x2
@@ -81,9 +84,6 @@
     MACC1X1 rw5h, rw5l, aw03, bw02, tmp1, tmp0
     MACC1X1 rw6h, rw6l, aw03, bw03, tmp1, tmp0
 .endm
-
-
-
 
 
 // The macro `PROLOGUE` pushes 13 callee-saved registers on the stack.
@@ -161,40 +161,40 @@
 
 // convert lower half of accu to 60-bit limbs
 
-.macro LIMB60
-    srli   tmp0, rw0l, 60
-    slli   tmp1, rw0h, 4
+.macro TOLIMB
+    srli   tmp0, rw0l, LIMBBITS
+    slli   tmp1, rw0h, (64-LIMBBITS)
     xor    tmp0, tmp0, tmp1
-    srli   tmp1, rw0h, 60
+    srli   tmp1, rw0h, LIMBBITS
     add    rw1l, rw1l, tmp0
     sltu   tmp0, rw1l, tmp0
     add    tmp1, tmp1, tmp0
     add    rw1h, rw1h, tmp1
-    srli   tmp0, rw1l, 60
-    slli   tmp1, rw1h, 4
+    srli   tmp0, rw1l, LIMBBITS
+    slli   tmp1, rw1h, (64-LIMBBITS)
     xor    tmp0, tmp0, tmp1
-    srli   tmp1, rw1h, 60
+    srli   tmp1, rw1h, LIMBBITS
     add    rw2l, rw2l, tmp0
     sltu   tmp0, rw2l, tmp0
     add    tmp1, tmp1, tmp0
     add    rw2h, rw2h, tmp1
-    srli   tmp0, rw2l, 60
-    slli   tmp1, rw2h, 4
+    srli   tmp0, rw2l, LIMBBITS
+    slli   tmp1, rw2h, (64-LIMBBITS)
     xor    tmp0, tmp0, tmp1
-    srli   tmp1, rw2h, 60
+    srli   tmp1, rw2h, LIMBBITS
     add    rw3l, rw3l, tmp0
     sltu   tmp0, rw3l, tmp0
     add    tmp1, tmp1, tmp0
     add    rw3h, rw3h, tmp1
-    srli   tmp0, rw3l, 60
-    slli   tmp1, rw3h, 4
+    srli   tmp0, rw3l, LIMBBITS
+    slli   tmp1, rw3h, (64-LIMBBITS)
     xor    tmp0, tmp0, tmp1
-    srli   tmp1, rw3h, 60
+    srli   tmp1, rw3h, LIMBBITS
     add    rw4l, rw4l, tmp0
     sltu   tmp0, rw4l, tmp0
     add    tmp1, tmp1, tmp0
     add    rw4h, rw4h, tmp1
-    li     tmp0, 0x0FFFFFFFFFFFFFFFULL
+    li     tmp0, LIMBMASK
     and    rw0l, rw0l, tmp0
     and    rw1l, rw1l, tmp0
     and    rw2l, rw2l, tmp0
@@ -250,18 +250,16 @@
 .endm
 
 
-
-
-
-
-
-
+// Multiple-precision multiplication using reduced-radix representation
+// --------------------------------------------------------------------
+// Operand-scanning method combined with hybrid technique where 4 limbs of the
+// two operands are processed in each iteration of the inner loop.
 
 .text
-.global int_mul4x4_isa
-.type int_mul4x4_isa,%function
+.global mpi_mul_4x4rr_isa
+.type mpi_mul_4x4rr_isa,%function
 .balign 16
-int_mul4x4_isa:
+mpi_mul_4x4rr_isa:
     PROLOGUE            // push callee-saved registers on stack
     CLRACCU
     slli    len, len, 3
@@ -281,17 +279,19 @@ int_mul4x4_isa:
     addi    ictr, ictr, 32          // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP1  // branch to start of loop if ictr != octr
     // END OF FIRST INNER LOOP
-    LIMB60
+    TOLIMB
     STM_RES     // store the result-words in array `r` in RAM
     SHRACCU     //
     sub     aptr, aptr, octr
     bne     octr, len, .LOUTLOOP1  // branch to start of loop if octr != len
     // END OF FIRST OUTER LOOP
-    addi    octr, octr, -32
+    add     aptr, aptr, len        // set aptr to address of a[len}
+    add     bptr, bptr, len        // set bptr to address of b[len}
+    addi    octr, octr, -32        // second outer loop is iterated len-1 times
     // START OF SECOND OUTER LOOP
 .LOUTLOOP2:
     mv      ictr, zero
-    add     bptr, bptr, octr
+    sub     aptr, aptr, octr
     // START OF SECOND INNER LOOP
 .LINNLOOP2:     // the second inner loop is iterated $octr/16$ times
     LDM_OPA     // load four words of array `a` and put them in
@@ -302,14 +302,14 @@ int_mul4x4_isa:
     addi    ictr, ictr, 32          // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP2  // branch to start of loop if ictr != octr
     // END OF SECOND INNER LOOP
-    LIMB60
+    TOLIMB
     STM_RES     // store the result-words in array `r` in RAM
     SHRACCU     //
-    sub     aptr, aptr, octr
+    add     bptr, bptr, octr
     addi    octr, octr, -32
     bne     octr, zero, .LOUTLOOP2  // branch to start of loop if octr != 0
     // END OF SECOND OUTER LOOP
-    LIMB60
+    TOLIMB
     STM_RES     // store the result-words in array `r` in RAM
     EPILOGUE    // pop callee-saved registers and return
 

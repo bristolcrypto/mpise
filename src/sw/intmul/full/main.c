@@ -48,9 +48,9 @@ void test_int_mul(void)
     printf("#limbs = %i, #cycles = %lld\n", nlimbs, diff_cycles);
 
 #if DEBUG
-    mpi64_print("  r  = 0x", r, 2*nlimbs);
-    mpi64_int_mul(x, a, b, nlimbs);  // C implementation
-    if (mpi64_int_cmp(r, x, 2*nlimbs) == 0) {
+    mpi_print("  r  = 0x", r, 2*nlimbs);
+    mpi_mul_fullradix(x, a, b, nlimbs);  // C implementation
+    if (mpi_compare(r, x, 2*nlimbs) == 0) {
       printf("  result is correct!\n");
     } else {
       printf("  result is wrong!!!\n");
