@@ -87,6 +87,18 @@
   make
   ```
 
+  Note that at some point, the repo. seems to have some problems that mean
+  one needs to execute
+
+  ```sh
+  sed -i '/shallow = true/d' .gitmodules
+  sed -i 's/--depth 1//g' Makefile.in
+  ```
+
+  to resolve an 
+  [issue](https://github.com/riscv-collab/riscv-gnu-toolchain/issues/1669) 
+  with shallow cloning sub-modules.
+
 - Build an ISE-enabled tool-chain, including
   [`spike`](https://github.com/riscv/riscv-isa-sim)
   and associated
