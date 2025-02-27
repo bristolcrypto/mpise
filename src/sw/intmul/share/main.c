@@ -36,8 +36,8 @@ int main( int argc, char* argv[] ) {
   mpi_init( a, AWORD, ALL1WORD, MAX_LIMBS );
   mpi_init( b, BWORD, ALL1WORD, MAX_LIMBS );
   #elif defined( MPISE_RADIX_REDUCED )
-  mpi_init( a, AWORD, LIMBMASK, MAX_WORDS );
-  mpi_init( b, BWORD, LIMBMASK, MAX_WORDS );
+  mpi_init( a, AWORD, LIMBMASK, MAX_LIMBS );
+  mpi_init( b, BWORD, LIMBMASK, MAX_LIMBS );
   #endif
   
   for( int j = MIN_LIMBS; j <= MAX_LIMBS; j += LIMB_STEP ) {
