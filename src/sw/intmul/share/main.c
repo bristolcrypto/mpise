@@ -1,7 +1,9 @@
 #include "rdtsc.h"
 #include "intarith.h"
 
+#ifndef DEBUG
 #define DEBUG 0
+#endif
 
 #ifndef TRIALS
 #define TRIALS 1000
@@ -24,8 +26,8 @@ int main( int argc, char* argv[] ) {
   #endif
   
   // initialise
-  mpi_init(a, AWORD, ALL1WORD, MAX_WORDS);
-  mpi_init(b, BWORD, ALL1WORD, MAX_WORDS);
+  mpi_init( a, AWORD, ALL1WORD, MAX_WORDS );
+  mpi_init( b, BWORD, ALL1WORD, MAX_WORDS );
   
   for( int j = MIN_WORDS; j <= MAX_WORDS; j += WORD_STEP ) {
     unsigned long long rdtsc_x   =  0;
@@ -61,14 +63,23 @@ int main( int argc, char* argv[] ) {
 
     // test/debug
     #if DEBUG
-    // mpi_print("  r  = 0x", r, 2*j);
-    mpi_mul_1x1fr_isa(x, a, b, j);  // C implementation
-    if (mpi_compare(r, x, 2*j) == 0) {
-      printf("  result is correct!\n");
+    #if   defined( MPISE_RADIX_FULL    )
+    mpi_mul_1x1fr_isa( x, a, b, j );
+    #elif defined( MPISE_RADIX_REDUCED )
+    mpi_mul_1x1rr_isa( x, a, b, j );
+    #endif
+
+    if( mpi_compare( r, x, 2 * j ) == 0 ) {
+      printf( "  result is correct!\n" );
     } else {
-      printf("  result is wrong!!!\n");
+      printf( "  result is wrong!!!\n" );
+      mpi_print( "  a  = 0x", a, 1 * j );
+      mpi_print( "  b  = 0x", b, 1 * j );
+      mpi_print( "  r  = 0x", r, 2 * j );
+      mpi_print( "  x  = 0x", x, 2 * j );
     }
-    memset(r, 0, 2*j*sizeof(uint64_t));
+
+    memset( r, 0, 2 * j * sizeof( uint64_t ) );
     #endif
   }
   
