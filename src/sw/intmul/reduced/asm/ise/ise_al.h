@@ -19,7 +19,7 @@
   macclu \Z, \A, \B, \S
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 // !destructive &&  stateless
-  macclu \Z, \A, \B, \S,  2 // imm = c =  2 => radix = (w-15)+c = (64-15)+ 2 = 51
+  macclu \Z, \A, \B, \S, MPISE_RADIX_IMM
 #endif
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 //  destructive
@@ -28,7 +28,7 @@
   macclu \Z, \A, \B
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 //  destructive &&  stateless
-  macclu \Z, \A, \B,      2 // imm = c =  2 => radix = (w-15)+c = (64-15)+ 2 = 51
+  macclu \Z, \A, \B,     MPISE_RADIX_IMM
 #endif
 #endif
 .endm
@@ -41,7 +41,7 @@
   macchu \Z, \A, \B, \S
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 // !destructive &&  stateless
-  macchu \Z, \A, \B, \S,  2 // imm = c =  2 => radix = (w-15)+c = (64-15)+ 2 = 51
+  macchu \Z, \A, \B, \S, MPISE_RADIX_IMM
 #endif
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 //  destructive
@@ -50,7 +50,7 @@
   macchu \Z, \A, \B
 #elif defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 1 )
 //  destructive &&  stateless
-  macchu \Z, \A, \B,      2 // imm = c =  2 => radix = (w-15)+c = (64-15)+ 2 = 51
+  macchu \Z, \A, \B,     MPISE_RADIX_IMM
 #endif
 #endif
 .endm

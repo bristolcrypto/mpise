@@ -19,8 +19,8 @@ uint64_t x[ 2*MAX_WORDS ];
 #endif
 
 int main( int argc, char* argv[] ) {
-  #if defined( MPISE_RADIX_REDUCED ) && defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
-  asm( "csrrwi x0, 0x801, 0xF" ); // imm = c = 15 => radix = (w-15)+c = (64-15)+15 = 64
+  #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
+  asm( "csrrwi x0, 0x801, " MPISE_RADIX_IMM );
   #endif
   
   // initialise

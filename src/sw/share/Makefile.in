@@ -39,10 +39,12 @@ endif
 
 ifeq "${RADIX}" "${XLEN}"
 export RADIX_FULL    = 1
-export GCC_FLAGS +=  -DMPISE_RADIX="${RADIX}" -DMPISE_RADIX_FULL
+export RADIX_IMM     = $(shell printf '0x%X' $$(( ${RADIX} - ${XLEN} + 15 )))
+export GCC_FLAGS +=  -DMPISE_RADIX="${RADIX}" -DMPISE_RADIX_FULL    -DMPISE_RADIX_IMM="${RADIX_IMM}"
 else
 export RADIX_REDUCED = 1
-export GCC_FLAGS +=  -DMPISE_RADIX="${RADIX}" -DMPISE_RADIX_REDUCED
+export RADIX_IMM     = $(shell printf '0x%X' $$(( ${RADIX} - ${XLEN} + 15 )))
+export GCC_FLAGS +=  -DMPISE_RADIX="${RADIX}" -DMPISE_RADIX_REDUCED -DMPISE_RADIX_IMM="${RADIX_IMM}"
 endif
 
 export GCC_FLAGS += -DMPISE_DESTRUCTIVE="${MPISE_DESTRUCTIVE}" -DMPISE_STATELESS="${MPISE_STATELESS}"
