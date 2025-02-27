@@ -82,22 +82,15 @@
   ```sh
   git clone https://github.com/riscv/riscv-gnu-toolchain.git ${REPO_HOME}/build/riscv-gnu-toolchain
   cd ${REPO_HOME}/build/riscv-gnu-toolchain
-  git submodule update --init --recursive
+  sed -i '/shallow = true/d' .gitmodules
+  sed -i 's/--depth 1//g' Makefile.in
   ./configure --prefix="${RISCV}" --enable-multilib --with-multilib-generator="rv32gc-ilp32--;rv64gc-lp64--"
   make
   ```
 
-  Note that at some point, the repo. seems to have some problems that mean
-  one needs to execute
-
-  ```sh
-  sed -i '/shallow = true/d' .gitmodules
-  sed -i 's/--depth 1//g' Makefile.in
-  ```
-
-  to resolve an 
+  noting that the `sed` lines are to deal with an
   [issue](https://github.com/riscv-collab/riscv-gnu-toolchain/issues/1669) 
-  with shallow cloning sub-modules.
+  related to shallow cloning sub-modules.
 
 - Build an ISE-enabled tool-chain, including
   [`spike`](https://github.com/riscv/riscv-isa-sim)
