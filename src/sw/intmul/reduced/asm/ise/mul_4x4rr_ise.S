@@ -1,7 +1,7 @@
 #include "ise_al.h"
 
-#ifdef RADIX
-#define LIMBBITS RADIX
+#ifdef MPISE_RADIX
+#define LIMBBITS MPISE_RADIX
 #else  // for testing!
 #define LIMBBITS 51
 #endif

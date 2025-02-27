@@ -4,8 +4,8 @@
 #include <stdint.h>
 // #define MPISE_ISA
 
-#ifdef RADIX
-#define LIMBBITS RADIX
+#ifdef MPISE_RADIX
+#define LIMBBITS MPISE_RADIX
 #else  // for testing!
 #define LIMBBITS 60
 #endif

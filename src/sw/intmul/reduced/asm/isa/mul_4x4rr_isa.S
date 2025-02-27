@@ -1,5 +1,5 @@
-#ifdef RADIX
-#define LIMBBITS RADIX
+#ifdef MPISE_RADIX
+#define LIMBBITS MPISE_RADIX
 #else  // for testing!
 #define LIMBBITS 60
 #endif
