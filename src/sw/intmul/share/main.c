@@ -10,20 +10,20 @@
 #endif
 
 #if   defined( MPISE_RADIX_FULL    )
-#define MIN_WORDS  8
-#define MAX_WORDS 64
-#define WORD_STEP  4
+#define MIN_LIMBS  8
+#define MAX_LIMBS 64
+#define LIMB_STEP  4
 #elif defined( MPISE_RADIX_REDUCED )
-#define MIN_WORDS  8
-#define MAX_WORDS 72
-#define WORD_STEP  4
+#define MIN_LIMBS  8
+#define MAX_LIMBS 72
+#define LIMB_STEP  4
 #endif
 
-uint64_t a[   MAX_WORDS ];
-uint64_t b[   MAX_WORDS ];
-uint64_t r[ 2*MAX_WORDS ]; 
+uint64_t a[   MAX_LIMBS ];
+uint64_t b[   MAX_LIMBS ];
+uint64_t r[ 2*MAX_LIMBS ];
 #if DEBUG
-uint64_t x[ 2*MAX_WORDS ];
+uint64_t x[ 2*MAX_LIMBS ];
 #endif
 
 int main( int argc, char* argv[] ) {
@@ -33,14 +33,14 @@ int main( int argc, char* argv[] ) {
   
   // initialise
   #if   defined( MPISE_RADIX_FULL    )
-  mpi_init( a, AWORD, ALL1WORD, MAX_WORDS );
-  mpi_init( b, BWORD, ALL1WORD, MAX_WORDS );
+  mpi_init( a, AWORD, ALL1WORD, MAX_LIMBS );
+  mpi_init( b, BWORD, ALL1WORD, MAX_LIMBS );
   #elif defined( MPISE_RADIX_REDUCED )
   mpi_init( a, AWORD, LIMBMASK, MAX_LIMBS );
   mpi_init( b, BWORD, LIMBMASK, MAX_LIMBS );
   #endif
   
-  for( int j = MIN_WORDS; j <= MAX_WORDS; j += WORD_STEP ) {
+  for( int j = MIN_LIMBS; j <= MAX_LIMBS; j += LIMB_STEP ) {
     unsigned long long rdtsc_x   =  0;
     unsigned long long rdtsc_y   =  0;
     unsigned long long rdtsc_r   =  0;
