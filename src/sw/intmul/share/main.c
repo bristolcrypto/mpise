@@ -9,9 +9,15 @@
 #define TRIALS 1000
 #endif
 
+#if   defined( MPISE_RADIX_FULL    )
 #define MIN_WORDS  8
 #define MAX_WORDS 64
 #define WORD_STEP  4
+#elif defined( MPISE_RADIX_REDUCED )
+#define MIN_WORDS  8
+#define MAX_WORDS 72
+#define WORD_STEP  4
+#endif
 
 uint64_t a[   MAX_WORDS ];
 uint64_t b[   MAX_WORDS ];
@@ -26,8 +32,13 @@ int main( int argc, char* argv[] ) {
   #endif
   
   // initialise
+  #if   defined( MPISE_RADIX_FULL    )
   mpi_init( a, AWORD, ALL1WORD, MAX_WORDS );
   mpi_init( b, BWORD, ALL1WORD, MAX_WORDS );
+  #elif defined( MPISE_RADIX_REDUCED )
+  mpi_init( a, AWORD, LIMBMASK, MAX_LIMBS );
+  mpi_init( b, BWORD, LIMBMASK, MAX_LIMBS );
+  #endif
   
   for( int j = MIN_WORDS; j <= MAX_WORDS; j += WORD_STEP ) {
     unsigned long long rdtsc_x   =  0;
@@ -59,7 +70,11 @@ int main( int argc, char* argv[] ) {
     rdtsc_avr /= TRIALS;
 
     // report
-    printf("! %d, %d, %d, %lld, %lld, %lld\n", TRIALS, LIMBBITS, j, rdtsc_min, rdtsc_max, rdtsc_avr );
+    #if   defined( MPISE_RADIX_FULL    )
+    printf("! %d, %d, %d, %d, %lld, %lld, %lld\n", TRIALS, LIMBBITS, j, j * MPISE_XLEN, rdtsc_min, rdtsc_max, rdtsc_avr );
+    #elif defined( MPISE_RADIX_REDUCED )
+    printf("! %d, %d, %d, %d, %lld, %lld, %lld\n", TRIALS, LIMBBITS, j, j * LIMBBITS,   rdtsc_min, rdtsc_max, rdtsc_avr );
+    #endif
 
     // test/debug
     #if DEBUG
