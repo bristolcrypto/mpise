@@ -19,6 +19,12 @@
 #define LIMB_STEP  4
 #endif
 
+#if   defined( MPISE_ISA )
+#define TYPE "isa"
+#elif defined( MPISE_ISE )
+#define TYPE "ise"
+#endif
+
 uint64_t a[   MAX_LIMBS ];
 uint64_t b[   MAX_LIMBS ];
 uint64_t r[ 2*MAX_LIMBS ];
@@ -71,9 +77,9 @@ int main( int argc, char* argv[] ) {
 
     // report
     #if   defined( MPISE_RADIX_FULL    )
-    printf("! %d, %d, %d, %d, %lld, %lld, %lld\n", TRIALS, LIMBBITS, j, j * MPISE_XLEN, rdtsc_min, rdtsc_max, rdtsc_avr );
+    printf("! %d, %s, %d, %d, %d, %d, %d, %lld, %lld, %lld\n", LIMBBITS, TYPE, MPISE_XLEN, MPISE_DESTRUCTIVE, MPISE_STATELESS, j, j * MPISE_XLEN, rdtsc_min, rdtsc_max, rdtsc_avr );
     #elif defined( MPISE_RADIX_REDUCED )
-    printf("! %d, %d, %d, %d, %lld, %lld, %lld\n", TRIALS, LIMBBITS, j, j * LIMBBITS,   rdtsc_min, rdtsc_max, rdtsc_avr );
+    printf("! %d, %s, %d, %d, %d, %d, %d, %lld, %lld, %lld\n", LIMBBITS, TYPE, MPISE_XLEN, MPISE_DESTRUCTIVE, MPISE_STATELESS, j, j * LIMBBITS,   rdtsc_min, rdtsc_max, rdtsc_avr );
     #endif
 
     // test/debug
