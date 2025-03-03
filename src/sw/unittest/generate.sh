@@ -7,7 +7,7 @@ export ARCH="rv64"
 export COUNT="10"
 
 run_one() {
-  echo "==== CASE=${CASE} (MPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE}, MPISE_STATELESS=${MPISE_STATELESS}), INSN=${1}, COUNT=${COUNT}"
+  echo "==== ARCH=${ARCH} CASE=${CASE} (MPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE}, MPISE_STATELESS=${MPISE_STATELESS}), INSN=${1}, COUNT=${COUNT}"
   make --quiet --directory="${REPO_HOME}/src/sw/unittest" ${REPO_HOME}/build/unittest/case-${CASE}_${1}.log INSN="${1}" COUNT="${COUNT}"
 }
 
