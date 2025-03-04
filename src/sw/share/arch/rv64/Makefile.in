@@ -18,7 +18,7 @@ export GCC_PATHS  +=
 export GCC_LIBS   += 
 endif
 ifeq "${PLATFORM}" "cva6-verilator"
-export GCC_FLAGS += -march='rv64imafdc_zicsr_zifencei' -mabi='lp64d'
+export GCC_FLAGS  += -march='rv64imafdc_zicsr_zifencei'        -mabi='lp64d'
 export GCC_FLAGS  += -DMPISE_STDC_RAND
 endif
 ifeq "${PLATFORM}" "cva6-fpga"

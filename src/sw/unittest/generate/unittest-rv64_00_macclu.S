@@ -1,0 +1,75 @@
+#include "ise.h"
+.global test
+test:
+li  t0, 0xDF3FB9C60127E00A
+li  t1, 0x6AF31EA6A17E3236
+li  t2, 0xB331AA133B6C8EC0
+li  t3, 0xEC9F4CF679902A51
+maccwri 14 ; macclu t0, t1, t2, t3
+li  t4, 0xFB86845538D7C6D1
+bne t4, t0, fail
+li  t0, 0x3877A76C156DA3AD
+li  t1, 0x10E4E39891765E16
+li  t2, 0x4484A4722DB9AC78
+li  t3, 0x233CBC36800A0BE0
+maccwri 8 ; macclu t0, t1, t2, t3
+li  t4, 0x2498D85612A2EE30
+bne t4, t0, fail
+li  t0, 0x21A3E8AB7A3D13A7
+li  t1, 0x1DFDB66AD1F4991C
+li  t2, 0x95942231A3B2C396
+li  t3, 0xBFF00702C1FAD9FD
+maccwri 5 ; macclu t0, t1, t2, t3
+li  t4, 0xC01807726164E465
+bne t4, t0, fail
+li  t0, 0x999D51DC7A75B3F5
+li  t1, 0x846E0B5268E51F8A
+li  t2, 0xEA3D3BF3E39F837D
+li  t3, 0x1B89C13DF0F8D3A9
+maccwri 8 ; macclu t0, t1, t2, t3
+li  t4, 0x1BE6836C5CB2D80B
+bne t4, t0, fail
+li  t0, 0xA6E70BB166DB7909
+li  t1, 0x44D8995D7BE530C5
+li  t2, 0x6E0979A1B96ECE8E
+li  t3, 0xA00CE2355072CED2
+maccwri 12 ; macclu t0, t1, t2, t3
+li  t4, 0xAC6CD360C8786218
+bne t4, t0, fail
+li  t0, 0x0BA14DDCF4515D11
+li  t1, 0xE2D89CCA9F440818
+li  t2, 0x2A135B5035E32B71
+li  t3, 0x0978202DA9038B2A
+maccwri 15 ; macclu t0, t1, t2, t3
+li  t4, 0x05FABCDE88AF25C2
+bne t4, t0, fail
+li  t0, 0x5D3D8530073502DE
+li  t1, 0x55C9A19B33378F61
+li  t2, 0x71DC7A9836D1D950
+li  t3, 0xB114CC0737C42D0E
+maccwri 6 ; macclu t0, t1, t2, t3
+li  t4, 0xB143BF23D5DB345E
+bne t4, t0, fail
+li  t0, 0xC0A8A2094E5027F1
+li  t1, 0x276E6E938B16E00E
+li  t2, 0x062CCB9371125FD6
+li  t3, 0x8846E950ED2CE730
+maccwri 13 ; macclu t0, t1, t2, t3
+li  t4, 0xB89ABBD09E6D64E4
+bne t4, t0, fail
+li  t0, 0xAF29A668F3873AB8
+li  t1, 0x66B4D2E76C47BA50
+li  t2, 0x209CFFB2AE899A1B
+li  t3, 0x64B1E6001A038591
+maccwri 15 ; macclu t0, t1, t2, t3
+li  t4, 0x6F4A4A30C0784C01
+bne t4, t0, fail
+li  t0, 0x745A99051F2B2687
+li  t1, 0x2557080327DF83F5
+li  t2, 0x82AAC11861B0F8D7
+li  t3, 0xA3AE90E67B4B8351
+maccwri 9 ; macclu t0, t1, t2, t3
+li  t4, 0xA5F288D00D48AE14
+bne t4, t0, fail
+pass: li a0, 1 ; ret
+fail: li a0, 0 ; ret
