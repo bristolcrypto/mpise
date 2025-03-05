@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export ARCH="rv64"
+export ARCH="rv32"
 export COUNT="10"
 
 # =============================================================================
@@ -41,6 +41,9 @@ case ${1} in
     export MPISE_STATELESS="0"
     export CASE="${MPISE_DESTRUCTIVE}${MPISE_STATELESS}"
     generate
+
+    exit
+
     # case 1 = 01
     export MPISE_DESTRUCTIVE="0"
     export MPISE_STATELESS="1"

@@ -6,10 +6,10 @@ index 00000000..32ce9d92
 @@ -0,0 +1 @@
 +#include "arith.h"
 diff --git a/riscv/arith.h b/riscv/arith.h
-index c60fcbea..482160e0 100644
+index c60fcbea..b274c309 100644
 --- a/riscv/arith.h
 +++ b/riscv/arith.h
-@@ -242,4 +242,68 @@ static inline T rotate_left(T x, std::size_t shiftamt) {
+@@ -242,4 +242,86 @@ static inline T rotate_left(T x, std::size_t shiftamt) {
    return (x << lshift) | (x >> rshift);
  }
  
@@ -22,7 +22,13 @@ index c60fcbea..482160e0 100644
 +
 +template <typename T>
 +static inline T __cacc( int w, T x, T y, T z ) {
++  x = x & ( ( ( T )( 1 ) << w ) - 1 );
++  y = y & ( ( ( T )( 1 ) << w ) - 1 );
++  z = z & ( ( ( T )( 1 ) << w ) - 1 );
++
 +  T r = ( ( x + y ) >> w ) + z;
++
++  r = r & ( ( ( T )( 1 ) << w ) - 1 );
 +
 +  return r;
 +}
@@ -42,12 +48,18 @@ index c60fcbea..482160e0 100644
 +    f_2 =        0;
 +  }
 +
++  x = x & ( ( ( T )( 1 ) << w ) - 1 );
++  y = y & ( ( ( T )( 1 ) << w ) - 1 );
++  z = z & ( ( ( T )( 1 ) << w ) - 1 );
++
 +  T t_0 = x * y;
 +  T t_1 = f_0 ? z : 0;
 +  T t_2 = f_0 ? 0 : z;
 +
 +  T m   = ( ( T )( 1 ) << f_1 ) - 1;
 +  T r   = ( ( ( t_0 + t_1 ) >> f_2 ) & m ) + t_2;
++
++  r = r & ( ( ( T )( 1 ) << w ) - 1 );
 +
 +  return r;
 +}
@@ -67,12 +79,18 @@ index c60fcbea..482160e0 100644
 +    f_5 = (w-15)+c;
 +  }
 +
++  x = x & ( ( ( T )( 1 ) << w ) - 1 );
++  y = y & ( ( ( T )( 1 ) << w ) - 1 );
++  z = z & ( ( ( T )( 1 ) << w ) - 1 );
++
 +  T t_0 = x * y;
 +  T t_1 = f_3 ? z : 0;
 +  T t_2 = f_3 ? 0 : z;
 +
 +  T m   = ( ( T )( 1 ) << f_4 ) - 1;
 +  T r   = ( ( ( t_0 + t_1 ) >> f_5 ) & m ) + t_2;
++
++  r = r & ( ( ( T )( 1 ) << w ) - 1 );
 +
 +  return r;
 +}
@@ -198,7 +216,7 @@ index 675b4f64..4fc7d8f2 100644
  DECLARE_CAUSE("misaligned fetch", CAUSE_MISALIGNED_FETCH)
 diff --git a/riscv/insns/cacc.h b/riscv/insns/cacc.h
 new file mode 100644
-index 00000000..fa6f42a0
+index 00000000..d6c7cca8
 --- /dev/null
 +++ b/riscv/insns/cacc.h
 @@ -0,0 +1,23 @@
@@ -207,19 +225,19 @@ index 00000000..fa6f42a0
 +if     ( xlen == 32 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  WRITE_REG( insn.rd(), __cacc< uint64_t>( w, (  uint64_t )( READ_REG( insn.rs1() ) ), (  uint64_t )( READ_REG( insn.rs2() ) ), (  uint64_t )( READ_REG( insn.rs3() ) ) ) );
++  WRITE_REG( insn.rd(), sext_xlen( __cacc< uint64_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rs3() ) ) ) );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  WRITE_REG( insn.rd(), __cacc< uint64_t>( w, (  uint64_t )( READ_REG( insn.rs1() ) ), (  uint64_t )( READ_REG( insn.rs2() ) ), (  uint64_t )( READ_REG( insn.rd()  ) ) ) );
++  WRITE_REG( insn.rd(), sext_xlen( __cacc< uint64_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rd()  ) ) ) );
 +  #endif
 +}
 +else if( xlen == 64 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  WRITE_REG( insn.rd(), __cacc<uint128_t>( w, ( uint128_t )( READ_REG( insn.rs1() ) ), ( uint128_t )( READ_REG( insn.rs2() ) ), ( uint128_t )( READ_REG( insn.rs3() ) ) ) );
++  WRITE_REG( insn.rd(), sext_xlen( __cacc<uint128_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rs3() ) ) ) );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  WRITE_REG( insn.rd(), __cacc<uint128_t>( w, ( uint128_t )( READ_REG( insn.rs1() ) ), ( uint128_t )( READ_REG( insn.rs2() ) ), ( uint128_t )( READ_REG( insn.rd()  ) ) ) );
++  WRITE_REG( insn.rd(), sext_xlen( __cacc<uint128_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rd()  ) ) ) );
 +  #endif
 +}
 +else {
@@ -227,7 +245,7 @@ index 00000000..fa6f42a0
 +}
 diff --git a/riscv/insns/macchu.h b/riscv/insns/macchu.h
 new file mode 100644
-index 00000000..4cf66228
+index 00000000..251b64e9
 --- /dev/null
 +++ b/riscv/insns/macchu.h
 @@ -0,0 +1,32 @@
@@ -245,19 +263,19 @@ index 00000000..4cf66228
 +if     ( xlen == 32 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  WRITE_REG( insn.rd(), __macchu< uint64_t>( w, (  uint64_t )( READ_REG( insn.rs1() ) ), (  uint64_t )( READ_REG( insn.rs2() ) ), (  uint64_t )( READ_REG( insn.rs3() ) ), c ) );
++  WRITE_REG( insn.rd(), sext_xlen( __macchu< uint64_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rs3() ), c ) ) );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  WRITE_REG( insn.rd(), __macchu< uint64_t>( w, (  uint64_t )( READ_REG( insn.rs1() ) ), (  uint64_t )( READ_REG( insn.rs2() ) ), (  uint64_t )( READ_REG( insn.rd()  ) ), c ) );
++  WRITE_REG( insn.rd(), sext_xlen( __macchu< uint64_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rd()  ), c ) ) );
 +  #endif
 +}
 +else if( xlen == 64 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  WRITE_REG( insn.rd(), __macchu<uint128_t>( w, ( uint128_t )( READ_REG( insn.rs1() ) ), ( uint128_t )( READ_REG( insn.rs2() ) ), ( uint128_t )( READ_REG( insn.rs3() ) ), c ) );
++  WRITE_REG( insn.rd(), sext_xlen( __macchu<uint128_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rs3() ), c ) ) );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  WRITE_REG( insn.rd(), __macchu<uint128_t>( w, ( uint128_t )( READ_REG( insn.rs1() ) ), ( uint128_t )( READ_REG( insn.rs2() ) ), ( uint128_t )( READ_REG( insn.rd()  ) ), c ) );
++  WRITE_REG( insn.rd(), sext_xlen( __macchu<uint128_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rd()  ), c ) ) );
 +  #endif
 +}
 +else {
@@ -265,7 +283,7 @@ index 00000000..4cf66228
 +}
 diff --git a/riscv/insns/macclu.h b/riscv/insns/macclu.h
 new file mode 100644
-index 00000000..5c708a22
+index 00000000..fdf97cfb
 --- /dev/null
 +++ b/riscv/insns/macclu.h
 @@ -0,0 +1,32 @@
@@ -283,19 +301,19 @@ index 00000000..5c708a22
 +if     ( xlen == 32 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  WRITE_REG( insn.rd(), __macclu< uint64_t>( w, (  uint64_t )( READ_REG( insn.rs1() ) ), (  uint64_t )( READ_REG( insn.rs2() ) ), (  uint64_t )( READ_REG( insn.rs3() ) ), c ) );
++  WRITE_REG( insn.rd(), sext_xlen( __macclu< uint64_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rs3() ), c ) ) );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  WRITE_REG( insn.rd(), __macclu< uint64_t>( w, (  uint64_t )( READ_REG( insn.rs1() ) ), (  uint64_t )( READ_REG( insn.rs2() ) ), (  uint64_t )( READ_REG( insn.rd()  ) ), c ) );
++  WRITE_REG( insn.rd(), sext_xlen( __macclu< uint64_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rd()  ), c ) ) );
 +  #endif
 +}
 +else if( xlen == 64 ) {
 +  #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +  // !destructive
-+  WRITE_REG( insn.rd(), __macclu<uint128_t>( w, ( uint128_t )( READ_REG( insn.rs1() ) ), ( uint128_t )( READ_REG( insn.rs2() ) ), ( uint128_t )( READ_REG( insn.rs3() ) ), c ) );
++  WRITE_REG( insn.rd(), sext_xlen( __macclu<uint128_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rs3() ), c ) ) );
 +  #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +  //  destructive
-+  WRITE_REG( insn.rd(), __macclu<uint128_t>( w, ( uint128_t )( READ_REG( insn.rs1() ) ), ( uint128_t )( READ_REG( insn.rs2() ) ), ( uint128_t )( READ_REG( insn.rd()  ) ), c ) );
++  WRITE_REG( insn.rd(), sext_xlen( __macclu<uint128_t>( w, READ_REG( insn.rs1() ), READ_REG( insn.rs2() ), READ_REG( insn.rd()  ), c ) ) );
 +  #endif
 +}
 +else {
