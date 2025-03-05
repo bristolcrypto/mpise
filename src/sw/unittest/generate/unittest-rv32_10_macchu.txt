@@ -1,0 +1,99 @@
+bbl loader
+!! MPISE_XLEN        = 32
+!! MPISE_DESTRUCTIVE = 1
+!! MPISE_STATELESS   = 0
+// #include "ise.h"
+// .global test
+// test:
+## [0] macchu > rd=0x98A4F20D,rs1=0x3F4F1114,rs2=0x2BB5AE9F,rs3=0x69A7A62E,imm=6
+// li  t0, 0x98A4F20D
+// li  t1, 0x3F4F1114
+// li  t2, 0x2BB5AE9F
+// li  t3, 0x69A7A62E
+// maccwri 6 ; macchu t0, t1, t2
+## [0] macchu < rd=0x3710DB0A
+// li  t4, 0x3710DB0A
+// bne t4, t0, fail
+## [1] macchu > rd=0x3614E862,rs1=0xC4FE64B6,rs2=0x50A24CB7,rs3=0xE0743CAF,imm=13
+// li  t0, 0x3614E862
+// li  t1, 0xC4FE64B6
+// li  t2, 0x50A24CB7
+// li  t3, 0xE0743CAF
+// maccwri 13 ; macchu t0, t1, t2
+## [1] macchu < rd=0x2E467655
+// li  t4, 0x2E467655
+// bne t4, t0, fail
+## [2] macchu > rd=0xDD56370F,rs1=0x0AC56B06,rs2=0xCBD18F80,rs3=0x7926F14B,imm=10
+// li  t0, 0xDD56370F
+// li  t1, 0x0AC56B06
+// li  t2, 0xCBD18F80
+// li  t3, 0x7926F14B
+// maccwri 10 ; macchu t0, t1, t2
+## [2] macchu < rd=0xEFC1D988
+// li  t4, 0xEFC1D988
+// bne t4, t0, fail
+## [3] macchu > rd=0x234B9F02,rs1=0x4AA31EE6,rs2=0x55612E22,rs3=0xEF7962E5,imm=0
+// li  t0, 0x234B9F02
+// li  t1, 0x4AA31EE6
+// li  t2, 0x55612E22
+// li  t3, 0xEF7962E5
+// maccwri 0 ; macchu t0, t1, t2
+## [3] macchu < rd=0x628DC530
+// li  t4, 0x628DC530
+// bne t4, t0, fail
+## [4] macchu > rd=0x412957FA,rs1=0x4B924FD7,rs2=0x3BE8AC10,rs3=0xCF49D900,imm=13
+// li  t0, 0x412957FA
+// li  t1, 0x4B924FD7
+// li  t2, 0x3BE8AC10
+// li  t3, 0xCF49D900
+// maccwri 13 ; macchu t0, t1, t2
+## [4] macchu < rd=0x87E6F721
+// li  t4, 0x87E6F721
+// bne t4, t0, fail
+## [5] macchu > rd=0x4AC7F7FF,rs1=0x28108E26,rs2=0xEF93630C,rs3=0xD0203DCE,imm=14
+// li  t0, 0x4AC7F7FF
+// li  t1, 0x28108E26
+// li  t2, 0xEF93630C
+// li  t3, 0xD0203DCE
+// maccwri 14 ; macchu t0, t1, t2
+## [5] macchu < rd=0x95C5036D
+// li  t4, 0x95C5036D
+// bne t4, t0, fail
+## [6] macchu > rd=0xB116F49B,rs1=0x09A44CE5,rs2=0x3559607B,rs3=0x2650A473,imm=9
+// li  t0, 0xB116F49B
+// li  t1, 0x09A44CE5
+// li  t2, 0x3559607B
+// li  t3, 0x2650A473
+// maccwri 9 ; macchu t0, t1, t2
+## [6] macchu < rd=0x31AF5FB3
+// li  t4, 0x31AF5FB3
+// bne t4, t0, fail
+## [7] macchu > rd=0x9664EFDA,rs1=0x3CA86ABC,rs2=0xDA84FA83,rs3=0xDE123109,imm=8
+// li  t0, 0x9664EFDA
+// li  t1, 0x3CA86ABC
+// li  t2, 0xDA84FA83
+// li  t3, 0xDE123109
+// maccwri 8 ; macchu t0, t1, t2
+## [7] macchu < rd=0x79DB7B2B
+// li  t4, 0x79DB7B2B
+// bne t4, t0, fail
+## [8] macchu > rd=0x54EA3844,rs1=0x07FA3523,rs2=0xCF885DF2,rs3=0xB8886CD9,imm=9
+// li  t0, 0x54EA3844
+// li  t1, 0x07FA3523
+// li  t2, 0xCF885DF2
+// li  t3, 0xB8886CD9
+// maccwri 9 ; macchu t0, t1, t2
+## [8] macchu < rd=0xF2CE6C81
+// li  t4, 0xF2CE6C81
+// bne t4, t0, fail
+## [9] macchu > rd=0xA7D1A256,rs1=0xA5375749,rs2=0x65673216,rs3=0x456C2C20,imm=1
+// li  t0, 0xA7D1A256
+// li  t1, 0xA5375749
+// li  t2, 0x65673216
+// li  t3, 0x456C2C20
+// maccwri 1 ; macchu t0, t1, t2
+## [9] macchu < rd=0x03935DA1
+// li  t4, 0x03935DA1
+// bne t4, t0, fail
+// pass: li a0, 1 ; ret
+// fail: li a0, 0 ; ret

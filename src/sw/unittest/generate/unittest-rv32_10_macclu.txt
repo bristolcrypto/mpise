@@ -1,0 +1,99 @@
+bbl loader
+!! MPISE_XLEN        = 32
+!! MPISE_DESTRUCTIVE = 1
+!! MPISE_STATELESS   = 0
+// #include "ise.h"
+// .global test
+// test:
+## [0] macclu > rd=0x4BCF0E41,rs1=0x386FB8D6,rs2=0x258A5C2C,rs3=0x81EBB904,imm=7
+// li  t0, 0x4BCF0E41
+// li  t1, 0x386FB8D6
+// li  t2, 0x258A5C2C
+// li  t3, 0x81EBB904
+// maccwri 7 ; macclu t0, t1, t2
+## [0] macclu < rd=0x4CCBBB09
+// li  t4, 0x4CCBBB09
+// bne t4, t0, fail
+## [1] macclu > rd=0xDA40B9FC,rs1=0xAFD240BD,rs2=0x4E60AC36,rs3=0xECB2D652,imm=5
+// li  t0, 0xDA40B9FC
+// li  t1, 0xAFD240BD
+// li  t2, 0x4E60AC36
+// li  t3, 0xECB2D652
+// maccwri 5 ; macclu t0, t1, t2
+## [1] macclu < rd=0xDA795DDA
+// li  t4, 0xDA795DDA
+// bne t4, t0, fail
+## [2] macclu > rd=0x63378F10,rs1=0x92C352F6,rs2=0x5D518803,rs3=0x6CAEBE31,imm=3
+// li  t0, 0x63378F10
+// li  t1, 0x92C352F6
+// li  t2, 0x5D518803
+// li  t3, 0x6CAEBE31
+// maccwri 3 ; macclu t0, t1, t2
+## [2] macclu < rd=0x633A37F2
+// li  t4, 0x633A37F2
+// bne t4, t0, fail
+## [3] macclu > rd=0xEC4BFBF8,rs1=0x0268349B,rs2=0xC1E96E57,rs3=0xEB122AE2,imm=15
+// li  t0, 0xEC4BFBF8
+// li  t1, 0x0268349B
+// li  t2, 0xC1E96E57
+// li  t3, 0xEB122AE2
+// maccwri 15 ; macclu t0, t1, t2
+## [3] macclu < rd=0x406376A5
+// li  t4, 0x406376A5
+// bne t4, t0, fail
+## [4] macclu > rd=0xF787CA33,rs1=0xB34DF2CA,rs2=0x8E425D27,rs3=0x7875E62E,imm=12
+// li  t0, 0xF787CA33
+// li  t1, 0xB34DF2CA
+// li  t2, 0x8E425D27
+// li  t3, 0x7875E62E
+// maccwri 12 ; macclu t0, t1, t2
+## [4] macclu < rd=0xFDAF28F9
+// li  t4, 0xFDAF28F9
+// bne t4, t0, fail
+## [5] macclu > rd=0x6CE8EEA5,rs1=0x3C98BA49,rs2=0x9C14957A,rs3=0xF85CBAE0,imm=8
+// li  t0, 0x6CE8EEA5
+// li  t1, 0x3C98BA49
+// li  t2, 0x9C14957A
+// li  t3, 0xF85CBAE0
+// maccwri 8 ; macclu t0, t1, t2
+## [5] macclu < rd=0x6DD2326F
+// li  t4, 0x6DD2326F
+// bne t4, t0, fail
+## [6] macclu > rd=0x6903E403,rs1=0x2431C462,rs2=0x68B6B3A5,rs3=0xBE79BA28,imm=4
+// li  t0, 0x6903E403
+// li  t1, 0x2431C462
+// li  t2, 0x68B6B3A5
+// li  t3, 0xBE79BA28
+// maccwri 4 ; macclu t0, t1, t2
+## [6] macclu < rd=0x6913FD2D
+// li  t4, 0x6913FD2D
+// bne t4, t0, fail
+## [7] macclu > rd=0x562A93DC,rs1=0x4EAF4CF2,rs2=0x5D9C6D98,rs3=0xA08D6F20,imm=12
+// li  t0, 0x562A93DC
+// li  t1, 0x4EAF4CF2
+// li  t2, 0x5D9C6D98
+// li  t3, 0xA08D6F20
+// maccwri 12 ; macclu t0, t1, t2
+## [7] macclu < rd=0x5F7B4D8C
+// li  t4, 0x5F7B4D8C
+// bne t4, t0, fail
+## [8] macclu > rd=0x6A5214E5,rs1=0xC654089B,rs2=0xC8C499F3,rs3=0xC29ADE30,imm=6
+// li  t0, 0x6A5214E5
+// li  t1, 0xC654089B
+// li  t2, 0xC8C499F3
+// li  t3, 0xC29ADE30
+// maccwri 6 ; macclu t0, t1, t2
+## [8] macclu < rd=0x6A66E306
+// li  t4, 0x6A66E306
+// bne t4, t0, fail
+## [9] macclu > rd=0x4C71BAA9,rs1=0x71FE5198,rs2=0x77BD32CD,rs3=0x1E335E27,imm=14
+// li  t0, 0x4C71BAA9
+// li  t1, 0x71FE5198
+// li  t2, 0x77BD32CD
+// li  t3, 0x1E335E27
+// maccwri 14 ; macclu t0, t1, t2
+## [9] macclu < rd=0xA640C161
+// li  t4, 0xA640C161
+// bne t4, t0, fail
+// pass: li a0, 1 ; ret
+// fail: li a0, 0 ; ret
