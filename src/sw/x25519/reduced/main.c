@@ -275,11 +275,9 @@ void test_ecdh()
   else            printf("\x1b[31m not equal\x1b[0m\n");
 }
 
-
-int main()
-{
+int main( int argc, char* argv[] ) {
   #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
-  asm( "csrrwi x0, 0x801, 0x2" ); // imm = c =  2 => radix = (w-15)+c = (64-15)+ 2 = 51
+  asm( "csrrwi x0, 0x801, " MPISE_RADIX_IMM );
   #endif
 
   test_ecdh();
