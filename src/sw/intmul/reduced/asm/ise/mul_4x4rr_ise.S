@@ -18,7 +18,7 @@
 // Register `len` holds the length of operands `a`, `b`
 #define len  a3
 // Register `tmp` holds an intermediate value (MACC1X1)
-#define tmp  t0
+#define tmp  ra
 // Register `mask` holds a radix-dependent mask (LIMBMASK)
 #define mask t0
 // Registers `ictr` and `octr` hold loop-counter values
@@ -63,6 +63,12 @@
 .endm
 
 
+.macro sraiadd_ rd:req, rs1:req, rs2:req, dist:req
+    srli    tmp, \rs2, \dist
+    add     \rd, \rs1, tmp
+.endm
+
+
 .macro MACL4x2
     MACC1X1 rw0h, rw0l, aw00, bw00, tmp
     MACC1X1 rw1h, rw1l, aw00, bw01, tmp
@@ -90,7 +96,7 @@
 // The macro `PROLOGUE` pushes 13 callee-saved registers on the stack.
 
 .macro PROLOGUE
-    addi    sp, sp, -96
+    addi    sp, sp, -104
     sd      s0, (sp)
     sd      s1, 8(sp)
     sd      s2, 16(sp)
@@ -103,6 +109,7 @@
     sd      s9, 72(sp)
     sd      s10, 80(sp)
     sd      s11, 88(sp)
+    sd      ra, 96(sp)
 .endm
 
 
@@ -110,6 +117,7 @@
 // returns to the caller.
 
 .macro EPILOGUE
+    ld      ra, 96(sp)
     ld      s11, 88(sp)
     ld      s10, 80(sp)
     ld      s9, 72(sp)
@@ -122,7 +130,7 @@
     ld      s2, 16(sp)
     ld      s1, 8(sp)
     ld      s0, (sp)
-    addi    sp, sp, 96
+    addi    sp, sp, 104
     ret
 .endm
 
@@ -162,21 +170,21 @@
 
 .macro TOLIMB
     // li      mask, LIMBMASK
-    sraiadd rw1l, rw1l, rw0l, LIMBBITS
+    sraiadd_ rw1l, rw1l, rw0l, LIMBBITS
     and     rw0l, rw0l, mask
-    sraiadd rw1h, rw1h, rw0h, LIMBBITS
+    sraiadd_ rw1h, rw1h, rw0h, LIMBBITS
     and     rw0h, rw0h, mask
-    sraiadd rw2l, rw2l, rw1l, LIMBBITS
+    sraiadd_ rw2l, rw2l, rw1l, LIMBBITS
     and     rw1l, rw1l, mask
-    sraiadd rw2h, rw2h, rw1h, LIMBBITS
+    sraiadd_ rw2h, rw2h, rw1h, LIMBBITS
     and     rw1h, rw1h, mask
-    sraiadd rw3l, rw3l, rw2l, LIMBBITS
+    sraiadd_ rw3l, rw3l, rw2l, LIMBBITS
     and     rw2l, rw2l, mask
-    sraiadd rw3h, rw3h, rw2h, LIMBBITS
+    sraiadd_ rw3h, rw3h, rw2h, LIMBBITS
     and     rw2h, rw2h, mask
-    sraiadd rw4l, rw4l, rw3l, LIMBBITS
+    sraiadd_ rw4l, rw4l, rw3l, LIMBBITS
     and     rw3l, rw3l, mask
-    sraiadd rw5l, rw5l, rw4l, LIMBBITS
+    sraiadd_ rw5l, rw5l, rw4l, LIMBBITS
     and     rw4l, rw4l, mask
     
     add     rw1l, rw1l, rw0h
@@ -184,11 +192,11 @@
     add     rw3l, rw3l, rw2h
     add     rw4l, rw4l, rw3h
     
-    sraiadd rw2l, rw2l, rw1l, LIMBBITS
+    sraiadd_ rw2l, rw2l, rw1l, LIMBBITS
     and     rw1l, rw1l, mask
-    sraiadd rw3l, rw3l, rw2l, LIMBBITS
+    sraiadd_ rw3l, rw3l, rw2l, LIMBBITS
     and     rw2l, rw2l, mask
-    sraiadd rw4l, rw4l, rw3l, LIMBBITS
+    sraiadd_ rw4l, rw4l, rw3l, LIMBBITS
     and     rw3l, rw3l, mask
 .endm
 
