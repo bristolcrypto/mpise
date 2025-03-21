@@ -35,6 +35,10 @@ void mpi_mul_4x4fr_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, int wo
 void mpi_mul_4x4fr_ise(uint64_t *r, const uint64_t *a, const uint64_t *b, int words);
 void mpi_mul_4x4rr_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, int limbs);
 void mpi_mul_4x4rr_ise(uint64_t *r, const uint64_t *a, const uint64_t *b, int limbs);
+void mpi_mul_1x1fr_isa_asm(uint64_t *r, const uint64_t *a, const uint64_t *b, int words);
+void mpi_mul_1x1fr_ise_asm(uint64_t *r, const uint64_t *a, const uint64_t *b, int words);
+void mpi_mul_1x1rr_isa_asm(uint64_t *r, const uint64_t *a, const uint64_t *b, int limbs);
+void mpi_mul_1x1rr_ise_asm(uint64_t *r, const uint64_t *a, const uint64_t *b, int limbs);
 
 // Test functions
 void test_mul_fullradix(int words);
@@ -42,9 +46,10 @@ void test_mul_redradix(int limbs);
 
 #if defined( MPISE_ISA )
 #define int_mul4x4_asm(r, a, b, len) mpi_mul_4x4rr_isa((r), (a), (b), (len))
+#define int_mul1x1_asm(r, a, b, len) mpi_mul_1x1rr_isa_asm((r), (a), (b), (len))
 #elif defined( MPISE_ISE )
 #define int_mul4x4_asm(r, a, b, len) mpi_mul_4x4rr_ise((r), (a), (b), (len))
+#define int_mul1x1_asm(r, a, b, len) mpi_mul_1x1rr_ise_asm((r), (a), (b), (len))
 #endif
 
 #endif  // _INTARITH_H
-
