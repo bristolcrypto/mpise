@@ -6,7 +6,7 @@ index 00000000..32ce9d92
 @@ -0,0 +1 @@
 +#include "arith.h"
 diff --git a/riscv/arith.h b/riscv/arith.h
-index c60fcbea..b274c309 100644
+index c60fcbea..918fa551 100644
 --- a/riscv/arith.h
 +++ b/riscv/arith.h
 @@ -242,4 +242,86 @@ static inline T rotate_left(T x, std::size_t shiftamt) {
@@ -14,7 +14,7 @@ index c60fcbea..b274c309 100644
  }
  
 +template <typename T>
-+static inline T __sraiadd( int w, T x, T y, int imm ) {
++static inline T __srxiadd( int w, T x, T y, int imm ) {
 +  T r = x + ( y >> imm );
 +
 +  return r;
@@ -36,7 +36,7 @@ index c60fcbea..b274c309 100644
 +template <typename T>
 +static inline T __macclu( int w, T x, T y, T z, int c ) {
 +  int f_0, f_1, f_2;
-+  
++
 +  if     ( c == 0xF ) { //    full-radix
 +    f_0 =        1;
 +    f_1 =  w      ;
@@ -67,7 +67,7 @@ index c60fcbea..b274c309 100644
 +template <typename T>
 +static inline T __macchu( int w, T x, T y, T z, int c ) {
 +  int f_3, f_4, f_5;
-+  
++
 +  if     ( c == 0xF ) { //    full-radix
 +    f_3 =        1;
 +    f_4 =  w      ;
@@ -97,7 +97,7 @@ index c60fcbea..b274c309 100644
 +
  #endif
 diff --git a/riscv/csr_init.cc b/riscv/csr_init.cc
-index d72c9250..a727660d 100644
+index d72c9250..15d7ee32 100644
 --- a/riscv/csr_init.cc
 +++ b/riscv/csr_init.cc
 @@ -379,4 +379,10 @@ void state_t::csr_init(processor_t* const proc, reg_t max_isa)
@@ -107,7 +107,7 @@ index d72c9250..a727660d 100644
 +
 +  // ++ mpise
 +  #if defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
-+  add_csr( CSR_MACC, macc = std::make_shared<basic_csr_t>( proc, CSR_MACC, 0 ) );  
++  add_csr( CSR_MACC, macc = std::make_shared<basic_csr_t>( proc, CSR_MACC, 0 ) );
 +  #endif
 +  // -- mpise
  }
@@ -128,20 +128,22 @@ index f36c04e5..734584b3 100644
    int64_t shamt() { return x(20, 6); }
    int64_t s_imm() { return x(7, 5) + (xs(25, 7) << 5); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 675b4f64..4fc7d8f2 100644
+index 675b4f64..83ab46ff 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
-@@ -2418,7 +2418,45 @@
+@@ -2418,7 +2418,47 @@
  #define MASK_XPERM4 0xfe00707f
  #define MATCH_XPERM8 0x28004033
  #define MASK_XPERM8 0xfe00707f
 -
 +// ++ mpise
++#define MATCH_SRLIADD 0x000000B
++#define  MASK_SRLIADD 0x000707F
 +#define MATCH_SRAIADD 0x000100B
 +#define  MASK_SRAIADD 0x000707F
 +#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 +// !destructive
-+#define MATCH_CACC    0x000000B
++#define MATCH_CACC    0x000200B
 +#define  MASK_CACC    0x000707F
 +#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 +// !destructive && !stateless
@@ -178,7 +180,7 @@ index 675b4f64..4fc7d8f2 100644
  #define CSR_FFLAGS 0x1
  #define CSR_FRM 0x2
  #define CSR_FCSR 0x3
-@@ -2875,7 +2913,9 @@
+@@ -2875,7 +2915,9 @@
  #define CSR_MHPMCOUNTER29H 0xb9d
  #define CSR_MHPMCOUNTER30H 0xb9e
  #define CSR_MHPMCOUNTER31H 0xb9f
@@ -189,20 +191,21 @@ index 675b4f64..4fc7d8f2 100644
  #define CAUSE_MISALIGNED_FETCH 0x0
  #define CAUSE_FETCH_ACCESS 0x1
  #define CAUSE_ILLEGAL_INSTRUCTION 0x2
-@@ -3961,6 +4001,12 @@ DECLARE_INSN(xperm16, MATCH_XPERM16, MASK_XPERM16)
+@@ -3961,6 +4003,13 @@ DECLARE_INSN(xperm16, MATCH_XPERM16, MASK_XPERM16)
  DECLARE_INSN(xperm32, MATCH_XPERM32, MASK_XPERM32)
  DECLARE_INSN(xperm4, MATCH_XPERM4, MASK_XPERM4)
  DECLARE_INSN(xperm8, MATCH_XPERM8, MASK_XPERM8)
 +// ++ mpise
-+DECLARE_INSN(cacc,    MATCH_CACC,    MASK_CACC)
++DECLARE_INSN(srliadd, MATCH_SRLIADD, MASK_SRLIADD)
 +DECLARE_INSN(sraiadd, MATCH_SRAIADD, MASK_SRAIADD)
++DECLARE_INSN(cacc,    MATCH_CACC,    MASK_CACC)
 +DECLARE_INSN(macclu,  MATCH_MACCLU,  MASK_MACCLU)
 +DECLARE_INSN(macchu,  MATCH_MACCHU,  MASK_MACCHU)
 +// -- mpise
  #endif
  #ifdef DECLARE_CSR
  DECLARE_CSR(fflags, CSR_FFLAGS)
-@@ -4419,6 +4465,11 @@ DECLARE_CSR(mhpmcounter28h, CSR_MHPMCOUNTER28H)
+@@ -4419,6 +4468,11 @@ DECLARE_CSR(mhpmcounter28h, CSR_MHPMCOUNTER28H)
  DECLARE_CSR(mhpmcounter29h, CSR_MHPMCOUNTER29H)
  DECLARE_CSR(mhpmcounter30h, CSR_MHPMCOUNTER30H)
  DECLARE_CSR(mhpmcounter31h, CSR_MHPMCOUNTER31H)
@@ -321,17 +324,34 @@ index 00000000..fdf97cfb
 +}
 diff --git a/riscv/insns/sraiadd.h b/riscv/insns/sraiadd.h
 new file mode 100644
-index 00000000..8e2d3ab7
+index 00000000..b8702756
 --- /dev/null
 +++ b/riscv/insns/sraiadd.h
 @@ -0,0 +1,11 @@
 +int w = xlen;
 +
 +if     ( xlen == 32 ) {
-+  WRITE_REG( insn.rd(), __sraiadd<int32_t>( w, ( int32_t )( READ_REG( insn.rs1() ) ), ( int32_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
++  WRITE_REG( insn.rd(), __srxiadd< int32_t>( w, (  int32_t )( READ_REG( insn.rs1() ) ), (  int32_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
 +}
 +else if( xlen == 64 ) {
-+  WRITE_REG( insn.rd(), __sraiadd<int64_t>( w, ( int64_t )( READ_REG( insn.rs1() ) ), ( int64_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
++  WRITE_REG( insn.rd(), __srxiadd< int64_t>( w, (  int64_t )( READ_REG( insn.rs1() ) ), (  int64_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
++}
++else {
++  abort();
++}
+diff --git a/riscv/insns/srliadd.h b/riscv/insns/srliadd.h
+new file mode 100644
+index 00000000..7f1ba1d2
+--- /dev/null
++++ b/riscv/insns/srliadd.h
+@@ -0,0 +1,11 @@
++int w = xlen;
++
++if     ( xlen == 32 ) {
++  WRITE_REG( insn.rd(), __srxiadd<uint32_t>( w, ( uint32_t )( READ_REG( insn.rs1() ) ), ( uint32_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
++}
++else if( xlen == 64 ) {
++  WRITE_REG( insn.rd(), __srxiadd<uint64_t>( w, ( uint64_t )( READ_REG( insn.rs1() ) ), ( uint64_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
 +}
 +else {
 +  abort();
@@ -354,7 +374,7 @@ index df77fc6a..d34a97f2 100644
  
    // When true, execute a single instruction and then enter debug mode.  This
 diff --git a/riscv/riscv.mk.in b/riscv/riscv.mk.in
-index bc512bfa..ba79a54a 100644
+index bc512bfa..bd22623f 100644
 --- a/riscv/riscv.mk.in
 +++ b/riscv/riscv.mk.in
 @@ -49,6 +49,7 @@ riscv_precompiled_hdrs = \
@@ -370,7 +390,7 @@ index bc512bfa..ba79a54a 100644
  	c_sspopchk_x5 \
  
 +# ++ mpise
-+riscv_insn_mpise = cacc sraiadd macchu macclu
++riscv_insn_mpise = cacc srliadd sraiadd macchu macclu
 +# -- mpise
 +
  riscv_insn_ext_zvk = \

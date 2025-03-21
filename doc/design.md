@@ -43,16 +43,30 @@
   +=============+===============+==========+==============+=============+
   | instruction | format        | f7       | f3           | opcode      |
   +=============+===============+==========+==============+=============+
+  | srliadd     | R  : 2R+I->1R | imm      | 000          | 0 = 0001011 |
   | sraiadd     | R  : 2R+I->1R | imm      | 001          | 0 = 0001011 |
   +=============+===============+==========+==============+=============+
-   
+
+  R  : iiii iiir rrrr rrrr r000 rrrr r000 1011
+  #define MATCH_SRLIADD  0x000000B
+  #define  MASK_SRLIADD  0x000707F
   R  : iiii iiir rrrr rrrr r001 rrrr r000 1011
   #define MATCH_SRAIADD  0x000100B
   #define  MASK_SRAIADD  0x000707F
 
+  .macro srliadd  rd, rs1, rs2, imm
+  .insn r  CUSTOM_0, 0, ( \imm & 0x7F ) << 0, \rd, \rs1, \rs2
+  .endm 
   .macro sraiadd  rd, rs1, rs2, imm
   .insn r  CUSTOM_0, 1, ( \imm & 0x7F ) << 0, \rd, \rs1, \rs2
   .endm 
+
+  srliadd rd, rs1, rs2, imm {
+    x       <- GPR[rs1]
+    y       <- GPR[rs2]
+    r       <- x + EXTZ(y >> imm)
+    GPR[rd] <- r
+  }
 
   sraiadd rd, rs1, rs2, imm {
     x       <- GPR[rs1]
@@ -68,15 +82,15 @@
   +=============+===============+==========+==============+=============+
   | instruction | format        | f2       | f3           | opcode      |
   +=============+===============+==========+==============+=============+
-  | cacc        | R4 : 3R  ->1R | 00       | 000          | 0 = 0001011 |
+  | cacc        | R4 : 3R  ->1R | 00       | 010          | 0 = 0001011 |
   +=============+===============+==========+==============+=============+
    
-  R4 : rrrr r00r rrrr rrrr r000 rrrr r000 1011
-  #define MATCH_CACC     0x000000B
+  R4 : rrrr r00r rrrr rrrr r010 rrrr r000 1011
+  #define MATCH_CACC     0x000200B
   #define  MASK_CACC     0x000707F
    
   .macro cacc rd, rs1, rs2, rs3             
-  .insn r4 CUSTOM_0, 0, 0, \rd, \rs1, \rs2, \rs3 
+  .insn r4 CUSTOM_0, 2, 0, \rd, \rs1, \rs2, \rs3 
   .endm
    
   cacc rd, rs1, rs2, rs3 {
@@ -94,15 +108,15 @@
   +=============+===============+==========+==============+=============+
   | instruction | format        | f7       | f3           | opcode      |
   +=============+===============+==========+==============+=============+
-  | cacc        | R  : 2R  ->1R | 0000000  | 000          | 0 = 0001011 |
+  | cacc        | R  : 2R  ->1R | 0000000  | 010          | 0 = 0001011 |
   +=============+===============+==========+==============+=============+
    
-  R  : 0000 000r rrrr rrrr r000 rrrr r000 1011
-  #define MATCH_CACC     0x000000B
+  R  : 0000 000r rrrr rrrr r010 rrrr r000 1011
+  #define MATCH_CACC     0x000200B
   #define  MASK_CACC     0x000707F
    
   .macro cacc rd, rs1, rs2
-  .insn r  CUSTOM_0, 0, 0, \rd, \rs1, \rs2
+  .insn r  CUSTOM_0, 2, 0, \rd, \rs1, \rs2
   .endm
    
   cacc rd, rs1, rs2, rs3 {

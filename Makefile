@@ -19,6 +19,8 @@ export TYPE              ?= isa    # isa, ise
 export RADIX             ?=   64   
 export PLATFORM          ?= spike  # spike, cva6-verilator, cva6-fpga
 
+export CONF              ?=
+
 ifeq "${PLATFORM}" "spike"
 export RISCV=${RISCV_MPISE}
 endif

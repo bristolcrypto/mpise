@@ -7,13 +7,20 @@ ifeq "${ARCH}" "rv64"
 export XLEN=64
 endif
 
+ifeq "${VERSION}" "simple"
+export CONF="-DVERSION_SIMPLE"
+endif
+ifeq "${VERSION}" "hybrid"
+export CONF="-DVERSION_HYBRID"
+endif
+
 # -----------------------------------------------------------------------------
 
-${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}.elf :
+${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf :
 	make --directory="${REPO_HOME}" ALG="intmul" ARCH="${ARCH}" TYPE="${TYPE}" RADIX="${RADIX}" PLATFORM="${PLATFORM}" sw-clean sw-build
 	mv ${REPO_HOME}/build/intmul/intmul-${ARCH}_${TYPE}.elf ${@}
 
-${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}.log : ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}.elf
+${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.log : ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
 	@echo "===="                                                                                          | tee --append ${@}
 	@echo "REPO_HOME         := ${REPO_HOME}"                                                             | tee --append ${@}
 	@echo "RISCV             := ${RISCV}"                                                                 | tee --append ${@}
@@ -24,6 +31,7 @@ ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}.log : ${REPO_HOM
 	@echo "TYPE              := ${TYPE}"                                                                  | tee --append ${@}
 	@echo "RADIX             := ${RADIX}"                                                                 | tee --append ${@}
 	@echo "PLATFORM          := ${PLATFORM}"                                                              | tee --append ${@}
+	@echo "VERSION           := ${VERSION}"                                                               | tee --append ${@}
 	@echo "<<<<"                                                                                          | tee --append ${@}
 
 ifeq "${ARCH}" "rv32"
@@ -46,8 +54,8 @@ endif
 
 	@echo ">>>>"                                                                                          | tee --append ${@}
 
-${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}.pdf :
-	@cat ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_*.log | grep '^!' | cut -c 3- | python3 ${REPO_HOME}/src/sw/intmul/scan.py --type="${TYPE}" --xlen="${XLEN}" --output="${@}"
+${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}.pdf :
+	@cat ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_*_${VERSION}.log | grep '^!' | cut -c 3- | python3 ${REPO_HOME}/src/sw/intmul/scan.py --type="${TYPE}" --xlen="${XLEN}" --output="${@}"
 
 # -----------------------------------------------------------------------------
 

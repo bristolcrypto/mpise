@@ -14,6 +14,30 @@ void prg( void* r, int n ) {
 
 // ----------------------------------------------------------------------------
 
+void test_srliadd( int i ) {
+  reg_t rd, rs1, rs2, rs3, imm; 
+  
+  // generate  input data
+  prg( &rd,  sizeof( rd  ) );
+  prg( &rs1, sizeof( rs1 ) );
+  prg( &rs2, sizeof( rs2 ) );
+  prg( &rs3, sizeof( rs3 ) );
+  prg( &imm, sizeof( imm ) ); imm &= 0x0F; // 7-bit => 4-bit due to macro
+  // emit      input data
+  printf( MARKER_DATA "[%d] srliadd" " > " "rd=" FORMAT_HEX "," "rs1=" FORMAT_HEX "," "rs2=" FORMAT_HEX "," "imm=" FORMAT_DEC "\n", i, rd, rs1, rs2, imm );
+  printf( MARKER_CODE "li  t0, " FORMAT_HEX "\n", rd  );
+  printf( MARKER_CODE "li  t1, " FORMAT_HEX "\n", rs1 );
+  printf( MARKER_CODE "li  t2, " FORMAT_HEX "\n", rs2 );
+  // emit     instruction
+  EMIT_SRLIADD;
+  // execute  model
+  INSN(imm,INSN_SRLIADD);
+  // emit     output data
+  printf( MARKER_DATA "[%d] srliadd" " < " "rd=" FORMAT_HEX                                                                   "\n", i, rd                );
+  printf( MARKER_CODE "li  t4, " FORMAT_HEX "\n", rd  );
+  printf( MARKER_CODE "bne t4, t0, fail"    "\n"      );
+}
+
 void test_sraiadd( int i ) {
   reg_t rd, rs1, rs2, rs3, imm; 
   
@@ -127,10 +151,18 @@ int main( int argc, char* argv[] ) {
 
   int i, n = atoi( argv[ 1 ] );
 
-  printf( MARKER_CODE "#include " "\"" "ise.h" "\"" "\n" );
+  printf( MARKER_CODE "#ifdef PLATFORM_SPIKE"               "\n" );
+  printf( MARKER_CODE "#include " "\"" "ise.h" "\""         "\n" );
+  printf( MARKER_CODE ".global test"                        "\n" );
+  printf( MARKER_CODE "test:"                               "\n" );
+  printf( MARKER_CODE "#endif"                              "\n" );
 
-  printf( MARKER_CODE ".global test"                "\n" );
-  printf( MARKER_CODE "test:"                       "\n" );
+  printf( MARKER_CODE "#ifdef PLATFORM_CVA6"                "\n" );
+  printf( MARKER_CODE "#include " "\"" "integration.S" "\"" "\n" );
+  printf( MARKER_CODE "#include " "\"" "ise.h" "\""         "\n" );
+  printf( MARKER_CODE ".global main"                        "\n" );
+  printf( MARKER_CODE "main:"                               "\n" );
+  printf( MARKER_CODE "#endif"                              "\n" );
 
   for( i = 0; i < n; i++ ) {
     if     ( 0 == strcmp( argv[ 2 ], "sraiadd" ) ) {
@@ -147,8 +179,14 @@ int main( int argc, char* argv[] ) {
     }
   }
 
-  printf( MARKER_CODE "pass: li a0, 1 ; ret" "\n" );
-  printf( MARKER_CODE "fail: li a0, 0 ; ret" "\n" );
+  printf( MARKER_CODE "#ifdef PLATFORM_SPIKE"               "\n" );
+  printf( MARKER_CODE "pass: li a0, 1 ; ret"                "\n" );
+  printf( MARKER_CODE "fail: li a0, 0 ; ret"                "\n" );
+  printf( MARKER_CODE "#endif"                              "\n" );
+
+  printf( MARKER_CODE "#ifdef PLATFORM_CVA6"                "\n" );
+  printf( MARKER_CODE "                 ret"                "\n" );
+  printf( MARKER_CODE "#endif"                              "\n" );
 
   fclose( PRG );
 

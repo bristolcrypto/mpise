@@ -57,15 +57,23 @@ int main( int argc, char* argv[] ) {
 
     // warm
     for( int i = 0; i < TRIALS; i++ ) {
-      // int_mul1x1_asm( r, a, b, j );
+      #if defined( VERSION_SIMPLE )
+      int_mul1x1_asm( r, a, b, j );
+      #endif
+      #if defined( VERSION_HYBRID )
       int_mul4x4_asm( r, a, b, j );
+      #endif
     }
 
     // execute
     for( int i = 0; i < TRIALS; i++ ) {
       rdtsc_x = rdtsc();
-      // int_mul1x1_asm( r, a, b, j );
+      #if defined( VERSION_SIMPLE )
+      int_mul1x1_asm( r, a, b, j );
+      #endif
+      #if defined( VERSION_HYBRID )
       int_mul4x4_asm( r, a, b, j );
+      #endif
       rdtsc_y = rdtsc();
 
       rdtsc_r = rdtsc_y - rdtsc_x;

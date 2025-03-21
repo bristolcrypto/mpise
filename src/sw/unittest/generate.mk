@@ -5,12 +5,12 @@ export GCC_FLAGS  += -DMPISE_DESTRUCTIVE="${MPISE_DESTRUCTIVE}" -DMPISE_STATELES
 ifeq "${ARCH}" "rv32"
 export GCC_PREFIX  = riscv64-unknown-elf
 export GCC_FLAGS  += -march='rv32imafdc_zicsr_zifencei_zicntr' -mabi='ilp32'
-export GCC_FLAGS  += -DMPISE_XLEN="32" 
+export GCC_FLAGS  += -DMPISE_XLEN="32" -DPLATFORM_SPIKE
 endif
 ifeq "${ARCH}" "rv64"
 export GCC_PREFIX  = riscv64-unknown-elf
 export GCC_FLAGS  += -march='rv64imafdc_zicsr_zifencei_zicntr' -mabi='lp64d'
-export GCC_FLAGS  += -DMPISE_XLEN="64"
+export GCC_FLAGS  += -DMPISE_XLEN="64" -DPLATFORM_SPIKE
 endif
 
 export INCLUDES   += ${REPO_HOME}/src/sw/share

@@ -8,6 +8,10 @@ export COUNT="10"
 generate() {
   # build tool-chain
   rm --force --recursive ${REPO_HOME}/build/riscv-isa-sim ${REPO_HOME}/build/riscv-pk && make sw-toolchain-build 2>&1 | tee ${REPO_HOME}/build/unittest/unittest-${ARCH}_${CASE}_toolchain.log
+  # run srliadd
+  export INSN="srliadd"
+  echo "==== ARCH=${ARCH} CASE=${CASE} (MPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE}, MPISE_STATELESS=${MPISE_STATELESS}), INSN=${INSN}, COUNT=${COUNT}"
+  make --quiet --directory="${REPO_HOME}/src/sw/unittest" --file="${REPO_HOME}/src/sw/unittest/generate.mk" ${REPO_HOME}/build/unittest/unittest-${ARCH}_${CASE}_${INSN}.log INSN="${INSN}" COUNT="${COUNT}"
   # run sraiadd
   export INSN="sraiadd"
   echo "==== ARCH=${ARCH} CASE=${CASE} (MPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE}, MPISE_STATELESS=${MPISE_STATELESS}), INSN=${INSN}, COUNT=${COUNT}"
@@ -60,17 +64,17 @@ case ${1} in
     ;;
 
   summarise)
-    tail -v -n +1 ${REPO_HOME}/build/unittest/unittest-${ARCH}_00_{sraiadd,cacc,macclu,macchu}.log
-    tail -v -n +1 ${REPO_HOME}/build/unittest/unittest-${ARCH}_01_{sraiadd,cacc,macclu,macchu}.log
-    tail -v -n +1 ${REPO_HOME}/build/unittest/unittest-${ARCH}_10_{sraiadd,cacc,macclu,macchu}.log
-    tail -v -n +1 ${REPO_HOME}/build/unittest/unittest-${ARCH}_11_{sraiadd,cacc,macclu,macchu}.log
+    tail -v -n +1 ${REPO_HOME}/build/unittest/unittest-${ARCH}_00_{srliadd,sraiadd,cacc,macclu,macchu}.log
+    tail -v -n +1 ${REPO_HOME}/build/unittest/unittest-${ARCH}_01_{srliadd,sraiadd,cacc,macclu,macchu}.log
+    tail -v -n +1 ${REPO_HOME}/build/unittest/unittest-${ARCH}_10_{srliadd,sraiadd,cacc,macclu,macchu}.log
+    tail -v -n +1 ${REPO_HOME}/build/unittest/unittest-${ARCH}_11_{srliadd,sraiadd,cacc,macclu,macchu}.log
     ;;
 
   archive)
-    cp ${REPO_HOME}/build/unittest/unittest-${ARCH}_00_{sraiadd,cacc,macclu,macchu}.{txt,S} ${REPO_HOME}/src/sw/unittest/generate
-    cp ${REPO_HOME}/build/unittest/unittest-${ARCH}_01_{sraiadd,cacc,macclu,macchu}.{txt,S} ${REPO_HOME}/src/sw/unittest/generate
-    cp ${REPO_HOME}/build/unittest/unittest-${ARCH}_10_{sraiadd,cacc,macclu,macchu}.{txt,S} ${REPO_HOME}/src/sw/unittest/generate
-    cp ${REPO_HOME}/build/unittest/unittest-${ARCH}_11_{sraiadd,cacc,macclu,macchu}.{txt,S} ${REPO_HOME}/src/sw/unittest/generate
+    cp ${REPO_HOME}/build/unittest/unittest-${ARCH}_00_{srliadd,sraiadd,cacc,macclu,macchu}.{txt,S} ${REPO_HOME}/src/sw/unittest/generate
+    cp ${REPO_HOME}/build/unittest/unittest-${ARCH}_01_{srliadd,sraiadd,cacc,macclu,macchu}.{txt,S} ${REPO_HOME}/src/sw/unittest/generate
+    cp ${REPO_HOME}/build/unittest/unittest-${ARCH}_10_{srliadd,sraiadd,cacc,macclu,macchu}.{txt,S} ${REPO_HOME}/src/sw/unittest/generate
+    cp ${REPO_HOME}/build/unittest/unittest-${ARCH}_11_{srliadd,sraiadd,cacc,macclu,macchu}.{txt,S} ${REPO_HOME}/src/sw/unittest/generate
     ;;
 esac
 

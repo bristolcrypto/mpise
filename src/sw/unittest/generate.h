@@ -48,6 +48,8 @@ typedef uint64_t reg_t;
 // ----------------------------------------------------------------------------
 
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+#define EMIT_SRLIADD      printf( MARKER_CODE "srliadd t0, t1, t2, " FORMAT_DEC "\n", imm );
+#define INSN_SRLIADD(imm) asm( "srliadd %0, %1, %2, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2) ); 
 #define EMIT_SRAIADD      printf( MARKER_CODE "sraiadd t0, t1, t2, " FORMAT_DEC "\n", imm );
 #define INSN_SRAIADD(imm) asm( "sraiadd %0, %1, %2, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2) ); 
 #define EMIT_CACC         printf( MARKER_CODE "cacc t0, t1, t2, t3" "\n" );
@@ -64,6 +66,8 @@ typedef uint64_t reg_t;
 #define INSN_MACCHU(imm)  asm(                        "macchu %0, %1, %2, %3, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2), "r"(rs3) ); 
 #endif
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+#define EMIT_SRLIADD      printf( MARKER_CODE "srliadd t0, t1, t2, " FORMAT_DEC "\n", imm );
+#define INSN_SRLIADD(imm) asm( "srliadd %0, %1, %2, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2) ); 
 #define EMIT_SRAIADD      printf( MARKER_CODE "sraiadd t0, t1, t2, " FORMAT_DEC "\n", imm );
 #define INSN_SRAIADD(imm) asm( "sraiadd %0, %1, %2, " # imm : "=r"(rd) : "r"(rs1), "r"(rs2) ); 
 #define EMIT_CACC         printf( MARKER_CODE "cacc t0, t1, t2"     "\n" );

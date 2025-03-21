@@ -22,6 +22,9 @@ nop
 // ----------------------------------------------------------------------------
 // 2. support for carry propagation
 
+.macro srliadd  rd, rs1, rs2, imm
+.insn r  CUSTOM_0, 0, ( \imm & 0x7F ) << 0, \rd, \rs1, \rs2
+.endm 
 .macro sraiadd  rd, rs1, rs2, imm
 .insn r  CUSTOM_0, 1, ( \imm & 0x7F ) << 0, \rd, \rs1, \rs2
 .endm 
@@ -29,12 +32,12 @@ nop
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
 // !destructive
 .macro cacc rd, rs1, rs2, rs3             
-.insn r4 CUSTOM_0, 0, 0, \rd, \rs1, \rs2, \rs3 
+.insn r4 CUSTOM_0, 2, 0, \rd, \rs1, \rs2, \rs3 
 .endm
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 //  destructive
 .macro cacc rd, rs1, rs2
-.insn r  CUSTOM_0, 0, 0, \rd, \rs1, \rs2
+.insn r  CUSTOM_0, 2, 0, \rd, \rs1, \rs2
 .endm
 #endif
 
