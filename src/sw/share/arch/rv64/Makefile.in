@@ -6,7 +6,7 @@
 
 # =============================================================================
 
-ifeq "${RISCV}" "${RISCV_MPISE}"
+ifeq "${RISCV}" "${RISCV_SPIKE}"
 export GCC_PREFIX  = riscv64-unknown-elf
 endif
 ifeq "${RISCV}" "${RISCV_CVA6}"

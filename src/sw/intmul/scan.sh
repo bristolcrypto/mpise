@@ -1,8 +1,24 @@
 #!/bin/bash
 
-export ARCH="rv64"
 export RADIXES="64 63 62 61 60 59 58 57 56 55 54 53 52 51 50"
-export PLATFORM="spike"
+if [ -z ${PLATFORM} ];
+then
+    export PLATFORM="spike"
+else
+    echo "Platform is ${PLATFORM}"
+fi
+if [ -z ${RISCV} ];
+then
+    export RISCV=${RISCV_SPIKE}
+else
+    echo "RISCV is ${RISCV}"
+fi
+if [ -z ${ARCH} ];
+then
+    export ARCH="rv64"
+else
+    echo "ARCH is ${ARCH}"
+fi
 
 # =============================================================================
 

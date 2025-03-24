@@ -12,7 +12,7 @@ export REPO_HOME="${PWD}"
 export CVA6="${REPO_HOME}/build/cva6"
 # Two toolchain installations, the default SPIKE version is now renamed to RISCV_MPISE. The CVA6-compatible version is named RISCV_CVA6. Depending on simulation target (spike, cva6-verilator), the appropriate toolchain is picked.
 
-export RISCV_MPISE="${REPO_HOME}/build/riscv"
+export RISCV_SPIKE="${REPO_HOME}/build/riscv-spike"
 export RISCV_CVA6="${REPO_HOME}/build/riscv-cva6"
 # CVA6-specific parameters
 export DV_SIMULATORS=veri-testharness
