@@ -128,7 +128,7 @@ index f36c04e5..734584b3 100644
    int64_t shamt() { return x(20, 6); }
    int64_t s_imm() { return x(7, 5) + (xs(25, 7) << 5); }
 diff --git a/riscv/encoding.h b/riscv/encoding.h
-index 675b4f64..83ab46ff 100644
+index 675b4f64..2ccb5e01 100644
 --- a/riscv/encoding.h
 +++ b/riscv/encoding.h
 @@ -2418,7 +2418,47 @@
@@ -160,7 +160,7 @@ index 675b4f64..83ab46ff 100644
 +#endif
 +#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
 +//  destructive
-+#define MATCH_CACC    0x000000B
++#define MATCH_CACC    0x000200B
 +#define  MASK_CACC    0x000707F
 +#if   defined( MPISE_STATELESS   ) && ( MPISE_STATELESS   == 0 )
 +//  destructive && !stateless
