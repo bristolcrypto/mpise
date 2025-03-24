@@ -22,7 +22,7 @@ export PLATFORM          ?= spike  # spike, cva6-verilator, cva6-fpga
 export CONF              ?=
 
 ifeq "${PLATFORM}" "spike"
-export RISCV=${RISCV_MPISE}
+export RISCV=${RISCV_SPIKE}
 endif
 ifeq "${PLATFORM}" "cva6-verilator"
 export RISCV=${RISCV_CVA6}
