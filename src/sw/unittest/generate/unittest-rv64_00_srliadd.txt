@@ -1,0 +1,22 @@
+bbl loader
+!! MPISE_XLEN        = 64
+!! MPISE_DESTRUCTIVE = 0
+!! MPISE_STATELESS   = 0
+// #ifdef PLATFORM_SPIKE
+// #include "ise.h"
+// .global test
+// test:
+// #endif
+// #ifdef PLATFORM_CVA6
+// #include "integration.S"
+// #include "ise.h"
+// .global main
+// main:
+// #endif
+// #ifdef PLATFORM_SPIKE
+// pass: li a0, 1 ; ret
+// fail: li a0, 0 ; ret
+// #endif
+// #ifdef PLATFORM_CVA6
+//                  ret
+// #endif
