@@ -1,0 +1,109 @@
+bbl loader
+!! MPISE_XLEN        = 32
+!! MPISE_DESTRUCTIVE = 1
+!! MPISE_STATELESS   = 1
+// #ifdef PLATFORM_SPIKE
+// #include "ise.h"
+// .global test
+// test:
+// #endif
+// #ifdef PLATFORM_CVA6
+// #include "integration.S"
+// #include "ise.h"
+// .global main
+// main:
+// #endif
+## [0] cacc > rd=0xCE592850,rs1=0x0F0647A6,rs2=0x5D1E2BDB,rs3=0x92E978CD
+// li  t0, 0xCE592850
+// li  t1, 0x0F0647A6
+// li  t2, 0x5D1E2BDB
+// li  t3, 0x92E978CD
+// cacc t0, t1, t2
+## [0] cacc < rd=0xCE592850
+// li  t4, 0xCE592850
+// bne t4, t0, fail
+## [1] cacc > rd=0x24E1D35B,rs1=0x344F32DB,rs2=0x27885CC2,rs3=0xB49B9FBA
+// li  t0, 0x24E1D35B
+// li  t1, 0x344F32DB
+// li  t2, 0x27885CC2
+// li  t3, 0xB49B9FBA
+// cacc t0, t1, t2
+## [1] cacc < rd=0x24E1D35B
+// li  t4, 0x24E1D35B
+// bne t4, t0, fail
+## [2] cacc > rd=0xCA6F3B24,rs1=0x8FC4099C,rs2=0x666FC7B3,rs3=0x4303AF39
+// li  t0, 0xCA6F3B24
+// li  t1, 0x8FC4099C
+// li  t2, 0x666FC7B3
+// li  t3, 0x4303AF39
+// cacc t0, t1, t2
+## [2] cacc < rd=0xCA6F3B24
+// li  t4, 0xCA6F3B24
+// bne t4, t0, fail
+## [3] cacc > rd=0xDAF5F9CF,rs1=0xE7AEC872,rs2=0x39286F19,rs3=0xF4DB0693
+// li  t0, 0xDAF5F9CF
+// li  t1, 0xE7AEC872
+// li  t2, 0x39286F19
+// li  t3, 0xF4DB0693
+// cacc t0, t1, t2
+## [3] cacc < rd=0xDAF5F9D0
+// li  t4, 0xDAF5F9D0
+// bne t4, t0, fail
+## [4] cacc > rd=0x9D158EE8,rs1=0x26608B34,rs2=0x9F0CA7AF,rs3=0xA7FB9938
+// li  t0, 0x9D158EE8
+// li  t1, 0x26608B34
+// li  t2, 0x9F0CA7AF
+// li  t3, 0xA7FB9938
+// cacc t0, t1, t2
+## [4] cacc < rd=0x9D158EE8
+// li  t4, 0x9D158EE8
+// bne t4, t0, fail
+## [5] cacc > rd=0x60EC260A,rs1=0x7947E49F,rs2=0xA790E1A0,rs3=0x3664D252
+// li  t0, 0x60EC260A
+// li  t1, 0x7947E49F
+// li  t2, 0xA790E1A0
+// li  t3, 0x3664D252
+// cacc t0, t1, t2
+## [5] cacc < rd=0x60EC260B
+// li  t4, 0x60EC260B
+// bne t4, t0, fail
+## [6] cacc > rd=0xC22D951E,rs1=0xD277F9F8,rs2=0x76541875,rs3=0xF1871EB2
+// li  t0, 0xC22D951E
+// li  t1, 0xD277F9F8
+// li  t2, 0x76541875
+// li  t3, 0xF1871EB2
+// cacc t0, t1, t2
+## [6] cacc < rd=0xC22D951F
+// li  t4, 0xC22D951F
+// bne t4, t0, fail
+## [7] cacc > rd=0xD166074F,rs1=0x2705D526,rs2=0x1C97F010,rs3=0x9951B47D
+// li  t0, 0xD166074F
+// li  t1, 0x2705D526
+// li  t2, 0x1C97F010
+// li  t3, 0x9951B47D
+// cacc t0, t1, t2
+## [7] cacc < rd=0xD166074F
+// li  t4, 0xD166074F
+// bne t4, t0, fail
+## [8] cacc > rd=0xAB04CAB1,rs1=0x8A7D1950,rs2=0xF948676F,rs3=0x14B1692B
+// li  t0, 0xAB04CAB1
+// li  t1, 0x8A7D1950
+// li  t2, 0xF948676F
+// li  t3, 0x14B1692B
+// cacc t0, t1, t2
+## [8] cacc < rd=0xAB04CAB2
+// li  t4, 0xAB04CAB2
+// bne t4, t0, fail
+## [9] cacc > rd=0x8ED54183,rs1=0xF0769C34,rs2=0xE77BFB3D,rs3=0x7F1FBEAD
+// li  t0, 0x8ED54183
+// li  t1, 0xF0769C34
+// li  t2, 0xE77BFB3D
+// li  t3, 0x7F1FBEAD
+// cacc t0, t1, t2
+## [9] cacc < rd=0x8ED54184
+// li  t4, 0x8ED54184
+// bne t4, t0, fail
+// #ifdef PLATFORM_SPIKE
+// pass: li a0, 1 ; ret
+// fail: li a0, 0 ; ret
+// #endif

@@ -13,10 +13,87 @@ bbl loader
 // .global main
 // main:
 // #endif
+## [0] srliadd > rd=0xA492908E2565519C,rs1=0x3CF65D6CC024D2D5,rs2=0x7D8845B93BDB75DE,imm=12
+// li  t0, 0xA492908E2565519C
+// li  t1, 0x3CF65D6CC024D2D5
+// li  t2, 0x7D8845B93BDB75DE
+// srliadd t0, t1, t2, 12
+## [0] srliadd < rd=0x3CFE35F11BB8908C
+// li  t4, 0x3CFE35F11BB8908C
+// bne t4, t0, fail
+## [1] srliadd > rd=0xD7582D0D9F55DB9E,rs1=0x3031C1C7EAA84150,rs2=0xF3E3E7ADDD3C4DD5,imm=0
+// li  t0, 0xD7582D0D9F55DB9E
+// li  t1, 0x3031C1C7EAA84150
+// li  t2, 0xF3E3E7ADDD3C4DD5
+// srliadd t0, t1, t2, 0
+## [1] srliadd < rd=0x2415A975C7E48F25
+// li  t4, 0x2415A975C7E48F25
+// bne t4, t0, fail
+## [2] srliadd > rd=0x8EBC003DF7BEC6EB,rs1=0x836FDFFCDCE2E839,rs2=0x301C37FD89C02531,imm=2
+// li  t0, 0x8EBC003DF7BEC6EB
+// li  t1, 0x836FDFFCDCE2E839
+// li  t2, 0x301C37FD89C02531
+// srliadd t0, t1, t2, 2
+## [2] srliadd < rd=0x8F76EDFC3F52F185
+// li  t4, 0x8F76EDFC3F52F185
+// bne t4, t0, fail
+## [3] srliadd > rd=0xEA688ADD6080A60E,rs1=0x1ECBDFB0A795FD5A,rs2=0xEF60C6631FE1B5CD,imm=11
+// li  t0, 0xEA688ADD6080A60E
+// li  t1, 0x1ECBDFB0A795FD5A
+// li  t2, 0xEF60C6631FE1B5CD
+// srliadd t0, t1, t2, 11
+## [3] srliadd < rd=0x1EE9CBC973F9F990
+// li  t4, 0x1EE9CBC973F9F990
+// bne t4, t0, fail
+## [4] srliadd > rd=0xB1060CA88C9833F5,rs1=0x0AB28F934F5F80BB,rs2=0x042F4EC60DF12BE6,imm=13
+// li  t0, 0xB1060CA88C9833F5
+// li  t1, 0x0AB28F934F5F80BB
+// li  t2, 0x042F4EC60DF12BE6
+// srliadd t0, t1, t2, 13
+## [4] srliadd < rd=0x0AB2B10DC58FF044
+// li  t4, 0x0AB2B10DC58FF044
+// bne t4, t0, fail
+## [5] srliadd > rd=0xF779ACE355509979,rs1=0x10EEEBFC28D6BB06,rs2=0x424431C31A1E6751,imm=9
+// li  t0, 0xF779ACE355509979
+// li  t1, 0x10EEEBFC28D6BB06
+// li  t2, 0x424431C31A1E6751
+// srliadd t0, t1, t2, 9
+## [5] srliadd < rd=0x11100E150A63CA39
+// li  t4, 0x11100E150A63CA39
+// bne t4, t0, fail
+## [6] srliadd > rd=0xFF19CDA0C6C9719D,rs1=0x7D1F682874AFDF8A,rs2=0x03DF28A012A56F72,imm=4
+// li  t0, 0xFF19CDA0C6C9719D
+// li  t1, 0x7D1F682874AFDF8A
+// li  t2, 0x03DF28A012A56F72
+// srliadd t0, t1, t2, 4
+## [6] srliadd < rd=0x7D5D5AB275DA3681
+// li  t4, 0x7D5D5AB275DA3681
+// bne t4, t0, fail
+## [7] srliadd > rd=0x698156190C9638F6,rs1=0x8895226943C2750E,rs2=0xBD859A8A2F60F6C3,imm=10
+// li  t0, 0x698156190C9638F6
+// li  t1, 0x8895226943C2750E
+// li  t2, 0xBD859A8A2F60F6C3
+// srliadd t0, t1, t2, 10
+## [7] srliadd < rd=0x88C483CFE64E4D4B
+// li  t4, 0x88C483CFE64E4D4B
+// bne t4, t0, fail
+## [8] srliadd > rd=0xDF59A8086DF71C9F,rs1=0x110785DF955A536E,rs2=0x0FCC9CD29B93D884,imm=4
+// li  t0, 0xDF59A8086DF71C9F
+// li  t1, 0x110785DF955A536E
+// li  t2, 0x0FCC9CD29B93D884
+// srliadd t0, t1, t2, 4
+## [8] srliadd < rd=0x12044FACBF1390F6
+// li  t4, 0x12044FACBF1390F6
+// bne t4, t0, fail
+## [9] srliadd > rd=0x8867D99295510400,rs1=0x0D78EF7C38E67B1E,rs2=0x56B66150BA4FEF06,imm=13
+// li  t0, 0x8867D99295510400
+// li  t1, 0x0D78EF7C38E67B1E
+// li  t2, 0x56B66150BA4FEF06
+// srliadd t0, t1, t2, 13
+## [9] srliadd < rd=0x0D7BA52F436C4D9D
+// li  t4, 0x0D7BA52F436C4D9D
+// bne t4, t0, fail
 // #ifdef PLATFORM_SPIKE
 // pass: li a0, 1 ; ret
 // fail: li a0, 0 ; ret
-// #endif
-// #ifdef PLATFORM_CVA6
-//                  ret
 // #endif

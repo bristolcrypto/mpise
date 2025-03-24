@@ -1,0 +1,85 @@
+#ifdef PLATFORM_SPIKE
+#include "ise.h"
+.global test
+test:
+#endif
+#ifdef PLATFORM_CVA6
+#include "integration.S"
+#include "ise.h"
+.global main
+main:
+#endif
+li  t0, 0xD99CF2AE
+li  t1, 0x4E13D370
+li  t2, 0xF66D0DE2
+li  t3, 0x3E4E4F30
+cacc t0, t1, t2, t3
+li  t4, 0x3E4E4F31
+bne t4, t0, fail
+li  t0, 0xD150276C
+li  t1, 0x6DA60243
+li  t2, 0x82A4FBBC
+li  t3, 0xA4093AB4
+cacc t0, t1, t2, t3
+li  t4, 0xA4093AB4
+bne t4, t0, fail
+li  t0, 0xD97D3DEC
+li  t1, 0x291BFE2D
+li  t2, 0xB1D2360B
+li  t3, 0x83887814
+cacc t0, t1, t2, t3
+li  t4, 0x83887814
+bne t4, t0, fail
+li  t0, 0x7BF1D8D8
+li  t1, 0xCB6D48C1
+li  t2, 0x53983691
+li  t3, 0x64A5E71C
+cacc t0, t1, t2, t3
+li  t4, 0x64A5E71D
+bne t4, t0, fail
+li  t0, 0xF31AA430
+li  t1, 0xFA319893
+li  t2, 0x10B3298E
+li  t3, 0xD2DFCED5
+cacc t0, t1, t2, t3
+li  t4, 0xD2DFCED6
+bne t4, t0, fail
+li  t0, 0xEA9B2232
+li  t1, 0x445E2154
+li  t2, 0x28A4E4AD
+li  t3, 0x9DED9283
+cacc t0, t1, t2, t3
+li  t4, 0x9DED9283
+bne t4, t0, fail
+li  t0, 0x74CA987A
+li  t1, 0x1C02D480
+li  t2, 0x6B1E2DC3
+li  t3, 0xA474239A
+cacc t0, t1, t2, t3
+li  t4, 0xA474239A
+bne t4, t0, fail
+li  t0, 0x5AF6680F
+li  t1, 0xA7363107
+li  t2, 0xEAA27604
+li  t3, 0xEAAC8094
+cacc t0, t1, t2, t3
+li  t4, 0xEAAC8095
+bne t4, t0, fail
+li  t0, 0x0FF0579B
+li  t1, 0x15F0B897
+li  t2, 0xDDD69F09
+li  t3, 0x02D11FC8
+cacc t0, t1, t2, t3
+li  t4, 0x02D11FC8
+bne t4, t0, fail
+li  t0, 0x61A7F876
+li  t1, 0xD4B706A3
+li  t2, 0x983136C1
+li  t3, 0xE818F2CA
+cacc t0, t1, t2, t3
+li  t4, 0xE818F2CB
+bne t4, t0, fail
+#ifdef PLATFORM_SPIKE
+pass: li a0, 1 ; ret
+fail: li a0, 0 ; ret
+#endif

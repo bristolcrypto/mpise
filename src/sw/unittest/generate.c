@@ -165,7 +165,10 @@ int main( int argc, char* argv[] ) {
   printf( MARKER_CODE "#endif"                              "\n" );
 
   for( i = 0; i < n; i++ ) {
-    if     ( 0 == strcmp( argv[ 2 ], "sraiadd" ) ) {
+    if     ( 0 == strcmp( argv[ 2 ], "srliadd" ) ) {
+      test_srliadd( i );
+    }
+    else if( 0 == strcmp( argv[ 2 ], "sraiadd" ) ) {
       test_sraiadd( i );
     }
     else if( 0 == strcmp( argv[ 2 ], "cacc"    ) ) {
@@ -182,10 +185,6 @@ int main( int argc, char* argv[] ) {
   printf( MARKER_CODE "#ifdef PLATFORM_SPIKE"               "\n" );
   printf( MARKER_CODE "pass: li a0, 1 ; ret"                "\n" );
   printf( MARKER_CODE "fail: li a0, 0 ; ret"                "\n" );
-  printf( MARKER_CODE "#endif"                              "\n" );
-
-  printf( MARKER_CODE "#ifdef PLATFORM_CVA6"                "\n" );
-  printf( MARKER_CODE "                 ret"                "\n" );
   printf( MARKER_CODE "#endif"                              "\n" );
 
   fclose( PRG );

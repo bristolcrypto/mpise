@@ -1,0 +1,99 @@
+bbl loader
+!! MPISE_XLEN        = 32
+!! MPISE_DESTRUCTIVE = 0
+!! MPISE_STATELESS   = 1
+// #ifdef PLATFORM_SPIKE
+// #include "ise.h"
+// .global test
+// test:
+// #endif
+// #ifdef PLATFORM_CVA6
+// #include "integration.S"
+// #include "ise.h"
+// .global main
+// main:
+// #endif
+## [0] sraiadd > rd=0xE5A929C1,rs1=0x74261E99,rs2=0x43825F1C,imm=13
+// li  t0, 0xE5A929C1
+// li  t1, 0x74261E99
+// li  t2, 0x43825F1C
+// sraiadd t0, t1, t2, 13
+## [0] sraiadd < rd=0x74283AAB
+// li  t4, 0x74283AAB
+// bne t4, t0, fail
+## [1] sraiadd > rd=0x3F22B3B8,rs1=0x0067C8F3,rs2=0xE3CDC025,imm=13
+// li  t0, 0x3F22B3B8
+// li  t1, 0x0067C8F3
+// li  t2, 0xE3CDC025
+// sraiadd t0, t1, t2, 13
+## [1] sraiadd < rd=0x0066E761
+// li  t4, 0x0066E761
+// bne t4, t0, fail
+## [2] sraiadd > rd=0xD25868E4,rs1=0xBEC54739,rs2=0x1A8FF1C2,imm=13
+// li  t0, 0xD25868E4
+// li  t1, 0xBEC54739
+// li  t2, 0x1A8FF1C2
+// sraiadd t0, t1, t2, 13
+## [2] sraiadd < rd=0xBEC61BB8
+// li  t4, 0xBEC61BB8
+// bne t4, t0, fail
+## [3] sraiadd > rd=0xEE9BA08C,rs1=0x3D7F57CD,rs2=0xDF209C2D,imm=11
+// li  t0, 0xEE9BA08C
+// li  t1, 0x3D7F57CD
+// li  t2, 0xDF209C2D
+// sraiadd t0, t1, t2, 11
+## [3] sraiadd < rd=0x3D7B3BE0
+// li  t4, 0x3D7B3BE0
+// bne t4, t0, fail
+## [4] sraiadd > rd=0x6C8DF7A7,rs1=0x79023328,rs2=0xA05A2998,imm=12
+// li  t0, 0x6C8DF7A7
+// li  t1, 0x79023328
+// li  t2, 0xA05A2998
+// sraiadd t0, t1, t2, 12
+## [4] sraiadd < rd=0x78FC38CA
+// li  t4, 0x78FC38CA
+// bne t4, t0, fail
+## [5] sraiadd > rd=0x0D5E3541,rs1=0xA735E9D9,rs2=0x2BE8F008,imm=1
+// li  t0, 0x0D5E3541
+// li  t1, 0xA735E9D9
+// li  t2, 0x2BE8F008
+// sraiadd t0, t1, t2, 1
+## [5] sraiadd < rd=0xBD2A61DD
+// li  t4, 0xBD2A61DD
+// bne t4, t0, fail
+## [6] sraiadd > rd=0xA333B0E6,rs1=0x371B637F,rs2=0x6E963B0E,imm=8
+// li  t0, 0xA333B0E6
+// li  t1, 0x371B637F
+// li  t2, 0x6E963B0E
+// sraiadd t0, t1, t2, 8
+## [6] sraiadd < rd=0x3789F9BA
+// li  t4, 0x3789F9BA
+// bne t4, t0, fail
+## [7] sraiadd > rd=0x1435312A,rs1=0xD8DA3E89,rs2=0x0FDEC449,imm=5
+// li  t0, 0x1435312A
+// li  t1, 0xD8DA3E89
+// li  t2, 0x0FDEC449
+// sraiadd t0, t1, t2, 5
+## [7] sraiadd < rd=0xD95934AB
+// li  t4, 0xD95934AB
+// bne t4, t0, fail
+## [8] sraiadd > rd=0xD184D395,rs1=0x2046089E,rs2=0xEA6E3F36,imm=13
+// li  t0, 0xD184D395
+// li  t1, 0x2046089E
+// li  t2, 0xEA6E3F36
+// sraiadd t0, t1, t2, 13
+## [8] sraiadd < rd=0x20455C0F
+// li  t4, 0x20455C0F
+// bne t4, t0, fail
+## [9] sraiadd > rd=0x8DECF636,rs1=0x295205E5,rs2=0x342A405B,imm=4
+// li  t0, 0x8DECF636
+// li  t1, 0x295205E5
+// li  t2, 0x342A405B
+// sraiadd t0, t1, t2, 4
+## [9] sraiadd < rd=0x2C94A9EA
+// li  t4, 0x2C94A9EA
+// bne t4, t0, fail
+// #ifdef PLATFORM_SPIKE
+// pass: li a0, 1 ; ret
+// fail: li a0, 0 ; ret
+// #endif

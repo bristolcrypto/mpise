@@ -1,0 +1,109 @@
+bbl loader
+!! MPISE_XLEN        = 32
+!! MPISE_DESTRUCTIVE = 1
+!! MPISE_STATELESS   = 0
+// #ifdef PLATFORM_SPIKE
+// #include "ise.h"
+// .global test
+// test:
+// #endif
+// #ifdef PLATFORM_CVA6
+// #include "integration.S"
+// #include "ise.h"
+// .global main
+// main:
+// #endif
+## [0] macclu > rd=0xBE1B484C,rs1=0x0C55C803,rs2=0x2B9942A5,rs3=0xDE3B61FE,imm=3
+// li  t0, 0xBE1B484C
+// li  t1, 0x0C55C803
+// li  t2, 0x2B9942A5
+// li  t3, 0xDE3B61FE
+// maccwri 3 ; macclu t0, t1, t2
+## [0] macclu < rd=0xBE20F83B
+// li  t4, 0xBE20F83B
+// bne t4, t0, fail
+## [1] macclu > rd=0x515F2660,rs1=0xACD66499,rs2=0x95D7A1A4,rs3=0x9DF40E94,imm=12
+// li  t0, 0x515F2660
+// li  t1, 0xACD66499
+// li  t2, 0x95D7A1A4
+// li  t3, 0x9DF40E94
+// maccwri 12 ; macclu t0, t1, t2
+## [1] macclu < rd=0x697AD164
+// li  t4, 0x697AD164
+// bne t4, t0, fail
+## [2] macclu > rd=0x61C7FDBA,rs1=0x0CBCA907,rs2=0x07C08005,rs3=0x95E9A704,imm=14
+// li  t0, 0x61C7FDBA
+// li  t1, 0x0CBCA907
+// li  t2, 0x07C08005
+// li  t3, 0x95E9A704
+// maccwri 14 ; macclu t0, t1, t2
+## [2] macclu < rd=0x6C3ACADD
+// li  t4, 0x6C3ACADD
+// bne t4, t0, fail
+## [3] macclu > rd=0x8A92AECE,rs1=0x04F53FF7,rs2=0xFC862BFC,rs3=0x83A529DF,imm=10
+// li  t0, 0x8A92AECE
+// li  t1, 0x04F53FF7
+// li  t2, 0xFC862BFC
+// li  t3, 0x83A529DF
+// maccwri 10 ; macclu t0, t1, t2
+## [3] macclu < rd=0x8D0622F2
+// li  t4, 0x8D0622F2
+// bne t4, t0, fail
+## [4] macclu > rd=0xE213C762,rs1=0x666D5F5C,rs2=0x400471B0,rs3=0xD6578D61,imm=14
+// li  t0, 0xE213C762
+// li  t1, 0x666D5F5C
+// li  t2, 0x400471B0
+// li  t3, 0xD6578D61
+// maccwri 14 ; macclu t0, t1, t2
+## [4] macclu < rd=0x11CCF2A2
+// li  t4, 0x11CCF2A2
+// bne t4, t0, fail
+## [5] macclu > rd=0x99A8D3F4,rs1=0x5EE9FCDA,rs2=0xBF45B85F,rs3=0x86F4223B,imm=8
+// li  t0, 0x99A8D3F4
+// li  t1, 0x5EE9FCDA
+// li  t2, 0xBF45B85F
+// li  t3, 0x86F4223B
+// maccwri 8 ; macclu t0, t1, t2
+## [5] macclu < rd=0x9AFC58DA
+// li  t4, 0x9AFC58DA
+// bne t4, t0, fail
+## [6] macclu > rd=0x56A15032,rs1=0xA352E5F3,rs2=0xFBE5C09A,rs3=0xF0ECC35F,imm=15
+// li  t0, 0x56A15032
+// li  t1, 0xA352E5F3
+// li  t2, 0xFBE5C09A
+// li  t3, 0xF0ECC35F
+// maccwri 15 ; macclu t0, t1, t2
+## [6] macclu < rd=0xB654E460
+// li  t4, 0xB654E460
+// bne t4, t0, fail
+## [7] macclu > rd=0x329F2B45,rs1=0x9D97EFCB,rs2=0x4221BA02,rs3=0x8423AF61,imm=8
+// li  t0, 0x329F2B45
+// li  t1, 0x9D97EFCB
+// li  t2, 0x4221BA02
+// li  t3, 0x8423AF61
+// maccwri 8 ; macclu t0, t1, t2
+## [7] macclu < rd=0x333388DB
+// li  t4, 0x333388DB
+// bne t4, t0, fail
+## [8] macclu > rd=0xFD42E7BB,rs1=0x6C5B3CEB,rs2=0x7D38B160,rs3=0x45D64DA1,imm=6
+// li  t0, 0xFD42E7BB
+// li  t1, 0x6C5B3CEB
+// li  t2, 0x7D38B160
+// li  t3, 0x45D64DA1
+// maccwri 6 ; macclu t0, t1, t2
+## [8] macclu < rd=0xFD803ADB
+// li  t4, 0xFD803ADB
+// bne t4, t0, fail
+## [9] macclu > rd=0xE05B12E5,rs1=0x389446EE,rs2=0xCDF02D79,rs3=0x7F2415AA,imm=15
+// li  t0, 0xE05B12E5
+// li  t1, 0x389446EE
+// li  t2, 0xCDF02D79
+// li  t3, 0x7F2415AA
+// maccwri 15 ; macclu t0, t1, t2
+## [9] macclu < rd=0xC4086F63
+// li  t4, 0xC4086F63
+// bne t4, t0, fail
+// #ifdef PLATFORM_SPIKE
+// pass: li a0, 1 ; ret
+// fail: li a0, 0 ; ret
+// #endif
