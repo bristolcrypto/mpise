@@ -17,7 +17,7 @@ fi
 mkdir --parents ${PK_INSTALL}
 mkdir --parents ${PK_BUILD}
 
-export PATH="${RISCV}/bin:${PATH}"
+export PATH="${RISCV_SPIKE}/bin:${PATH}"
 
 cd ${PK_BUILD}
 ../configure --prefix="${PK_INSTALL}" --host="riscv64-unknown-elf" --with-arch="rv32gc" --with-abi="ilp32"

@@ -34,6 +34,8 @@
   source ./bin/conf.sh
   ```
 
+  This initializes the environment variables : `RISCV_SPIKE`, `RISCV_CVA6`, `REPO_HOME`.
+  There are two RISC-V toolchains - one installed in RISCV_SPIKE (compatible with spike simulator), and one installed in RISCV_CVA6 (for simulating CVA6-MPISE implementation on verilator).
 - Fix configuration, e.g., 
 
   - one option from

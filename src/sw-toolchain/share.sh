@@ -11,12 +11,12 @@
 export CFLAGS="-DMPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE} -DMPISE_STATELESS=${MPISE_STATELESS}"
 export CXXFLAGS="-DMPISE_DESTRUCTIVE=${MPISE_DESTRUCTIVE} -DMPISE_STATELESS=${MPISE_STATELESS}"
 
-export PK_REPO="${REPO_HOME}/build/riscv-pk"
+export PK_REPO="${REPO_HOME}/build/riscv-pk-spike"
 export PK_BUILD="${PK_REPO}/build"
 export PK_COMMIT="b7ee9734776123c34a8c0d37fa981169521614ad"
 export PK_BRANCH="mpise"
 export PK_PATCH="${PWD}/pk.patch"
-export PK_INSTALL="${REPO_HOME}/build/riscv"
+export PK_INSTALL="${RISCV_SPIKE}"
 
 export SPIKE_REPO="${REPO_HOME}/build/riscv-isa-sim"
 export SPIKE_BUILD="${SPIKE_REPO}/build"
@@ -24,6 +24,6 @@ export SPIKE_BUILD="${SPIKE_REPO}/build"
 export SPIKE_COMMIT="bfe9173c284594cfa73c99eb0bcbd0a4e67d1076" # new, fixes cstdint
 export SPIKE_BRANCH="mpise"
 export SPIKE_PATCH="${PWD}/spike.patch"
-export SPIKE_INSTALL="${REPO_HOME}/build/riscv"
+export SPIKE_INSTALL="${RISCV_SPIKE}"
 
 # =============================================================================
