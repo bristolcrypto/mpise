@@ -324,34 +324,34 @@ index 00000000..fdf97cfb
 +}
 diff --git a/riscv/insns/sraiadd.h b/riscv/insns/sraiadd.h
 new file mode 100644
-index 00000000..b8702756
+index 00000000..505fc1f5
 --- /dev/null
 +++ b/riscv/insns/sraiadd.h
 @@ -0,0 +1,11 @@
 +int w = xlen;
 +
 +if     ( xlen == 32 ) {
-+  WRITE_REG( insn.rd(), __srxiadd< int32_t>( w, (  int32_t )( READ_REG( insn.rs1() ) ), (  int32_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
++  WRITE_REG( insn.rd(), sext_xlen( __srxiadd< int32_t>( w, (  int32_t )( READ_REG( insn.rs1() ) ), (  int32_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) ) );
 +}
 +else if( xlen == 64 ) {
-+  WRITE_REG( insn.rd(), __srxiadd< int64_t>( w, (  int64_t )( READ_REG( insn.rs1() ) ), (  int64_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
++  WRITE_REG( insn.rd(), sext_xlen( __srxiadd< int64_t>( w, (  int64_t )( READ_REG( insn.rs1() ) ), (  int64_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) ) );
 +}
 +else {
 +  abort();
 +}
 diff --git a/riscv/insns/srliadd.h b/riscv/insns/srliadd.h
 new file mode 100644
-index 00000000..7f1ba1d2
+index 00000000..7eb1a138
 --- /dev/null
 +++ b/riscv/insns/srliadd.h
 @@ -0,0 +1,11 @@
 +int w = xlen;
 +
 +if     ( xlen == 32 ) {
-+  WRITE_REG( insn.rd(), __srxiadd<uint32_t>( w, ( uint32_t )( READ_REG( insn.rs1() ) ), ( uint32_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
++  WRITE_REG( insn.rd(), sext_xlen( __srxiadd<uint32_t>( w, ( uint32_t )( READ_REG( insn.rs1() ) ), ( uint32_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) ) );
 +}
 +else if( xlen == 64 ) {
-+  WRITE_REG( insn.rd(), __srxiadd<uint64_t>( w, ( uint64_t )( READ_REG( insn.rs1() ) ), ( uint64_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) );
++  WRITE_REG( insn.rd(), sext_xlen( __srxiadd<uint64_t>( w, ( uint64_t )( READ_REG( insn.rs1() ) ), ( uint64_t )( READ_REG( insn.rs2() ) ), insn.funct7() & 0x3F ) ) );
 +}
 +else {
 +  abort();
