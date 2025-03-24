@@ -34,8 +34,12 @@
   source ./bin/conf.sh
   ```
 
-  This initializes the environment variables : `RISCV_SPIKE`, `RISCV_CVA6`, `REPO_HOME`.
-  There are two RISC-V toolchains - one installed in RISCV_SPIKE (compatible with spike simulator), and one installed in RISCV_CVA6 (for simulating CVA6-MPISE implementation on verilator).
+  This initializes the environment variables `REPO_HOME`, `RISCV_SPIKE`, and `RISCV_CVA6`:
+  note that two RISC-V toolchains are used, with
+  one installed in `${RISCV_SPIKE} (for simulation               using     `spike`)
+  and 
+  one installed in `${RISCV_CVA6}  (for simulation of CVA6-MPISE using `verilator`).
+
 - Fix configuration, e.g., 
 
   - one option from
@@ -60,7 +64,6 @@
   
   ```sh
   export CVA6="${REPO_HOME}/build/cva6"
-  export RISCV="${REPO_HOME}/build/riscv"
   ```
 
 - Clone the 
@@ -79,14 +82,14 @@
 
 - Build a multi-architecture 
   [tool-chain](https://github.com/riscv/riscv-gnu-toolchain)
-  into `${RISCV}`:
+  into `${RISCV_SPIKE}`:
   
   ```sh
   git clone https://github.com/riscv/riscv-gnu-toolchain.git ${REPO_HOME}/build/riscv-gnu-toolchain
   cd ${REPO_HOME}/build/riscv-gnu-toolchain
   sed -i '/shallow = true/d' .gitmodules
   sed -i 's/--depth 1//g' Makefile.in
-  ./configure --prefix="${RISCV}" --enable-multilib --with-multilib-generator="rv32gc-ilp32--;rv64gc-lp64--"
+  ./configure --prefix="${RISCV_SPIKE}" --enable-multilib --with-multilib-generator="rv32gc-ilp32--;rv64gc-lp64--"
   make
   ```
 
