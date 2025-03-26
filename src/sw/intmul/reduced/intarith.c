@@ -3,74 +3,69 @@
 #include <string.h>
 #include "intarith.h"
 
-
-#define ROTL(x, dist) (((x) << (dist)) | ((x) >> (64 - (dist))))
-#define ROTR(x, dist) (((x) >> (dist)) | ((x) << (64 - (dist))))
-
-
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////// Functions emulating the custom instructions /////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 
-static inline uint64_t cacc(uint64_t rs1, uint64_t rs2,  uint64_t rs3)
+static inline limb_t cacc(limb_t rs1, limb_t rs2,  limb_t rs3)
 {
-  __uint128_t sum;
-  uint64_t rd;
+  dlimb_t sum;
+  limb_t rd;
   
-  sum = (__uint128_t) rs1 + rs2;
-  sum = (sum >> 64) + rs3;
-  rd = (uint64_t) (sum);
+  sum = (dlimb_t) rs1 + rs2;
+  sum = (sum >> MPISE_XLEN) + rs3;
+  rd = (limb_t) (sum);
   
   return rd;
 }
 
 
-static inline uint64_t maccfrlu(uint64_t rs1, uint64_t rs2,  uint64_t rs3)
+static inline limb_t maccfrlu(limb_t rs1, limb_t rs2,  limb_t rs3)
 {
-  __uint128_t prod;
-  uint64_t rd;
+  dlimb_t prod;
+  limb_t rd;
   
-  prod = (__uint128_t) rs1*rs2;
+  prod = (dlimb_t) rs1*rs2;
   prod += rs3;
-  rd = (uint64_t) (prod);
+  rd = (limb_t) (prod);
     
   return rd;
 }
 
 
-static inline uint64_t maccfrhu(uint64_t rs1, uint64_t rs2,  uint64_t rs3)
+static inline limb_t maccfrhu(limb_t rs1, limb_t rs2,  limb_t rs3)
 {
-  __uint128_t prod;
-  uint64_t rd;
+  dlimb_t prod;
+  limb_t rd;
   
-  prod = (__uint128_t) rs1*rs2;
+  prod = (dlimb_t) rs1*rs2;
   prod += rs3;
-  rd = (uint64_t) (prod >> 64);
+  rd = (limb_t) (prod >> MPISE_XLEN);
   
   return rd;
 }
 
 
-static inline uint64_t maccrrlu(uint64_t rs1, uint64_t rs2,  uint64_t rs3)
+static inline limb_t maccrrlu(limb_t rs1, limb_t rs2,  limb_t rs3)
 {
-  __uint128_t prod;
-  uint64_t rd;
+  dlimb_t prod;
+  limb_t rd;
   
-  prod = (__uint128_t) rs1*rs2;
-  rd = rs3 + (((uint64_t ) prod) & LIMBMASK);
+  prod = (dlimb_t) rs1*rs2;
+  rd = rs3 + (((limb_t ) prod) & LIMBMASK);
     
   return rd;
 }
 
 
-static inline uint64_t maccrrhu(uint64_t rs1, uint64_t rs2,  uint64_t rs3)
+static inline limb_t maccrrhu(limb_t rs1, limb_t rs2,  limb_t rs3)
 {
-  __uint128_t prod;
-  uint64_t rd;
+  dlimb_t prod;
+  limb_t rd;
   
-  prod = (__uint128_t) rs1*rs2;
-  rd = rs3 + ((uint64_t ) (prod >> LIMBBITS));
+  prod = (dlimb_t) rs1*rs2;
+  rd = rs3 + ((limb_t ) (prod >> LIMBBITS));
   
   return rd;
 }
@@ -83,7 +78,7 @@ static inline uint64_t maccrrhu(uint64_t rs1, uint64_t rs2,  uint64_t rs3)
 
 // Initialization of a multi-precision integer
 
-void mpi_init(uint64_t *r, uint64_t word, uint64_t mask, int len)
+void mpi_init(limb_t *r, limb_t word, limb_t mask, int len)
 {
   int i;
   
@@ -96,7 +91,7 @@ void mpi_init(uint64_t *r, uint64_t word, uint64_t mask, int len)
 // Printing of a multi-precision integer
 
 // __attribute__((noinline))
-void mpi_print(const char *c, const uint64_t *a, int len)
+void mpi_print(const char *c, const limb_t *a, int len)
 {
   int i;
   
@@ -113,7 +108,7 @@ void mpi_print(const char *c, const uint64_t *a, int len)
 // Comparison two multi-precision integers of length `len`, return value is
 // either +1, 0, or -1, depending on whether a > b, a == b, or a < b.
 
-int mpi_compare(const uint64_t *a, const uint64_t *b, int len)
+int mpi_compare(const limb_t *a, const limb_t *b, int len)
 {
   int i;
   
@@ -127,34 +122,34 @@ int mpi_compare(const uint64_t *a, const uint64_t *b, int len)
 
 // Conversion full radix -> reduced radix
 
-void mpi_full2red(uint64_t *r, int rlen, const uint64_t *a, int alen)
+void mpi_full2red(limb_t *r, int rlen, const limb_t *a, int alen)
 {
-  uint64_t w0, w1;
+  limb_t w0, w1;
   int lbits = LIMBBITS, rbits = 0, i, j = 0;
   
   for (i = 0; i < rlen; i++) {
     w0 = (j < alen) ? a[j] : 0;
     w1 = (j + 1 < alen) ? a[j+1] : 0;
     r[i] = w0 >> rbits;
-    if (rbits > (64 - LIMBBITS)) r[i] |= (w1 << lbits);
+    if (rbits > (MPISE_XLEN - LIMBBITS)) r[i] |= (w1 << lbits);
     r[i] &= LIMBMASK;
     // printf("i = %02i, j = %02i, ", i, j);
     // printf("lbits = %02i, rbits = %02i\n", lbits, rbits);
     rbits += LIMBBITS;
-    if (rbits >= 64) {
-      rbits -= 64;
+    if (rbits >= MPISE_XLEN) {
+      rbits -= MPISE_XLEN;
       j++;
     }
-    lbits = 64 - rbits;
+    lbits = MPISE_XLEN - rbits;
   }
 }
 
 
 // Conversion reduced radix -> full radix
 
-void mpi_red2full(uint64_t *r, int rlen, const uint64_t *a, int alen)
+void mpi_red2full(limb_t *r, int rlen, const limb_t *a, int alen)
 {
-  uint64_t w0, w1, w2;
+  limb_t w0, w1, w2;
   int lbits = LIMBBITS, rbits = 0, i, j = 0;
   
   for (i = 0; i < rlen; i++) {
@@ -162,10 +157,10 @@ void mpi_red2full(uint64_t *r, int rlen, const uint64_t *a, int alen)
     w1 = (j + 1 < alen) ? a[j+1] : 0;
     w2 = (j + 2 < alen) ? a[j+2] : 0;
     r[i] = (w1 << lbits) | (w0 >> rbits);
-    if (lbits < (64 - LIMBBITS)) r[i] |= (w2 << (LIMBBITS + lbits));
+    if (lbits < (MPISE_XLEN - LIMBBITS)) r[i] |= (w2 << (LIMBBITS + lbits));
     // printf("i = %02i, j = %02i, ", i, j);
     // printf("lbits = %02i, rbits = %02i\n", lbits, rbits);
-    rbits += 64;
+    rbits += MPISE_XLEN;
     while (rbits >= LIMBBITS) {
       rbits -= LIMBBITS;
       j++;
@@ -192,30 +187,30 @@ void mpi_red2full(uint64_t *r, int rlen, const uint64_t *a, int alen)
 // function name, the implementation processes one word operand `a` and one
 // word of operand `b` in each iteration of the inner loop.
 
-void mpi_mul_1x1fr_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, \
+void mpi_mul_1x1fr_isa(limb_t *r, const limb_t *a, const limb_t *b, \
                        int len)
 {
-  __uint128_t prod = 0;
+  dlimb_t prod = 0;
   int i, j;
   
   // multiplication of A by b[0]
   for (j = 0; j < len; j++) {
-    prod += (__uint128_t) a[j]*b[0];
-    r[j] = (uint64_t) prod;
-    prod >>= 64;
+    prod += (dlimb_t) a[j]*b[0];
+    r[j] = (limb_t) prod;
+    prod >>= MPISE_XLEN;
   }
-  r[j] = (uint64_t) prod;
+  r[j] = (limb_t) prod;
   
   // multiplication of A by b[i] for 1 <= i < len
   for (i = 1; i < len; i++) {
     prod = 0;
     for (j = 0; j < len; j++) {
-      prod += (__uint128_t) a[j]*b[i];
+      prod += (dlimb_t) a[j]*b[i];
       prod += r[i+j];
-      r[i+j] = (uint64_t) prod;
-      prod >>= 64;
+      r[i+j] = (limb_t) prod;
+      prod >>= MPISE_XLEN;
     }
-    r[i+j] = (uint64_t) prod;
+    r[i+j] = (limb_t) prod;
   }
 }
 
@@ -227,10 +222,10 @@ void mpi_mul_1x1fr_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, \
 // function name, the implementation processes one word operand `a` and one
 // word of operand `b` in each iteration of the inner loops.
 
-void mpi_mul_1x1fr_ise(uint64_t *r, const uint64_t *a, const uint64_t *b, \
+void mpi_mul_1x1fr_ise(limb_t *r, const limb_t *a, const limb_t *b, \
                        int len)
 {
-  uint64_t t, h = 0, m = 0, l = 0;
+  limb_t t, h = 0, m = 0, l = 0;
   int i, j, k;
   
   // len iterations of 1st outer loop
@@ -276,20 +271,20 @@ void mpi_mul_1x1fr_ise(uint64_t *r, const uint64_t *a, const uint64_t *b, \
 // "1x1" in the function name, the implementation processes one word operand
 // `a` and one word of operand `b` in each iteration of the inner loops.
 
-void mpi_mul_1x1rr_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, \
+void mpi_mul_1x1rr_isa(limb_t *r, const limb_t *a, const limb_t *b, \
                       int len)
 {
-  __uint128_t prod = 0;
+  dlimb_t prod = 0;
   int i, j, k;
   
   // len iterations of 1st outer loop
   for (i = 0; i < len; i++) {
     k = i;  // to access b[k]
     for (j = 0; j <= i; j++) {
-      prod += (__uint128_t) a[j]*b[k];
+      prod += (dlimb_t) a[j]*b[k];
       k--;
     }
-    r[i] = ((uint64_t) prod) & LIMBMASK;
+    r[i] = ((limb_t) prod) & LIMBMASK;
     prod >>= LIMBBITS;
   }
   
@@ -297,13 +292,13 @@ void mpi_mul_1x1rr_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, \
   for (i = len; i < 2*len - 1; i++) {
     k = len - 1;  // to access b[k]
     for (j = i - k; j < len; j++) {
-      prod += (__uint128_t) a[j]*b[k];
+      prod += (dlimb_t) a[j]*b[k];
       k--;
     }
-    r[i] = ((uint64_t) prod) & LIMBMASK;
+    r[i] = ((limb_t) prod) & LIMBMASK;
     prod >>= LIMBBITS;
   }
-  r[2*len-1] = (uint64_t) prod;
+  r[2*len-1] = (limb_t) prod;
 }
 
 
@@ -318,10 +313,10 @@ void mpi_mul_1x1rr_isa(uint64_t *r, const uint64_t *a, const uint64_t *b, \
 // in the function name, the implementation processes one word operand `a` and
 // one word of operand `b` in each iteration of the inner loops.
 
-void mpi_mul_1x1rr_ise(uint64_t *r, const uint64_t *a, const uint64_t *b, \
+void mpi_mul_1x1rr_ise(limb_t *r, const limb_t *a, const limb_t *b, \
                       int len)
 {
-  uint64_t h = 0, l = 0;
+  limb_t h = 0, l = 0;
   int i, j, k;
   
   // len iterations of 1st outer loop
@@ -363,14 +358,14 @@ void mpi_mul_1x1rr_ise(uint64_t *r, const uint64_t *a, const uint64_t *b, \
 
 void test_conversion(void)
 {
-  uint64_t x[120], z[80], a[80];
+  limb_t x[120], z[80], a[80];
   int len, numlimbs;
   
   // initialization of operand
   mpi_init(a, AWORD, ALL1WORD, 80);
   
   for (len = 4; len < 80; len++) {
-    numlimbs = (64*len + LIMBBITS - 1)/LIMBBITS;
+    numlimbs = (MPISE_XLEN*len + LIMBBITS - 1)/LIMBBITS;
     printf("number of words = %i, number of limbs = %i", len, numlimbs);
     // mpi_print("a = ", a, len);
     mpi_full2red(x, numlimbs, a, len);
@@ -391,7 +386,7 @@ void test_conversion(void)
 
 void test_mul_fullradix(int words)
 {
-  uint64_t a[words], b[words], r[2*words], c[2*words];
+  limb_t a[words], b[words], r[2*words], c[2*words];
   
   // initialization of operands
   mpi_init(a, AWORD, ALL1WORD, words);
@@ -421,9 +416,9 @@ void test_mul_fullradix(int words)
 
 void test_mul_redradix(int limbs)
 {
-  uint64_t a[limbs], b[limbs], c[2*limbs], r[2*limbs];
+  limb_t a[limbs], b[limbs], c[2*limbs], r[2*limbs];
   // int words = (limbs*LIMBBITS + 63)/64;  // operand length full-radix
-  // uint64_t afr[words], bfr[words], rfr[2*words];  // to verify result
+  // limb_t afr[words], bfr[words], rfr[2*words];  // to verify result
   
   // initialization of operands
   mpi_init(a, AWORD, LIMBMASK, limbs);
