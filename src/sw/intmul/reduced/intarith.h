@@ -8,8 +8,8 @@
 #define ROTR(x, dist) (((x) >> (dist)) | ((x) << (MPISE_XLEN - (dist))))
 
 #if ( MPISE_XLEN == 32 )
-typedef  limb_t uint32_t;
-typedef dlimb_t uint64_t;
+typedef uint32_t  limb_t;
+typedef uint64_t dlimb_t;
 #ifdef MPISE_RADIX
 #define LIMBBITS MPISE_RADIX
 #else  // for testing!
@@ -22,8 +22,8 @@ typedef dlimb_t uint64_t;
 #endif
 
 #if ( MPISE_XLEN == 64 )
-typedef  limb_t uint64_t;
-typedef dlimb_t __uint128_t;
+typedef uint64_t     limb_t;
+typedef __uint128_t dlimb_t;
 #ifdef MPISE_RADIX
 #define LIMBBITS MPISE_RADIX
 #else  // for testing!
