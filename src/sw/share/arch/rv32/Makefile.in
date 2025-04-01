@@ -6,22 +6,19 @@
 
 # =============================================================================
 
-ifeq "${RISCV}" "${RISCV_MPISE}"
-export GCC_PREFIX  = riscv64-unknown-elf
-endif
-ifeq "${RISCV}" "${RISCV_CVA6}"
-export GCC_PREFIX  = riscv-none-elf
-endif
 ifeq "${PLATFORM}" "spike"
+export GCC_PREFIX  = riscv64-unknown-elf
 export GCC_FLAGS  += -march='rv32imafdc_zicsr_zifencei_zicntr' -mabi='ilp32'
 export GCC_PATHS  += 
 export GCC_LIBS   += 
 endif
 ifeq "${PLATFORM}" "cva6-verilator"
+export GCC_PREFIX  = riscv-none-elf
 export GCC_FLAGS  += -march='rv32imafdc_zicsr_zifencei'        -mabi='ilp32'
 export GCC_FLAGS  += -DMPISE_STDC_RAND
 endif
 ifeq "${PLATFORM}" "cva6-fpga"
+export GCC_PREFIX  = riscv-none-elf
 export GCC_FLAGS  += -march='rv32imafdc_zicsr_zifencei_zicntr' -mabi='ilp32' -static -mcmodel='medany' -fvisibility='hidden' -nostdlib -nostartfiles -g -T ${CVA6}/config/gen_from_riscv_config/linker/link.ld
 export GCC_PATHS  += -I ${CVA6}/verif/sim/dv/user_extension -I ${CVA6}/verif/tests/custom/env -I ${CVA6}/verif/tests/custom/common
 export GCC_LIBS   += -lgcc
