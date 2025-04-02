@@ -6,6 +6,7 @@
 
 #define LIMBMASK (0xFFFFFFFFFFFFFFFFULL >> (64 - (LIMBBITS)))
 
+// ============================================================================
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
@@ -47,6 +48,7 @@
 #define rw6l t6
 #define rw6h ra
 
+// ----------------------------------------------------------------------------
 
 // The macro `MACC1X1` multiplies the word `aiw` by `bjw` and adds the double-
 // length product to the double-length accumulator `rhi|rlo`. The two words
@@ -61,7 +63,6 @@
     add     \rhi, \rhi, \thi
 .endm
 
-
 .macro MACL4x2
     MACC1X1 rw0h, rw0l, aw00, bw00, tmp1, tmp0
     MACC1X1 rw1h, rw1l, aw00, bw01, tmp1, tmp0
@@ -72,7 +73,6 @@
     MACC1X1 rw3h, rw3l, aw03, bw00, tmp1, tmp0
     MACC1X1 rw4h, rw4l, aw03, bw01, tmp1, tmp0
 .endm
-
 
 .macro MACH4x2
     MACC1X1 rw2h, rw2l, aw00, bw02, tmp1, tmp0
@@ -85,6 +85,7 @@
     MACC1X1 rw6h, rw6l, aw03, bw03, tmp1, tmp0
 .endm
 
+// ----------------------------------------------------------------------------
 
 // The macro `PROLOGUE` pushes 13 callee-saved registers on the stack.
 
@@ -104,7 +105,6 @@
     sd      s11, 88(sp)
     sd      ra, 96(sp)
 .endm
-
 
 // The macro `EPILOGUE` pops 13 callee-saved registers from the stack and
 // returns to the caller.
@@ -127,6 +127,7 @@
     ret
 .endm
 
+// ----------------------------------------------------------------------------
 
 // The macro `LDM_OPA` loads four words of array `a` from RAM and puts then in
 // registers `aw00`-`aw03`.
@@ -138,7 +139,6 @@
     ld      aw03, 24(aptr)
     addi    aptr, aptr, 32
 .endm
-
 
 // The macro `LDL_OPB` loads two words of array `b` from RAM and puts then in
 // registers `bw00`-`bw01`.
@@ -157,7 +157,6 @@
     ld      bw02, -16(bptr)
     addi    bptr, bptr, -32
 .endm
-
 
 // convert lower half of accu to 60-bit limbs
 
@@ -213,7 +212,6 @@
     addi    rptr, rptr, 32
 .endm
 
-
 .macro CLRACCU
     mv      rw0l, zero
     mv      rw0h, zero
@@ -230,7 +228,6 @@
     mv      rw6l, zero
     mv      rw6h, zero
 .endm
-
 
 .macro SHRACCU
     mv      rw0l, rw4l
@@ -249,6 +246,7 @@
     mv      rw6h, zero
 .endm
 
+// ============================================================================
 
 // Multiple-precision multiplication using reduced-radix representation
 // --------------------------------------------------------------------
@@ -312,7 +310,7 @@ mpi_mul_4x4rr_isa:
     TOLIMB
     STM_RES     // store the result-words in array `r` in RAM
     EPILOGUE    // pop callee-saved registers and return
-
-
 .end
+
+// ============================================================================
 

@@ -1,13 +1,14 @@
 #include "ise_al.h"
 
-#ifdef RADIX
-#define LIMBBITS RADIX
+#ifdef MPISE_RADIX
+#define LIMBBITS MPISE_RADIX
 #else  // for testing!
 #define LIMBBITS 51
 #endif
 
 #define LIMBMASK (0xFFFFFFFFFFFFFFFFULL >> (64 - (LIMBBITS)))
 
+// ============================================================================
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
@@ -31,6 +32,7 @@
 #define rwl t5
 #define rwh t6
 
+// ----------------------------------------------------------------------------
 
 // The macro `MACC1X1` multiplies the word `aiw` by `bjw` and adds the double-
 // length product to the double-length accumulator `rhi|rlo`. The two words
@@ -43,6 +45,7 @@
 #endif
 .endm
 
+// ----------------------------------------------------------------------------
 
 // The macro `LDM_OPA` loads a word of array `a` from RAM and puts it in
 // register `aw0`.
@@ -52,7 +55,6 @@
     addi    aptr, aptr, 8
 .endm
 
-
 // The macro `LDM_OPB` loads a word of array `b` from RAM and puts it in
 // registers `bw0`.
 
@@ -60,7 +62,6 @@
     addi    bptr, bptr, -8
     ld      bw0, 0(bptr)
  .endm
-
 
 // convert lower half of accu to 60-bit limbs
 
@@ -70,7 +71,6 @@
     and     rwl, rwl, mask
 .endm
 
-
 // The macro `STM_RES` stores a result-words, which is in register `rwl`, to
 // array `r` in RAM.
 
@@ -79,18 +79,17 @@
     addi    rptr, rptr, 8
 .endm
 
-
 .macro CLRACCU
     mv      rwl, zero
     mv      rwh, zero
 .endm
-
 
 .macro SHRACCU
     mv      rwl, rwh
     mv      rwh, zero
 .endm
 
+// ============================================================================
 
 // Multiple-precision multiplication using reduced-radix representation
 // --------------------------------------------------------------------
@@ -150,7 +149,6 @@ mpi_mul_1x1rr_ise_asm:
     TOLIMB
     STW_RES     // store the result-words in array `r` in RAM
     ret
-
-
 .end
 
+// ============================================================================

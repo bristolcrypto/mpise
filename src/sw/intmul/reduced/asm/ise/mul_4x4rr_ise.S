@@ -8,6 +8,7 @@
 
 #define LIMBMASK (0xFFFFFFFFFFFFFFFFULL >> (64 - (LIMBBITS)))
 
+// ============================================================================
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
@@ -50,6 +51,7 @@
 #define rw6l t5
 #define rw6h t6
 
+// ----------------------------------------------------------------------------
 
 // The macro `MACC1X1` multiplies the word `aiw` by `bjw` and adds the double-
 // length product to the double-length accumulator `rhi|rlo`. The two words
@@ -92,6 +94,7 @@
     MACC1X1 rw6h, rw6l, aw03, bw03, tmp
 .endm
 
+// ----------------------------------------------------------------------------
 
 // The macro `PROLOGUE` pushes 13 callee-saved registers on the stack.
 
@@ -111,7 +114,6 @@
     sd      s11, 88(sp)
     sd      ra, 96(sp)
 .endm
-
 
 // The macro `EPILOGUE` pops 13 callee-saved registers from the stack and
 // returns to the caller.
@@ -134,6 +136,7 @@
     ret
 .endm
 
+// ----------------------------------------------------------------------------
 
 // The macro `LDM_OPA` loads four words of array `a` from RAM and puts then in
 // registers `aw00`-`aw03`.
@@ -164,7 +167,6 @@
     ld      bw02, -16(bptr)
     addi    bptr, bptr, -32
 .endm
-
 
 // convert lower half of accu to 60-bit limbs
 
@@ -200,7 +202,6 @@
     and     rw3l, rw3l, mask
 .endm
 
-
 // The macro `STM_RES` stores four result-words, which are in registers `rw00`-
 // `rw03`, to array `r` in RAM.
 
@@ -211,7 +212,6 @@
     sd      rw3l, 24(rptr)
     addi    rptr, rptr, 32
 .endm
-
 
 .macro CLRACCU
     mv      rw0l, zero
@@ -230,7 +230,6 @@
     mv      rw6h, zero
 .endm
 
-
 .macro SHRACCU
     mv      rw0l, rw4l
     mv      rw0h, rw4h
@@ -248,6 +247,7 @@
     mv      rw6h, zero
 .endm
 
+// ============================================================================
 
 // Multiple-precision multiplication using reduced-radix representation
 // --------------------------------------------------------------------
@@ -312,7 +312,6 @@ mpi_mul_4x4rr_ise:
     TOLIMB
     STM_RES     // store the result-words in array `r` in RAM
     EPILOGUE    // pop callee-saved registers and return
-
-
 .end
 
+// ============================================================================
