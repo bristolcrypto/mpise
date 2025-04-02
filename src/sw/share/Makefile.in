@@ -73,11 +73,11 @@ ${REPO_HOME}/build/${ALG} :
 	@mkdir --parents ${@}
 
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf : $${SOURCES}
-	${RISCV}/bin/${GCC_PREFIX}-gcc ${GCC_FLAGS} ${GCC_PATHS} $(addprefix -I ,${INCLUDES}) ${CONF} -Wall -std='gnu99' -O3 -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
+	@${RISCV}/bin/${GCC_PREFIX}-gcc ${GCC_FLAGS} ${GCC_PATHS} $(addprefix -I ,${INCLUDES}) ${CONF} -Wall -std='gnu99' -O3 -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.bin : ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
-	${RISCV}/bin/${GCC_PREFIX}-objcopy --output-target='binary' ${<} ${@}
+	@${RISCV}/bin/${GCC_PREFIX}-objcopy --output-target='binary' ${<} ${@}
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.asm : ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
-	${RISCV}/bin/${GCC_PREFIX}-objdump --disassemble-all ${<} > ${@}
+	@${RISCV}/bin/${GCC_PREFIX}-objdump --disassemble-all ${<} > ${@}
 
 # -----------------------------------------------------------------------------
 

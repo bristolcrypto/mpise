@@ -2,11 +2,15 @@
 #include "intarith.h"
 
 #ifndef DEBUG
-#define DEBUG 0
+#define DEBUG 1
 #endif
 
 #ifndef TRIALS
 #define TRIALS 1000
+#endif
+
+#if !defined( VERSION_SIMPLE ) && !defined( VERSION_HYBRID )
+#define VERSION_HYBRID 1
 #endif
 
 #if   defined( MPISE_RADIX_FULL    )
