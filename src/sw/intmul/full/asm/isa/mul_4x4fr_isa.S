@@ -1,5 +1,13 @@
 // ============================================================================
 
+#if   ( MPISE_XLEN == 32 )
+#define IMM_SHIFT 2
+#define IMM_INC   16
+#elif ( MPISE_XLEN == 64 )
+#define IMM_SHIFT 3
+#define IMM_INC   32
+#endif
+
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
@@ -243,19 +251,19 @@
 mpi_mul_4x4fr_isa:
     PROLOGUE            // push callee-saved registers on stack
     CLRACCU
-    slli    len, len, 3
+    slli    len, len, IMM_SHIFT
     mv      octr, zero
     // START OF FIRST OUTER LOOP
 .LOUTLOOP1:
     mv      ictr, zero
-    add     octr, octr, 32
+    add     octr, octr,  IMM_INC
     add     bptr, bptr, octr
     // START OF FIRST INNER LOOP
 .LINNLOOP1:     // the first inner loop is iterated $octr/16$ times
     LDM_OPA     // load four words of array `a` and put them in
     LDM_OPB     // load four words of array `b` and put them in
     MACC4X4     //
-    addi    ictr, ictr, 32          // increment inner-loop counter
+    addi    ictr, ictr,  IMM_INC          // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP1  // branch to start of loop if ictr != octr
     // END OF FIRST INNER LOOP
     STM_RES     // store the result-words in array `r` in RAM
@@ -265,7 +273,7 @@ mpi_mul_4x4fr_isa:
     // END OF FIRST OUTER LOOP
     add     aptr, aptr, len        // set aptr to address of a[len}
     add     bptr, bptr, len        // set bptr to address of b[len}
-    addi    octr, octr, -32        // second outer loop is iterated len-1 times
+    addi    octr, octr, -IMM_INC        // second outer loop is iterated len-1 times
     // START OF SECOND OUTER LOOP
 .LOUTLOOP2:
     mv      ictr, zero
@@ -275,13 +283,13 @@ mpi_mul_4x4fr_isa:
     LDM_OPA     // load four words of array `a` and put them in
     LDM_OPB     // load four words of array `b` and put them in
     MACC4X4     //
-    addi    ictr, ictr, 32          // increment inner-loop counter
+    addi    ictr, ictr,  IMM_INC          // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP2  // branch to start of loop if ictr != octr
     // END OF SECOND INNER LOOP
     STM_RES     // store the result-words in array `r` in RAM
     SHRACCU     //
     add     bptr, bptr, octr
-    addi    octr, octr, -32
+    addi    octr, octr, -IMM_INC
     bne     octr, zero, .LOUTLOOP2  // branch to start of loop if octr != 0
     // END OF SECOND OUTER LOOP
     STM_RES     // store the result-words in array `r` in RAM
