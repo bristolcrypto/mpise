@@ -14,7 +14,7 @@
 #define LIMBBITS 60
 #endif
 
-#define LIMBMASK (0xFFFFFFFFFFFFFFFFULL >> (64 - (LIMBBITS)))
+#define LIMBMASK (0xFFFFFFFFFFFFFFFFULL >> (MPISE_XLEN - (LIMBBITS)))
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
