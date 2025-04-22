@@ -98,10 +98,17 @@ void mpi_print(const char *c, const limb_t *a, int len)
   if ((c != NULL) && (strlen(c) > 0)) {
     printf("%s", c);
   }
+  #if   ( MPISE_XLEN == 32 )
+  for (i = len - 1; i > 0; i--) {
+    printf("%08x ", (unsigned int) a[i]);
+  }
+  printf("%08x\n", (unsigned int) a[0]);
+  #elif ( MPISE_XLEN == 64 )
   for (i = len - 1; i > 0; i--) {
     printf("%016llx ", (unsigned long long) a[i]);
   }
   printf("%016llx\n", (unsigned long long) a[0]);
+  #endif
 }
 
 
