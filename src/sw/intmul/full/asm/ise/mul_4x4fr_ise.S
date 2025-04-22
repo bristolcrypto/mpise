@@ -180,7 +180,7 @@
     lw      bw02, - 8(bptr)
     lw      bw01, -12(bptr)
     lw      bw00, -16(bptr)
-    addi    bptr, bptr, -32
+    addi    bptr, bptr, -16
 .endm
 #elif ( MPISE_XLEN == 64 )
 .macro LDM_OPB
