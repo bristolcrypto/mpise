@@ -72,13 +72,6 @@
 #endif
 .endm
 
-
-.macro sraiadd_ rd:req, rs1:req, rs2:req, dist:req
-    srli    tmp, \rs2, \dist
-    add     \rd, \rs1, tmp
-.endm
-
-
 .macro MACL4x2
     MACC1X1 rw0h, rw0l, aw00, bw00, tmp
     MACC1X1 rw1h, rw1l, aw00, bw01, tmp
@@ -242,21 +235,21 @@
 
 .macro TOLIMB
     // li      mask, LIMBMASK
-    sraiadd_ rw1l, rw1l, rw0l, LIMBBITS
+    sraiadd rw1l, rw1l, rw0l, LIMBBITS
     and     rw0l, rw0l, mask
-    sraiadd_ rw1h, rw1h, rw0h, LIMBBITS
+    sraiadd rw1h, rw1h, rw0h, LIMBBITS
     and     rw0h, rw0h, mask
-    sraiadd_ rw2l, rw2l, rw1l, LIMBBITS
+    sraiadd rw2l, rw2l, rw1l, LIMBBITS
     and     rw1l, rw1l, mask
-    sraiadd_ rw2h, rw2h, rw1h, LIMBBITS
+    sraiadd rw2h, rw2h, rw1h, LIMBBITS
     and     rw1h, rw1h, mask
-    sraiadd_ rw3l, rw3l, rw2l, LIMBBITS
+    sraiadd rw3l, rw3l, rw2l, LIMBBITS
     and     rw2l, rw2l, mask
-    sraiadd_ rw3h, rw3h, rw2h, LIMBBITS
+    sraiadd rw3h, rw3h, rw2h, LIMBBITS
     and     rw2h, rw2h, mask
-    sraiadd_ rw4l, rw4l, rw3l, LIMBBITS
+    sraiadd rw4l, rw4l, rw3l, LIMBBITS
     and     rw3l, rw3l, mask
-    sraiadd_ rw5l, rw5l, rw4l, LIMBBITS
+    sraiadd rw5l, rw5l, rw4l, LIMBBITS
     and     rw4l, rw4l, mask
     
     add     rw1l, rw1l, rw0h
@@ -264,11 +257,11 @@
     add     rw3l, rw3l, rw2h
     add     rw4l, rw4l, rw3h
     
-    sraiadd_ rw2l, rw2l, rw1l, LIMBBITS
+    sraiadd rw2l, rw2l, rw1l, LIMBBITS
     and     rw1l, rw1l, mask
-    sraiadd_ rw3l, rw3l, rw2l, LIMBBITS
+    sraiadd rw3l, rw3l, rw2l, LIMBBITS
     and     rw2l, rw2l, mask
-    sraiadd_ rw4l, rw4l, rw3l, LIMBBITS
+    sraiadd rw4l, rw4l, rw3l, LIMBBITS
     and     rw3l, rw3l, mask
 .endm
 
