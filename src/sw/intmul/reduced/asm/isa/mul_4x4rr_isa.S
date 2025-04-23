@@ -3,9 +3,13 @@
 #if   ( MPISE_XLEN == 32 )
 #define IMM_SHIFT 2
 #define IMM_INC   16
+#define ALL1WORD 0xFFFFFFFFULL
+#define LIMBMASK (ALL1WORD >> (32 - (LIMBBITS)))
 #elif ( MPISE_XLEN == 64 )
 #define IMM_SHIFT 3
 #define IMM_INC   32
+#define ALL1WORD 0xFFFFFFFFFFFFFFFFULL
+#define LIMBMASK (ALL1WORD >> (64 - (LIMBBITS)))
 #endif
 
 #ifdef MPISE_RADIX
@@ -13,8 +17,6 @@
 #else  // for testing!
 #define LIMBBITS 60
 #endif
-
-#define LIMBMASK (0xFFFFFFFFFFFFFFFFULL >> (MPISE_XLEN - (LIMBBITS)))
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
