@@ -5,10 +5,10 @@
 // Description:
 // ------------
 // The function `gfp_add_isa` computes the sum $r = a + b \bmod p$ of two
-// elements $a$ and $b$ of a pseudo-Mersenne prime field. The prime $p$ is
-// the 255-bit pseudo-Mersenne prime $p = 2^{255} - 19$. Operands $a$ and $b$
-// are allowed to be larger than $p$. The result $r$ may not be fully reduced,
-// but $r$ is always less than $2p$.
+// elements $a$ and $b$ of a pseudo-Mersenne prime field. The prime $p$ is the
+// 255-bit pseudo-Mersenne prime $p = 2^{255} - 19$. Operands $a$ and $b$ are
+// allowed to be larger than $p$. The result $r$ may not be fully reduced, but
+// $r$ is always less than $2p$.
 //
 // Parameters:
 // -----------
