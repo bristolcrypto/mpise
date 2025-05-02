@@ -1,3 +1,13 @@
+// ============================================================================
+
+#if   ( MPISE_XLEN == 32 )
+#define IMM_SHIFT 2
+#define IMM_INC   16
+#elif ( MPISE_XLEN == 64 )
+#define IMM_SHIFT 3
+#define IMM_INC   32
+#endif
+
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
@@ -33,6 +43,7 @@
 #define rw07 t5
 #define rw08 t6
 
+// ----------------------------------------------------------------------------
 
 // The macro `MACC1X1` multiplies the word `aiw` by `bjw` and adds the double-
 // length product to the triple-length accumulator `rex|rhi|rlo`. The two words
@@ -48,7 +59,6 @@
     sltu    \thi, \rhi, \thi
     add     \rex, \rex, \thi
 .endm
-
 
 .macro MACC4x4
     MACC1X1 rw02, rw01, rw00, aw00, bw00, tmp1, tmp0
@@ -69,13 +79,29 @@
     MACC1X1 rw08, rw07, rw06, aw03, bw03, tmp1, tmp0
 .endm
 
+// ----------------------------------------------------------------------------
 
 // The macro `PROLOGUE` pushes 10 callee-saved registers on the stack.
 
+#if   ( MPISE_XLEN == 32 )
+.macro PROLOGUE
+    addi    sp, sp, -40
+    sw      s0,  0(sp)
+    sw      s1,  4(sp)
+    sw      s2,  8(sp)
+    sw      s3, 12(sp)
+    sw      s4, 16(sp)
+    sw      s5, 20(sp)
+    sw      s6, 24(sp)
+    sw      s7, 28(sp)
+    sw      s8, 32(sp)
+    sw      s9, 36(sp)
+.endm
+#elif ( MPISE_XLEN == 64 )
 .macro PROLOGUE
     addi    sp, sp, -80
-    sd      s0, (sp)
-    sd      s1, 8(sp)
+    sd      s0,  0(sp)
+    sd      s1,  8(sp)
     sd      s2, 16(sp)
     sd      s3, 24(sp)
     sd      s4, 32(sp)
@@ -85,14 +111,30 @@
     sd      s8, 64(sp)
     sd      s9, 72(sp)
 .endm
-
+#endif
 
 // The macro `EPILOGUE` pops 10 callee-saved registers from the stack and
 // returns to the caller.
 
+#if   ( MPISE_XLEN == 32 )
 .macro EPILOGUE
-    ld      s0, (sp)
-    ld      s1, 8(sp)
+    lw      s0,  0(sp)
+    lw      s1,  4(sp)
+    lw      s2,  8(sp)
+    lw      s3, 12(sp)
+    lw      s4, 16(sp)
+    lw      s5, 20(sp)
+    lw      s6, 24(sp)
+    lw      s7, 28(sp)
+    lw      s8, 32(sp)
+    lw      s9, 36(sp)
+    addi    sp, sp, 40
+    ret
+.endm
+#elif ( MPISE_XLEN == 64 )
+.macro EPILOGUE
+    ld      s0,  0(sp)
+    ld      s1,  8(sp)
     ld      s2, 16(sp)
     ld      s3, 24(sp)
     ld      s4, 32(sp)
@@ -104,43 +146,72 @@
     addi    sp, sp, 80
     ret
 .endm
+#endif
 
+// ----------------------------------------------------------------------------
 
 // The macro `LDM_OPA` loads four words of array `a` from RAM and puts then in
 // registers `aw00`-`aw03`.
 
+#if   ( MPISE_XLEN == 32 )
 .macro LDM_OPA
-    ld      aw00, 0(aptr)
-    ld      aw01, 8(aptr)
+    lw      aw00,  0(aptr)
+    lw      aw01,  4(aptr)
+    lw      aw02,  8(aptr)
+    lw      aw03, 12(aptr)
+    addi    aptr, aptr, 16
+.endm
+#elif ( MPISE_XLEN == 64 )
+.macro LDM_OPA
+    ld      aw00,  0(aptr)
+    ld      aw01,  8(aptr)
     ld      aw02, 16(aptr)
     ld      aw03, 24(aptr)
     addi    aptr, aptr, 32
 .endm
-
+#endif
 
 // The macro `LDM_OPB` loads four words of array `b` from RAM and puts then in
 // registers `bw00`-`bw03`.
 
+#if   ( MPISE_XLEN == 32 )
 .macro LDM_OPB
-    ld      bw03, -8(bptr)
+    lw      bw03, - 4(bptr)
+    lw      bw02, - 8(bptr)
+    lw      bw01, -12(bptr)
+    lw      bw00, -16(bptr)
+    addi    bptr, bptr, -16
+.endm
+#elif ( MPISE_XLEN == 64 )
+.macro LDM_OPB
+    ld      bw03, - 8(bptr)
     ld      bw02, -16(bptr)
     ld      bw01, -24(bptr)
     ld      bw00, -32(bptr)
     addi    bptr, bptr, -32
 .endm
-
+#endif
 
 // The macro `STM_RES` stores four result-words, which are in registers `rw00`-
 // `rw03`, to array `r` in RAM.
 
+#if   ( MPISE_XLEN == 32 )
 .macro STM_RES
-    sd      rw00, 0(rptr)
-    sd      rw01, 8(rptr)
+    sw      rw00,  0(rptr)
+    sw      rw01,  4(rptr)
+    sw      rw02,  8(rptr)
+    sw      rw03, 12(rptr)
+    addi    rptr, rptr, 16
+.endm
+#elif ( MPISE_XLEN == 64 )
+.macro STM_RES
+    sd      rw00,  0(rptr)
+    sd      rw01,  8(rptr)
     sd      rw02, 16(rptr)
     sd      rw03, 24(rptr)
     addi    rptr, rptr, 32
 .endm
-
+#endif
 
 .macro CLRACCU
     mv      rw00, zero
@@ -154,7 +225,6 @@
     mv      rw08, zero
 .endm
 
-
 .macro SHRACCU
     mv      rw00, rw04
     mv      rw01, rw05
@@ -167,6 +237,7 @@
     mv      rw08, zero
 .endm
 
+// ============================================================================
 
 // Multiple-precision multiplication using full-radix representation
 // -----------------------------------------------------------------
@@ -180,19 +251,19 @@
 mpi_mul_4x4fr_isa:
     PROLOGUE            // push callee-saved registers on stack
     CLRACCU
-    slli    len, len, 3
+    slli    len, len, IMM_SHIFT
     mv      octr, zero
     // START OF FIRST OUTER LOOP
 .LOUTLOOP1:
     mv      ictr, zero
-    add     octr, octr, 32
+    add     octr, octr,  IMM_INC
     add     bptr, bptr, octr
     // START OF FIRST INNER LOOP
 .LINNLOOP1:     // the first inner loop is iterated $octr/16$ times
     LDM_OPA     // load four words of array `a` and put them in
     LDM_OPB     // load four words of array `b` and put them in
     MACC4X4     //
-    addi    ictr, ictr, 32          // increment inner-loop counter
+    addi    ictr, ictr,  IMM_INC          // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP1  // branch to start of loop if ictr != octr
     // END OF FIRST INNER LOOP
     STM_RES     // store the result-words in array `r` in RAM
@@ -202,7 +273,7 @@ mpi_mul_4x4fr_isa:
     // END OF FIRST OUTER LOOP
     add     aptr, aptr, len        // set aptr to address of a[len}
     add     bptr, bptr, len        // set bptr to address of b[len}
-    addi    octr, octr, -32        // second outer loop is iterated len-1 times
+    addi    octr, octr, -IMM_INC        // second outer loop is iterated len-1 times
     // START OF SECOND OUTER LOOP
 .LOUTLOOP2:
     mv      ictr, zero
@@ -212,18 +283,17 @@ mpi_mul_4x4fr_isa:
     LDM_OPA     // load four words of array `a` and put them in
     LDM_OPB     // load four words of array `b` and put them in
     MACC4X4     //
-    addi    ictr, ictr, 32          // increment inner-loop counter
+    addi    ictr, ictr,  IMM_INC          // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP2  // branch to start of loop if ictr != octr
     // END OF SECOND INNER LOOP
     STM_RES     // store the result-words in array `r` in RAM
     SHRACCU     //
     add     bptr, bptr, octr
-    addi    octr, octr, -32
+    addi    octr, octr, -IMM_INC
     bne     octr, zero, .LOUTLOOP2  // branch to start of loop if octr != 0
     // END OF SECOND OUTER LOOP
     STM_RES     // store the result-words in array `r` in RAM
     EPILOGUE    // pop callee-saved registers and return
-
-
 .end
 
+// ============================================================================

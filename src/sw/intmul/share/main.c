@@ -2,11 +2,15 @@
 #include "intarith.h"
 
 #ifndef DEBUG
-#define DEBUG 0
+#define DEBUG 1
 #endif
 
 #ifndef TRIALS
 #define TRIALS 1000
+#endif
+
+#if !defined( VERSION_SIMPLE ) && !defined( VERSION_HYBRID )
+#define VERSION_HYBRID 1
 #endif
 
 #if   defined( MPISE_RADIX_FULL    )
@@ -25,11 +29,11 @@
 #define TYPE "ise"
 #endif
 
-uint64_t a[   MAX_LIMBS ];
-uint64_t b[   MAX_LIMBS ];
-uint64_t r[ 2*MAX_LIMBS ];
+limb_t a[   MAX_LIMBS ];
+limb_t b[   MAX_LIMBS ];
+limb_t r[ 2*MAX_LIMBS ];
 #if DEBUG
-uint64_t x[ 2*MAX_LIMBS ];
+limb_t x[ 2*MAX_LIMBS ];
 #endif
 
 int main( int argc, char* argv[] ) {
@@ -110,7 +114,7 @@ int main( int argc, char* argv[] ) {
       mpi_print( "  x  = 0x", x, 2 * j );
     }
 
-    memset( r, 0, 2 * j * sizeof( uint64_t ) );
+    memset( r, 0, 2 * j * sizeof( limb_t ) );
     #endif
   }
   
