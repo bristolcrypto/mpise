@@ -51,6 +51,10 @@ int main( int argc, char* argv[] ) {
   #endif
   
   for( int j = MIN_LIMBS; j <= MAX_LIMBS; j += LIMB_STEP ) {
+    if( j > ( 1 << ( ( 2 * MPISE_XLEN ) - ( 2 * LIMBBITS ) ) ) ) { // maximum limbs bounded by 2^( 2*MPISE_XLEN - 2*LIMBBITS )
+      continue;
+    }
+
     unsigned long long rdtsc_x   =  0;
     unsigned long long rdtsc_y   =  0;
     unsigned long long rdtsc_r   =  0;
