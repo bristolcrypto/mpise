@@ -1,23 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////
-// gfp_mul32_isa.S: Multiplication by 32-bit Integer Mod a 255-bit PM Prime. //
-// This file is part of Micro25519, a lightweight implementation of X25519   //
-// key exchange and Ed25519 signatures for 8/16/32-bit microcontrollers.     //
-// Version 1.0.0 (13-09-24), see <http://github.com/johgrolux/> for updates. //
-// License: GPLv3 (see LICENSE file), other licenses available upon request. //
-// Author: Johann Groszschaedl (in personal capacity).                       //
-// ------------------------------------------------------------------------- //
-// This program is free software: you can redistribute it and/or modify it   //
-// under the terms of the GNU General Public License as published by the     //
-// Free Software Foundation, either version 3 of the License, or (at your    //
-// option) any later version. This program is distributed in the hope that   //
-// it will be useful, but WITHOUT ANY WARRANTY; without even the implied     //
-// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the  //
-// GNU General Public License for more details. You should have received a   //
-// copy of the GNU General Public License along with this program. If not,   //
-// see <http://www.gnu.org/licenses/>.                                       //
-///////////////////////////////////////////////////////////////////////////////
-
-
 // Function prototype:
 // -------------------
 // void gfp_mul32_isa(uint32_t *r, const uint32_t *a, const uint32_t *b);
