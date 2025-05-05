@@ -20,13 +20,18 @@
 //////////////////////// REGISTER NAMES AND CONSTANTS /////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+// Constant c of the pseudo-Mersenne prime: p = 2^k - c
+.equ CCON, 19
+
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
 #define aptr a1
-// Registers `tmp0` and `tmp1` hold intermediate results
+// Registers `tmp0` to `tmp2` hold intermediate results
 #define tmp0 a1
 #define tmp1 a2
+#define tmp2 t6
 // Registers `aw00` to `aw07` hold words of operand `a`
 #define aw00 t0
 #define aw01 t1
@@ -54,19 +59,17 @@
 #define rw14 t5
 #define rw15 t6
 
-// Constant c of the pseudo-Mersenne prime: p = 2^k - c
-.equ CCON, 19
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////// MACROS FOR WORD-WISE MULTIPLY-ACCUMULATE OPERATIONS /////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `MACC_V1` multiplies the word `aiw` by `bjw` and puts the double-
-// length product in the double-length accumulator `rhi`:`rlo` (i.e., the macro
-// performs an ordinary multiplication, which can also be seen as a multiply-
-// accumulate operation with an initial accumulator that is 0).
+// The macro `MACC_V1` multiplies the word `aiw` by `bjw` and puts the product
+// in the double-length accumulator `rhi:rlo` (i.e., this macro performs a
+// multiply-accumulate operation with an initial accumulator that is 0, i.e.,
+// a normal multiplication).
+// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
 .macro MACC_V1 rhi:req, rlo:req, aiw:req, bjw:req
     mul     \rlo, \aiw, \bjw
@@ -74,49 +77,51 @@
 .endm
 
 
-// The macro `MACC_V2` multiplies the word `aiw` by `bjw` and adds the double-
-// length product to the double-length accumulator `rhi`:`rlo`, whereby the
-// initial value of the accumulator is only 32 bits long (i.e., `rhi` is 0).
-// The word `tlo` holds temporary results.
+// The macro `MACC_V2` multiplies the word `aiw` by `bjw` and adds the product
+// to the double-length accumulator `rhi:rlo`, whereby the initial value of the
+// accumulator is only 32 bits long (i.e., `rhi` is 0).
+// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
-.macro MACC_V2 rhi:req, rlo:req, aiw:req, bjw:req, tlo:req
-    mul     \tlo, \aiw, \bjw
+.macro MACC_V2 rhi:req, rlo:req, aiw:req, bjw:req
+    mul     tmp0, \aiw, \bjw
     mulhu   \rhi, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \rhi, \rhi, \tlo
+    add     \rlo, \rlo, tmp0
+    sltu    tmp0, \rlo, tmp0
+    add     \rhi, \rhi, tmp0
 .endm
 
 
-// The macro `MACC_V3` multiplies the word `aiw` by `bjw` and adds the double-
-// length product to the triple-length accumulator `rex`:`rhi`:`rlo`, whereby
-// the initial value of the accumulator is only 64 bits long (i.e., `rex` is 0).
-// The word `tlo` holds temporary results.
+// The macro `MACC_V3` multiplies the word `aiw` by `bjw` and adds the product
+// to the triple-length accumulator `rex:rhi:rlo`, whereby the initial value of
+// the accumulator is only 64 bits long (i.e., `rex` is 0).
+// NOTE: Registers `rex`, `rhi`, and `rlo` have to be different from `aiw` and
+// `bjw`.
 
-.macro MACC_V3 rex:req, rhi:req, rlo:req, aiw:req, bjw:req, tlo:req
-    mul     \tlo, \aiw, \bjw
+.macro MACC_V3 rex:req, rhi:req, rlo:req, aiw:req, bjw:req
+    mul     tmp0, \aiw, \bjw
     mulhu   \rex, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \rex, \rex, \tlo
+    add     \rlo, \rlo, tmp0
+    sltu    tmp0, \rlo, tmp0
+    add     \rex, \rex, tmp0
     add     \rhi, \rhi, \rex
     sltu    \rex, \rhi, \rex
 .endm
 
 
-// The macro `MACC_V4` multiplies the word `aiw` by `bjw` and adds the double-
-// length product to the triple-length accumulator `rex`:`rhi`:`rlo`. The words
-// `tlo` and `thi` hold temporary results.
+// The macro `MACC_V4` multiplies the word `aiw` by `bjw` and adds the product
+// to the triple-length accumulator `rex:rhi:rlo`.
+// NOTE: Registers `rex`, `rhi`, and `rlo` have to be different from `aiw` and
+// `bjw`.
 
-.macro MACC_V4 rex:req, rhi:req, rlo:req, aiw:req, bjw:req, thi:req, tlo:req
-    mul     \tlo, \aiw, \bjw
-    mulhu   \thi, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \thi, \thi, \tlo
-    add     \rhi, \rhi, \thi
-    sltu    \thi, \rhi, \thi
-    add     \rex, \rex, \thi
+.macro MACC_V4 rex:req, rhi:req, rlo:req, aiw:req, bjw:req
+    mul     tmp0, \aiw, \bjw
+    mulhu   tmp1, \aiw, \bjw
+    add     \rlo, \rlo, tmp0
+    sltu    tmp0, \rlo, tmp0
+    add     tmp1, tmp1, tmp0
+    add     \rhi, \rhi, tmp1
+    sltu    tmp1, \rhi, tmp1
+    add     \rex, \rex, tmp1
 .endm
 
 
@@ -126,65 +131,62 @@
 
 
 // The macro DASQ_V1 doubles the word `rhi` and adds the result to the upper
-// half of the double-length square of the word `aiw`. The final result is put
-// in the double-length word `rhi`:`rlo` and the outgoing carry in the word
-// `cry`.
+// half of the square of the word `aiw`. The triple-length result is put in the
+// three registers `rex:rhi:rlo`.
 
-.macro DASQ_V1 rhi:req, rlo:req, aiw:req, cry:req
+.macro DASQ_V1 req:req, rhi:req, rlo:req, aiw:req
     mul     \rlo, \aiw, \aiw
-    add     tmp1, \rhi, \rhi
-    sltu    \cry, tmp1, \rhi
+    add     tmp0, \rhi, \rhi
+    sltu    \req, tmp0, \rhi
     mulhu   \rhi, \aiw, \aiw
-    add     \rhi, \rhi, tmp1
-    sltu    tmp1, \rhi, tmp1
-    add     \cry, \cry, tmp1
+    add     \rhi, \rhi, tmp0
+    sltu    tmp0, \rhi, tmp0
+    add     \req, \req, tmp0
 .endm
 
 
-// The macro DASQ_V2 doubles the double-length word `rhi`:`rlo` and adds the
-// result along with the incoming carry-word `cry` to the double-length square
-// of the word `aiw`. The final result is put in the double-length word
-// `rhi`:`rlo` and the outgoing carry in the word `cry`.
+// The macro DASQ_V2 doubles the double-length word `rhi:rlo` and adds the
+// result along with the incoming carry `ciw` to the square of the word `aiw`.
+// The triple-length result is put in the three registers `rex:rhi:rlo`.
 
-.macro DASQ_V2 rhi:req, rlo:req, aiw:req, cry:req
-    add     tmp1, \rlo, \rlo
-    sltu    \rlo, tmp1, \rlo
-    add     tmp1, tmp1, \cry
-    sltu    \cry, tmp1, \cry
-    add     \cry, \cry, \rlo
+.macro DASQ_V2 rex:req, rhi:req, rlo:req, aiw:req, ciw:req
+    add     tmp0, \rlo, \rlo
+    sltu    \rlo, tmp0, \rlo
+    add     tmp0, tmp0, \ciw
+    sltu    \rex, tmp0, \ciw
+    add     \rex, \rex, \rlo
     mul     \rlo, \aiw, \aiw
-    add     \rlo, \rlo, tmp1
-    sltu    tmp1, \rlo, tmp1
-    add     \cry, \cry, tmp1
-    add     tmp1, \rhi, \rhi
-    sltu    \rhi, tmp1, \rhi
-    add     tmp1, tmp1, \cry
-    sltu    \cry, tmp1, \cry
-    add     \cry, \cry, \rhi
+    add     \rlo, \rlo, tmp0
+    sltu    tmp0, \rlo, tmp0
+    add     \rex, \rex, tmp0
+    add     tmp0, \rhi, \rhi
+    sltu    \rhi, tmp0, \rhi
+    add     tmp0, tmp0, \rex
+    sltu    \rex, tmp0, \rex
+    add     \rex, \rex, \rhi
     mulhu   \rhi, \aiw, \aiw
-    add     \rhi, \rhi, tmp1
-    sltu    tmp1, \rhi, tmp1
-    add     \cry, \cry, tmp1
+    add     \rhi, \rhi, tmp0
+    sltu    tmp0, \rhi, tmp0
+    add     \rex, \rex, tmp0
 .endm
 
 
 // The macro DASQ_V3 doubles the word `rlo` and adds the result along with the
-// incoming carry-word `cry` to the double-length square of the word `aiw`. The
-// final result is put in the double-length word `rhi`:`rlo` (normally, there
-// should be no outgoing carry!).
+// incoming carry `ciw` to the square of the word `aiw`. The result, which is
+// at most 64 bit long, is put in the `rhi`:`rlo` register-pair.
 
-.macro DASQ_V3 rhi:req, rlo:req, aiw:req, cry:req
-    add     tmp1, \rlo, \rlo
-    sltu    \rlo, tmp1, \rlo
-    add     tmp1, tmp1, \cry
-    sltu    \cry, tmp1, \cry
-    add     \cry, \cry, \rlo
+.macro DASQ_V3 rhi:req, rlo:req, aiw:req, ciw:req
+    add     tmp0, \rlo, \rlo
+    sltu    \rlo, tmp0, \rlo
+    add     tmp0, tmp0, \ciw
+    sltu    \ciw, tmp0, \ciw
+    add     \ciw, \ciw, \rlo
     mul     \rlo, \aiw, \aiw
-    add     \rlo, \rlo, tmp1
-    sltu    tmp1, \rlo, tmp1
-    add     \cry, \cry, tmp1
+    add     \rlo, \rlo, tmp0
+    sltu    tmp0, \rlo, tmp0
+    add     \ciw, \ciw, tmp0
     mulhu   \rhi, \aiw, \aiw
-    add     \rhi, \rhi, \cry
+    add     \rhi, \rhi, \ciw
 .endm
 
 
@@ -193,75 +195,52 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `MADD_V3` multiplies the word `aiw` by `bjw` and adds `rlo` to the
-// double-length product. The lower half of the result is put in `rlo` and the
-// upper half in `thi` (`tlo` holds temporary results). This macro corresponds
-// to the following C code (`temp` is a double-length word):
-// temp = ((UI64) a[i]*b[j]) + r[i+j]; r[i+j] = (UI32) temp;
+// The macro `MADD_V2` multiplies the word `aiw` by `bjw` and adds the word
+// `c0w` to the product. The double-length result is put in the `rhi:rlo`
+// register-pair.
+// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
-.macro MADD_V3 rlo:req, aiw:req, bjw:req, thi:req, tlo:req
-    mul     \tlo, \aiw, \bjw
-    mulhu   \thi, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \thi, \thi, \tlo
-.endm
-
-
-// The macro `MADD_V4` multiplies the word `aiw` by `bjw` and adds `rlo` and
-// `thi` to the double-length product. The lower half of the result is put in
-// `rlo` and the upper half in `thi` (`tlo` holds temporary results). This
-// macro corresponds to the following C code (`temp` is a double-length word):
-// temp = (temp >> 32) + ((UI64) a[i]*b[j}) + r[i+j]; r[i+j] = (UI32) temp;
-
-.macro MADD_V4 rlo:req, aiw:req, bjw:req, thi:req, tlo:req
-    add     \rlo, \rlo, \thi
-    sltu    \tlo, \rlo, \thi
-    mulhu   \thi, \aiw, \bjw
-    add     \thi, \thi, \tlo
-    mul     \tlo, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \thi, \thi, \tlo
-.endm
-
-
-// The macro `MULHIXC` splits the double-length word `rhi`:`rlo` into a 31-bit
-// lower part and a (normally much shorter) upper part. The lower part remains
-// in `rlo`, while the upper part is multiplied by the constant $c = 19$. The
-// resulting product, which normally does not exceed a word, is put in `rhi`.
-
-.macro MULHIXC rhi:req, rlo:req
-    srli    tmp0, \rlo, 31
-    slli    \rhi, \rhi, 1
-    li      tmp1, CCON
+.macro MADD_V2 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req
+    mul     tmp0, \aiw, \bjw
+    mulhu   \rhi, \aiw, \bjw
+    add     \rlo, \c0w, tmp0
+    sltu    tmp0, \rlo, tmp0
     add     \rhi, \rhi, tmp0
-    slli    \rlo, \rlo, 1
-    mul     \rhi, \rhi, tmp1
+.endm
+
+
+// The macro `MADD_V3` multiplies the word `aiw` by `bjw` and adds the two
+// words `c0w` and `d0w` to the product. The double-length result is put in the
+// `rhi:rlo` register-pair.
+// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+
+.macro MADD_V3 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req, d0w:req
+    add     tmp0, \c0w, \d0w
+    mulhu   \rhi, \aiw, \bjw
+    sltu    \rlo, tmp0, \d0w
+    add     \rhi, \rhi, \rlo
+    mul     \rlo, \aiw, \bjw
+    add     \rlo, \rlo, tmp0
+    sltu    tmp0, \rlo, tmp0
+    add     \rhi, \rhi, tmp0
+.endm
+
+
+// The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
+// 31-bit lower part and an upper part. The lower part is put in `rlo`, while
+// the upper part is multiplied by the constant $c = 19$ and the single-word
+// product is put in `rhi`.
+// NOTE: the bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
+// $c = 19$, `dhi` can be up to 26 bits long.
+
+.macro MULHIXC rhi:req, rlo:req, ccw:req, dhi:req, dlo:req
+    srli    tmp0, \dlo, 31
+    slli    \rhi, \dhi, 1
+    add     \rhi, \rhi, tmp0
+    slli    \rlo, \dlo, 1
+    mul     \rhi, \rhi, \ccw
     srli    \rlo, \rlo, 1
-.endm
-
-
-// The macro `ADDWORD` adds the word `adw` to the 8-word operand `p7w`-`p0w`.
-
-.macro ADDWORD p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, p1w:req, \
-               p0w:req, adr:req
-    add     \p0w, \p0w, \adr
-    sltu    \adr, \p0w, \adr
-    add     \p1w, \p1w, \adr
-    sltu    \adr, \p1w, \adr
-    add     \p2w, \p2w, \adr
-    sltu    \adr, \p2w, \adr
-    add     \p3w, \p3w, \adr
-    sltu    \adr, \p3w, \adr
-    add     \p4w, \p4w, \adr
-    sltu    \adr, \p4w, \adr
-    add     \p5w, \p5w, \adr
-    sltu    \adr, \p5w, \adr
-    add     \p6w, \p6w, \adr
-    sltu    \adr, \p6w, \adr
-    add     \p7w, \p7w, \adr
-.endm
+ .endm
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -269,65 +248,64 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `MCOL_V1` multiplies the word `a0w` by `b0w` and adds the double-
-// length product to the triple-length accumulator `rex`:`rhi`:`rlo`. The last
-// parameter `acclen` specifies the initial length of the accumulator, which
-// can be either 0 (i.e., `rex`, `rhi`, and `rlo` is 0), 32 (i.e., `rex` and
-// `rhi` is 0), or 64 (i.e., `rex` is 0).
+// The macro `MCOL_V1` multiplies the word `a0w` by `b0w` and adds the product
+// to the triple-length accumulator `rex:rhi:rlo`. The last parameter `acclen`
+// specifies the initial length of the accumulator and can be either 0 (i.e.,
+// `rex`, `rhi`, and `rlo` is 0), 32 (i.e., `rex` and `rhi` is 0), or 64 (i.e.,
+// `rex` is 0).
 
 .macro MCOL_V1 rex:req, rhi:req, rlo:req, a0w:req, b0w:req, acclen:req
     .if (\acclen == 0)
     MACC_V1 \rhi, \rlo, \a0w, \b0w
     .elseif (\acclen == 32)
-    MACC_V2 \rhi, \rlo, \a0w, \b0w, tmp0
+    MACC_V2 \rhi, \rlo, \a0w, \b0w
     .else  // acclen == 64
-    MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w, tmp0
+    MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w
     .endif
 .endm
 
 
-// The macro `MCOL_V2` multiplies the word `a0w` by `b0w` and the word `a1w` by
-// `b1w`, and adds the double-length products to the triple-length accumulator
-// `rex`:`rhi`:`rlo`. The last parameter `acclen` specifies the initial length
-// of the accumulator, which can be either 32 (i.e., `rex` and `rhi` is 0) or
-// 64 (i.e., `rex` is 0).
+// The macro `MCOL_V2` multiplies the word `a0w` by `b0w` and `a1w` by `b1w`,
+// and adds the two products to the triple-length accumulator `rex:rhi:rlo`.
+// The last parameter `acclen` specifies the initial length of the accumulator
+// and can be either 32 (i.e., `rex` and `rhi` is 0) or 64 (i.e., `rex` is 0).
 
 .macro MCOL_V2 rex:req, rhi:req, rlo:req, a0w:req, b0w:req, a1w:req, b1w:req, \
                acclen:req
     .if (\acclen == 32)
-    MACC_V2 \rhi, \rlo, \a0w, \b0w, tmp0
-    MACC_V3 \rex, \rhi, \rlo, \a1w, \b1w, tmp0
+    MACC_V2 \rhi, \rlo, \a0w, \b0w
+    MACC_V3 \rex, \rhi, \rlo, \a1w, \b1w
     .else  // acclen == 64
-    MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w, tmp0
-    MACC_V4 \rex, \rhi, \rlo, \a1w, \b1w, tmp1, tmp0
+    MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w
+    MACC_V4 \rex, \rhi, \rlo, \a1w, \b1w
     .endif
 .endm
 
 
-// The macro `MCOL_V3` multiplies the word `a0w` by `b0w`, the word `a1w` by
-// `b1w` and the word `a2w` by `b2w`, and adds the double-length products to
-// the triple-length accumulator `rex`:`rhi`:`rlo`. The initial length of the
-// accumulator is 64 (i.e., `rex` is 0).
+// The macro `MCOL_V3` multiplies the word `a0w` by `b0w`, `a1w` by `b1w` and
+// `a2w` by `b2w`, and adds the three products to the triple-length accumulator
+// `rex:rhi:rlo`. The initial length of the accumulator is 64 (i.e., `rex` is
+// 0).
 
 .macro MCOL_V3 rex:req, rhi:req, rlo:req, a0w:req, b0w:req, a1w:req, b1w:req, \
                a2w:req, b2w:req
-    MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w, tmp0
-    MACC_V4 \rex, \rhi, \rlo, \a1w, \b1w, tmp1, tmp0
-    MACC_V4 \rex, \rhi, \rlo, \a2w, \b2w, tmp1, tmp0
+    MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w
+    MACC_V4 \rex, \rhi, \rlo, \a1w, \b1w
+    MACC_V4 \rex, \rhi, \rlo, \a2w, \b2w
 .endm
 
 
-// The macro `MCOL_V4` multiplies the word `a0w` by `b0w`, the word `a1w` by
-// `b1w`, the word `a2w` by `b2w` and the word `a3w` by `b3w`, and adds the
-// double-length products to the triple-length accumulator `rex`:`rhi`:`rlo`.
-// The initial length of the accumulator is 64 (i.e., `rex` is 0).
+// The macro `MCOL_V4` multiplies the word `a0w` by `b0w`, `a1w` by `b1w`,
+// `a2w` by `b2w` and `a3w` by `b3w`, and adds the four products to the triple-
+// length accumulator `rex:rhi:rlo`. The initial length of the accumulator is
+// 64 (i.e., `rex` is 0).
 
 .macro MCOL_V4 rex:req, rhi:req, rlo:req, a0w:req, b0w:req, a1w:req, b1w:req, \
                a2w:req, b2w:req, a3w:req, b3w:req
-    MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w, tmp0
-    MACC_V4 \rex, \rhi, \rlo, \a1w, \b1w, tmp1, tmp0
-    MACC_V4 \rex, \rhi, \rlo, \a2w, \b2w, tmp1, tmp0
-    MACC_V4 \rex, \rhi, \rlo, \a3w, \b3w, tmp1, tmp0
+    MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w
+    MACC_V4 \rex, \rhi, \rlo, \a1w, \b1w
+    MACC_V4 \rex, \rhi, \rlo, \a2w, \b2w
+    MACC_V4 \rex, \rhi, \rlo, \a3w, \b3w
 .endm
 
 
@@ -336,12 +314,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `MULCOLS` computes the column-sums of all double-length products
-// of the form $a_i \cdot a_j$ with $i < j$ (these are exactly the 28 double-
-// length products that appear twice in the final result). The eight words of
-// operand $a$ are `aw00`-`aw07` and the 14 words of the obtained column-sums
-// are put in `rw01`-`rw14` (the computation of the words `rw00` and `rw15` is
-// not part of this macro!).
+// The macro `MULCOLS` computes the column-sums of all products of the form
+// $a_i \cdot a_j$ with $i < j$ (these are exactly the 28 products that appear
+// twice in the final result). The eight words of operand $a$ are `aw00`-`aw07`
+// and the 14 words of the obtained column-sums are put in `rw01`-`rw14` (the
+// two words `rw00` and `rw15` are not computed by this macro!).
 
 .macro MULCOLS
     MCOL_V1 rw03, rw02, rw01, aw00, aw01, 0
@@ -360,53 +337,52 @@
 .endm
 
 
-// The macro `MULCOLS` doubles the 14 column sums `rw01`-`rw14` and adds the
-// eight double-length squares $a_i^2$ (i.e., the squares that are in the "main
-// diagonal") to the result. The eight words of operand $a$ are `aw00`-`aw07`
-// and the 16 words of the final result are put in `rw00`-`rw15`.
+// The macro `DBADDSQ` doubles the 14 column sums `rw01`-`rw14` and adds the
+// eight squares $a_i^2$ (which are in the "main diagonal") to the result. The
+// eight words of operand $a$ are `aw00`-`aw07` and the 16 words of the final
+// result are put in `rw00`-`rw15`.
 
 .macro DBADDSQ
-    DASQ_V1 rw01, rw00, aw00, tmp0
-    DASQ_V2 rw03, rw02, aw01, tmp0
-    DASQ_V2 rw05, rw04, aw02, tmp0
-    DASQ_V2 rw07, rw06, aw03, tmp0
-    DASQ_V2 rw09, rw08, aw04, tmp0
-    DASQ_V2 rw11, rw10, aw05, tmp0
-    DASQ_V2 rw13, rw12, aw06, tmp0
-    DASQ_V3 rw15, rw14, aw07, tmp0
+    DASQ_V1 tmp1, rw01, rw00, aw00
+    DASQ_V2 tmp1, rw03, rw02, aw01, tmp1
+    DASQ_V2 tmp1, rw05, rw04, aw02, tmp1
+    DASQ_V2 tmp1, rw07, rw06, aw03, tmp1
+    DASQ_V2 tmp1, rw09, rw08, aw04, tmp1
+    DASQ_V2 tmp1, rw11, rw10, aw05, tmp1
+    DASQ_V2 tmp1, rw13, rw12, aw06, tmp1
+    DASQ_V3 rw15, rw14, aw07, tmp1
 .endm
 
 
-// The macro `MODRED1` performs a (partial) reduction of the 16-word operand
-// `rw00`-`rw15` modulo $2p = 2^{256} - 38$ to obtain a 9-word result. The
-// upper half of the operand (i.e., the words `rw08`-`rw15`) is multiplied by
-// $2c = 38$ and the 9-word product is added to the lower half (i.e., the words
-// `rw00`-`rw07`). The result is put in `rw00`-`rw08`, whereby the word `rw08`
-// is relatively short (at most one bit longer than $2c$).
+// The macro `MODREDP` reduces the 16-word operand `rw00`-`rw15` modulo the
+// prime $p = 2^{256} - 19$ to get an 8-word result. This reduction consists
+// of two steps: (i) the upper half `rw08`-`rw15` is multiplied by $2c = 38$
+// and the obtained 9-word product is added to the lower half `rw08`-`rw15`,
+// yielding a 9-word intermediate result `rw00`-`rw08`, (ii) the double-length
+// word in the `rw08:rw07` register-pair is split into a lower part of 31 bits
+// and an upper part, which is multiplied by $c = 19$ and the obtained product
+// is added to the intermediate result `rw00`-`rw07`. The implementation below
+// merges these steps and performs the modular reduction as follows: (i) `rw15`
+// is multiplied by $2c$ and `rw07` is added to the product (macro `MADD_V3`),
+// (ii) the obtained product is split into a 31-bit lower part and a (smaller)
+// upper part, which is multiplied by $c = 19$ (macro `MULHIXC`), (iii) the
+// obtained single-word product is taken into account when the remaining words
+// `rw08`-`rw14` are multiplied by $2c$ and added to the words `rw00`-`rw06`.
 
-.macro MODRED1
-    li      tmp1, 2*CCON
-    MADD_V3 rw00, rw08, tmp1, rw08, tmp0
-    MADD_V4 rw01, rw09, tmp1, rw08, tmp0
-    MADD_V4 rw02, rw10, tmp1, rw08, tmp0
-    MADD_V4 rw03, rw11, tmp1, rw08, tmp0
-    MADD_V4 rw04, rw12, tmp1, rw08, tmp0
-    MADD_V4 rw05, rw13, tmp1, rw08, tmp0
-    MADD_V4 rw06, rw14, tmp1, rw08, tmp0
-    MADD_V4 rw07, rw15, tmp1, rw08, tmp0
-.endm
-
-
-// The macro `MODRED2` performs a (partial) reduction of the 9-word operand
-// `rw00`-`rw08` modulo $p = 2^{255} - 19$ to obtain an 8-word result. First,
-// the macro `MULHIXC` is called to split the double-length word `rw08`:`rw07`
-// into a 31-bit lower part and a (normally much shorter) upper part, which is
-// then multiplied by $c = 19$. Then, the macro `ADDWORD` adds the obtained
-// product, which fits into a single word, to the eight words `rw00`-`rw07`.
-
-.macro MODRED2
-    MULHIXC rw08, rw07
-    ADDWORD rw07, rw06, rw05, rw04, rw03, rw02, rw01, rw00, rw08
+.macro MODREDP
+    li      tmp1, 2*CCON   // tmp1 = 38
+    MADD_V2 tmp2, rw07, rw15, tmp1, rw07
+    srli    tmp1, tmp1, 1  // tmp1 = 19
+    MULHIXC tmp2, rw07, tmp1, tmp2, rw07
+    slli    tmp1, tmp1, 1  // tmp1 = 38
+    MADD_V3 tmp2, rw00, rw08, tmp1, tmp2, rw00
+    MADD_V3 tmp2, rw01, rw09, tmp1, tmp2, rw01
+    MADD_V3 tmp2, rw02, rw10, tmp1, tmp2, rw02
+    MADD_V3 tmp2, rw03, rw11, tmp1, tmp2, rw03
+    MADD_V3 tmp2, rw04, rw12, tmp1, tmp2, rw04
+    MADD_V3 tmp2, rw05, rw13, tmp1, tmp2, rw05
+    MADD_V3 tmp2, rw06, rw14, tmp1, tmp2, rw06
+    add     rw07, rw07, tmp2 
 .endm
 
 
@@ -415,7 +391,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all callee-saved registers on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers on the stack.
 
 .macro PROLOGUE
     addi    sp, sp, -48
@@ -434,8 +410,7 @@
 .endm
 
 
-// The macro `EPILOGUE` pops all callee-saved registers from the stack and
-// returns to the caller.
+// The macro `EPILOGUE` pops all 12 callee-saved registers from the stack.
 
 .macro EPILOGUE
     lw      s0, (sp)
@@ -451,7 +426,6 @@
     lw      s10, 40(sp)
     lw      s11, 44(sp)
     addi    sp, sp, 48
-    ret
 .endm
 
 
@@ -499,16 +473,16 @@
 .text
 .global gfp_sqr_isa
 .type gfp_sqr_isa,%function
-.balign 16
+// .balign 8
 gfp_sqr_isa:
     PROLOGUE            // push callee-saved registers on stack
     LDM_OPA             // load the eight words of operand A from RAM
     MULCOLS             // Column-wise mul of all a[i]*a[j] to be doubled
     DBADDSQ             // Double current result and add squares a[i]^2
-    MODRED1             // 1st step of reduction: Rlo = Rlo + Rhi*38
-    MODRED2             // 2nd step of reduction: obtain 8-word result
-    STM_RES             // store the eight words of the result in RAM
-    EPILOGUE            // pop callee-saved registers and return
+    MODREDP             // modular reduction: Rlo = (Rlo + Rhi*2*c) mod p
+    STM_RES             // store the eight result-words of the result in RAM
+    EPILOGUE            // pop callee-saved registers from stack
+    ret
 
 
 .end

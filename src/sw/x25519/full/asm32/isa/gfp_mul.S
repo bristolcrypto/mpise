@@ -21,6 +21,10 @@
 //////////////////////// REGISTER NAMES AND CONSTANTS /////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+// Constant c of the pseudo-Mersenne prime: p = 2^k - c
+.equ CCON, 19
+
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
@@ -58,19 +62,16 @@
 #define rw14 t5
 #define rw15 t6
 
-// Constant c of the pseudo-Mersenne prime: p = 2^k - c
-.equ CCON, 19
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////// MACROS FOR WORD-WISE MULTIPLY-ADD OPERATIONS ////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `MADD_V1` multiplies the word `aiw` by `bjw` and puts the double-
-// length product in `rhi`:`rlo` (i.e., this macro performs a multiply-add
-// operation where 0 is added to the product, which boils down to an ordinary
-// multiplication).
+// The macro `MADD_V1` multiplies the word `aiw` by `bjw` and puts the product
+// in the `rhi:rlo` register-pair (i.e., this macro performs a multiply-add
+// operation where 0 is added to the product, i.e., a normal multiplication).
+// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
 .macro MADD_V1 rhi:req, rlo:req, aiw:req, bjw:req
     mul     \rlo, \aiw, \bjw
@@ -78,49 +79,34 @@
 .endm
 
 
-// The macro `MADD_V2` multiplies the word `aiw` by `bjw` and adds `rlo` to the
-// double-length product. The lower half of the result is put in `rlo` and the
-// upper part in `rhi` (`tlo` holds temporary results).
+// The macro `MADD_V2` multiplies the word `aiw` by `bjw` and adds the word
+// `c0w` to the product. The double-length result is put in the `rhi:rlo`
+// register-pair.
+// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
-.macro MADD_V2 rhi:req, rlo:req, aiw:req, bjw:req, tlo:req
-    mul     \tlo, \aiw, \bjw
+.macro MADD_V2 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req
+    mul     tmp0, \aiw, \bjw
     mulhu   \rhi, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \rhi, \rhi, \tlo
+    add     \rlo, \c0w, tmp0
+    sltu    tmp0, \rlo, tmp0
+    add     \rhi, \rhi, tmp0
 .endm
 
 
-// The macro `MADD_V3` multiplies the word `aiw` by `bjw` and adds `rlo` to the
-// double-length product. The lower half of the result is put in `rlo` and the
-// upper half in `thi` (`tlo` holds temporary results). This macro corresponds
-// to the following C code (`temp` is a double-length word):
-// temp = ((UI64) a[i]*b[j]) + r[i+j]; r[i+j] = (UI32) temp;
+// The macro `MADD_V3` multiplies the word `aiw` by `bjw` and adds the two
+// words `c0w` and `d0w` to the product. The double-length result is put in the
+// `rhi:rlo` register-pair.
+// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
-.macro MADD_V3 rlo:req, aiw:req, bjw:req, thi:req, tlo:req
-    mul     \tlo, \aiw, \bjw
-    mulhu   \thi, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \thi, \thi, \tlo
-.endm
-
-
-// The macro `MADD_V4` multiplies the word `aiw` by `bjw` and adds `rlo` and
-// `thi` to the double-length product. The lower half of the result is put in
-// `rlo` and the upper half in `thi` (`tlo` holds temporary results). This
-// macro corresponds to the following C code (`temp` is a double-length word):
-// temp = (temp >> 32) + ((UI64) a[i]*b[j]) + r[i+j]; r[i+j] = (UI32) temp;
-
-.macro MADD_V4 rlo:req, aiw:req, bjw:req, thi:req, tlo:req
-    add     \rlo, \rlo, \thi
-    sltu    \tlo, \rlo, \thi
-    mulhu   \thi, \aiw, \bjw
-    add     \thi, \thi, \tlo
-    mul     \tlo, \aiw, \bjw
-    add     \rlo, \rlo, \tlo
-    sltu    \tlo, \rlo, \tlo
-    add     \thi, \thi, \tlo
+.macro MADD_V3 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req, d0w:req
+    add     tmp0, \c0w, \d0w
+    mulhu   \rhi, \aiw, \bjw
+    sltu    \rlo, tmp0, \d0w
+    add     \rhi, \rhi, \rlo
+    mul     \rlo, \aiw, \bjw
+    add     \rlo, \rlo, tmp0
+    sltu    tmp0, \rlo, tmp0
+    add     \rhi, \rhi, tmp0
 .endm
 
 
@@ -129,42 +115,21 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `MULHIXC` splits the double-length word `rhi`:`rlo` into a 31-bit
-// lower part and a (normally much shorter) upper part. The lower part remains
-// in `rlo`, while the upper part is multiplied by the constant $c = 19$. The
-// resulting product, which normally does not exceed a word, is put in `rhi`.
+// The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
+// 31-bit lower part and an upper part. The lower part is put in `rlo`, while
+// the upper part is multiplied by the constant $c = 19$ and the single-word
+// product is put in `rhi`.
+// NOTE: the bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
+// $c = 19$, `dhi` can be up to 26 bits long.
 
-.macro MULHIXC rhi:req, rlo:req
-    srli    tmp0, \rlo, 31
-    slli    \rhi, \rhi, 1
-    li      tmp1, CCON
+.macro MULHIXC rhi:req, rlo:req, ccw:req, dhi:req, dlo:req
+    srli    tmp0, \dlo, 31
+    slli    \rhi, \dhi, 1
     add     \rhi, \rhi, tmp0
-    slli    \rlo, \rlo, 1
-    mul     \rhi, \rhi, tmp1
+    slli    \rlo, \dlo, 1
+    mul     \rhi, \rhi, \ccw
     srli    \rlo, \rlo, 1
-.endm
-
-
-// The macro `ADDWORD` adds the word `adw` to the 8-word operand `p7w`-`p0w`.
-
-.macro ADDWORD p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, p1w:req, \
-               p0w:req, adr:req
-    add     \p0w, \p0w, \adr
-    sltu    \adr, \p0w, \adr
-    add     \p1w, \p1w, \adr
-    sltu    \adr, \p1w, \adr
-    add     \p2w, \p2w, \adr
-    sltu    \adr, \p2w, \adr
-    add     \p3w, \p3w, \adr
-    sltu    \adr, \p3w, \adr
-    add     \p4w, \p4w, \adr
-    sltu    \adr, \p4w, \adr
-    add     \p5w, \p5w, \adr
-    sltu    \adr, \p5w, \adr
-    add     \p6w, \p6w, \adr
-    sltu    \adr, \p6w, \adr
-    add     \p7w, \p7w, \adr
-.endm
+ .endm
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -173,67 +138,44 @@
 
 
 // The macro `MROW_V1` multiplies the 8-word operand `aw00`-`aw07` by a single
-// word (held in `tmp2`) and puts the 9-word product in `p0w`-`p8w`. This macro
+// word (held in `bjw`) and puts the 9-word product in `p0w`-`p8w`. This macro
 // corresponds to the operation $r = a \cdot b_0$ performed by the very first
-// iteration of the outer loop of the operand-scanning method. The multiplier
-// $b_j$ is loaded to `tmp2` (i.e., `rw15`) via base address `bptr` and offset
-// `idx`. The word `tmp0` (i.e., `aptr`) holds temporary results.
+// iteration of the outer loop of the operand-scanning method. The word $b_0$
+// of the multiplier is loaded to `bjw` via base-address `bptr` and offset `j`.
 
 .macro MROW_V1 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
-               p1w:req, p0w:req, idx:req
-    lw      tmp2, \idx(bptr)
-    MADD_V1 \p1w, \p0w, aw00, tmp2
-    MADD_V2 \p2w, \p1w, aw01, tmp2, tmp0
-    MADD_V2 \p3w, \p2w, aw02, tmp2, tmp0
-    MADD_V2 \p4w, \p3w, aw03, tmp2, tmp0
-    MADD_V2 \p5w, \p4w, aw04, tmp2, tmp0
-    MADD_V2 \p6w, \p5w, aw05, tmp2, tmp0
-    MADD_V2 \p7w, \p6w, aw06, tmp2, tmp0
-    MADD_V2 \p8w, \p7w, aw07, tmp2, tmp0
+               p1w:req, p0w:req, bjw:req, j:req
+    lw      \bjw, \j(bptr)
+    MADD_V1 \p1w, \p0w, aw00, \bjw
+    MADD_V2 \p2w, \p1w, aw01, \bjw, \p1w
+    MADD_V2 \p3w, \p2w, aw02, \bjw, \p2w
+    MADD_V2 \p4w, \p3w, aw03, \bjw, \p3w
+    MADD_V2 \p5w, \p4w, aw04, \bjw, \p4w
+    MADD_V2 \p6w, \p5w, aw05, \bjw, \p5w
+    MADD_V2 \p7w, \p6w, aw06, \bjw, \p6w
+    MADD_V2 \p8w, \p7w, aw07, \bjw, \p7w
 .endm
 
 
 // The macro `MROW_V2` multiplies the 8-word operand `aw00`-`aw07` by a single
 // word (held in `tmp2`) and adds the 9-word product to operand `p0w`-`p8w`.
 // This macro corresponds to the operation $r = r + a \cdot b_j \cdot 2^{32j}$
-// for $1 \leq j < 7$ performed by the six middle iterations of the outer loop
-// of the operand-scanning method. The multiplier $b_j$ is loaded to `tmp2`
-// (i.e., `rw15`) via base address `bptr` and offset `idx`. The words `tmp0`
-// (i.e., `aptr`) and `p8w` hold temporary results.
+// for $1 \leq j < 8$ performed by the seven last iterations of the outer loop
+// of the operand-scanning method. The word $b_j$ of the multiplier is loaded
+// to `bjw` via base address `bptr` and offset `j`. The word `p8w` is used for
+// temporary results.
 
 .macro MROW_V2 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
-               p1w:req, p0w:req, idx:req
-    lw      tmp2, \idx(bptr)
-    MADD_V3 \p0w, aw00, tmp2, \p8w, tmp0
-    MADD_V4 \p1w, aw01, tmp2, \p8w, tmp0
-    MADD_V4 \p2w, aw02, tmp2, \p8w, tmp0
-    MADD_V4 \p3w, aw03, tmp2, \p8w, tmp0
-    MADD_V4 \p4w, aw04, tmp2, \p8w, tmp0
-    MADD_V4 \p5w, aw05, tmp2, \p8w, tmp0
-    MADD_V4 \p6w, aw06, tmp2, \p8w, tmp0
-    MADD_V4 \p7w, aw07, tmp2, \p8w, tmp0
-.endm
-
-
-// The macro `MROW_V3` multiplies the 8-word operand `aw00`-`aw07` by a single
-// word (held in `tmp1`) and adds the 9-word product to operand `p0w`-`p8w`.
-// This macro corresponds to the operation $r = r + a \cdot b_7 \cdot 2^{224}$
-// performed by the last iteration of the outer loop of the operand-scanning
-// method. The multiplier $b_7$ is loaded to `tmp1` (i.e., `bptr`) via base
-// address `bptr` (which is not needed anymore!) and offset `idx`. The words
-// `tmp0` (i.e., `aptr`) and `p8w` hold temporary results.
-
-.macro MROW_V3 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
-               p1w:req, p0w:req, idx:req
-    lw      tmp1, \idx(bptr)
-    MADD_V3 \p0w, aw00, tmp1, \p8w, tmp0
-    MADD_V4 \p1w, aw01, tmp1, \p8w, tmp0
-    MADD_V4 \p2w, aw02, tmp1, \p8w, tmp0
-    MADD_V4 \p3w, aw03, tmp1, \p8w, tmp0
-    MADD_V4 \p4w, aw04, tmp1, \p8w, tmp0
-    MADD_V4 \p5w, aw05, tmp1, \p8w, tmp0
-    MADD_V4 \p6w, aw06, tmp1, \p8w, tmp0
-    MADD_V4 \p7w, aw07, tmp1, \p8w, tmp0
+               p1w:req, p0w:req, bjw:req, j:req
+    lw      \bjw, \j(bptr)
+    MADD_V2 \p8w, \p0w, aw00, \bjw, \p0w
+    MADD_V3 \p8w, \p1w, aw01, \bjw, \p8w, \p1w
+    MADD_V3 \p8w, \p2w, aw02, \bjw, \p8w, \p2w
+    MADD_V3 \p8w, \p3w, aw03, \bjw, \p8w, \p3w
+    MADD_V3 \p8w, \p4w, aw04, \bjw, \p8w, \p4w
+    MADD_V3 \p8w, \p5w, aw05, \bjw, \p8w, \p5w
+    MADD_V3 \p8w, \p6w, aw06, \bjw, \p8w, \p6w
+    MADD_V3 \p8w, \p7w, aw07, \bjw, \p8w, \p7w
 .endm
 
 
@@ -247,47 +189,46 @@
 // RAM) in a row-wise fashion. The 16-word product is put in `rw00`-`rw15`.
 
 .macro MULROWS
-    MROW_V1 rw08, rw07, rw06, rw05, rw04, rw03, rw02, rw01, rw00, 0
-    MROW_V2 rw09, rw08, rw07, rw06, rw05, rw04, rw03, rw02, rw01, 4
-    MROW_V2 rw10, rw09, rw08, rw07, rw06, rw05, rw04, rw03, rw02, 8
-    MROW_V2 rw11, rw10, rw09, rw08, rw07, rw06, rw05, rw04, rw03, 12
-    MROW_V2 rw12, rw11, rw10, rw09, rw08, rw07, rw06, rw05, rw04, 16
-    MROW_V2 rw13, rw12, rw11, rw10, rw09, rw08, rw07, rw06, rw05, 20
-    MROW_V2 rw14, rw13, rw12, rw11, rw10, rw09, rw08, rw07, rw06, 24
-    MROW_V3 rw15, rw14, rw13, rw12, rw11, rw10, rw09, rw08, rw07, 28
+    MROW_V1 rw08, rw07, rw06, rw05, rw04, rw03, rw02, rw01, rw00, tmp2, 0
+    MROW_V2 rw09, rw08, rw07, rw06, rw05, rw04, rw03, rw02, rw01, tmp2, 4
+    MROW_V2 rw10, rw09, rw08, rw07, rw06, rw05, rw04, rw03, rw02, tmp2, 8
+    MROW_V2 rw11, rw10, rw09, rw08, rw07, rw06, rw05, rw04, rw03, tmp2, 12
+    MROW_V2 rw12, rw11, rw10, rw09, rw08, rw07, rw06, rw05, rw04, tmp2, 16
+    MROW_V2 rw13, rw12, rw11, rw10, rw09, rw08, rw07, rw06, rw05, tmp2, 20
+    MROW_V2 rw14, rw13, rw12, rw11, rw10, rw09, rw08, rw07, rw06, tmp2, 24
+    MROW_V2 rw15, rw14, rw13, rw12, rw11, rw10, rw09, rw08, rw07, tmp1, 28
 .endm
 
 
-// The macro `MODRED1` performs a (partial) reduction of the 16-word operand
-// `rw00`-`rw15` modulo $2p = 2^{256} - 38$ to obtain a 9-word result. The
-// upper half of the operand (i.e., the words `rw08`-`rw15`) is multiplied by
-// $2c = 38$ and the 9-word product is added to the lower half (i.e., the words
-// `rw00`-`rw07`). The result is put in `rw00`-`rw08`, whereby the word `rw08`
-// is relatively short (at most one bit longer than $2c$).
+// The macro `MODREDP` reduces the 16-word operand `rw00`-`rw15` modulo the
+// prime $p = 2^{256} - 19$ to get an 8-word result. This reduction consists
+// of two steps: (i) the upper half `rw08`-`rw15` is multiplied by $2c = 38$
+// and the obtained 9-word product is added to the lower half `rw08`-`rw15`,
+// yielding a 9-word intermediate result `rw00`-`rw08`, (ii) the double-length
+// word in the `rw08:rw07` register-pair is split into a lower part of 31 bits
+// and an upper part, which is multiplied by $c = 19$ and the obtained product
+// is added to the intermediate result `rw00`-`rw07`. The implementation below
+// merges these steps and performs the modular reduction as follows: (i) `rw15`
+// is multiplied by $2c$ and `rw07` is added to the product (macro `MADD_V3`),
+// (ii) the obtained product is split into a 31-bit lower part and a (smaller)
+// upper part, which is multiplied by $c = 19$ (macro `MULHIXC`), (iii) the
+// obtained single-word product is taken into account when the remaining words
+// `rw08`-`rw14` are multiplied by $2c$ and added to the words `rw00`-`rw06`.
 
-.macro MODRED1
-    li      tmp1, 2*CCON
-    MADD_V3 rw00, rw08, tmp1, rw08, tmp0
-    MADD_V4 rw01, rw09, tmp1, rw08, tmp0
-    MADD_V4 rw02, rw10, tmp1, rw08, tmp0
-    MADD_V4 rw03, rw11, tmp1, rw08, tmp0
-    MADD_V4 rw04, rw12, tmp1, rw08, tmp0
-    MADD_V4 rw05, rw13, tmp1, rw08, tmp0
-    MADD_V4 rw06, rw14, tmp1, rw08, tmp0
-    MADD_V4 rw07, rw15, tmp1, rw08, tmp0
-.endm
-
-
-// The macro `MODRED2` performs a (partial) reduction of the 9-word operand
-// `rw00`-`rw08` modulo $p = 2^{255} - 19$ to obtain an 8-word result. First,
-// the macro `MULHIXC` is called to split the double-length word `rw08`:`rw07`
-// into a 31-bit lower part and a (normally much shorter) upper part, which is
-// then multiplied by $c = 19$. Then, the macro `ADDWORD` adds the obtained
-// product, which fits into a single word, to the eight words `rw00`-`rw07`.
-
-.macro MODRED2
-    MULHIXC rw08, rw07
-    ADDWORD rw07, rw06, rw05, rw04, rw03, rw02, rw01, rw00, rw08
+.macro MODREDP
+    li      tmp1, 2*CCON   // tmp1 = 38
+    MADD_V2 tmp2, rw07, rw15, tmp1, rw07
+    srli    tmp1, tmp1, 1  // tmp1 = 19
+    MULHIXC tmp2, rw07, tmp1, tmp2, rw07
+    slli    tmp1, tmp1, 1  // tmp1 = 38
+    MADD_V3 tmp2, rw00, rw08, tmp1, tmp2, rw00
+    MADD_V3 tmp2, rw01, rw09, tmp1, tmp2, rw01
+    MADD_V3 tmp2, rw02, rw10, tmp1, tmp2, rw02
+    MADD_V3 tmp2, rw03, rw11, tmp1, tmp2, rw03
+    MADD_V3 tmp2, rw04, rw12, tmp1, tmp2, rw04
+    MADD_V3 tmp2, rw05, rw13, tmp1, tmp2, rw05
+    MADD_V3 tmp2, rw06, rw14, tmp1, tmp2, rw06
+    add     rw07, rw07, tmp2 
 .endm
 
 
@@ -296,7 +237,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all callee-saved registers on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers on the stack.
 
 .macro PROLOGUE
     addi    sp, sp, -48
@@ -315,8 +256,7 @@
 .endm
 
 
-// The macro `EPILOGUE` pops all callee-saved registers from the stack and
-// returns to the caller.
+// The macro `EPILOGUE` pops all 12 callee-saved registers from the stack.
 
 .macro EPILOGUE
     lw      s0, (sp)
@@ -332,7 +272,6 @@
     lw      s10, 40(sp)
     lw      s11, 44(sp)
     addi    sp, sp, 48
-    ret
 .endm
 
 
@@ -380,15 +319,15 @@
 .text
 .global gfp_mul_isa
 .type gfp_mul_isa,%function
-.balign 16
+// .balign 8
 gfp_mul_isa:
     PROLOGUE            // push callee-saved registers on stack
     LDM_OPA             // load the eight words of array `a` from RAM
     MULROWS             // row-wise multiplication R += A*b[j]*2^(32*j)
-    MODRED1             // 1st step of reduction: Rlo = Rlo + Rhi*2*c
-    MODRED2             // 2nd step of reduction: obtain 8-word result
-    STM_RES             // store the result-words in array `r` in RAM
-    EPILOGUE            // pop callee-saved registers and return
+    MODREDP             // modular reduction: Rlo = (Rlo + Rhi*2*c) mod p
+    STM_RES             // store the eight result-words in array `r` in RAM
+    EPILOGUE            // pop callee-saved registers from stack
+    ret
 
 
 .end
