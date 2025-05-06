@@ -1,6 +1,6 @@
 // Function prototype:
 // -------------------
-// void gfp_mul32_isa(uint32_t *r, const uint32_t *a, const uint32_t *b);
+// void gfp_mul32_isa(uint32_t *r, const uint32_t *a, uint32_t b);
 //
 // Description:
 // ------------
@@ -14,7 +14,7 @@
 // -----------
 // `r`: pointer to array for the eight 32-bit words of the result $r$.
 // `a`: pointer to array containing the eight 32-bit words of operand $a$.
-// `b`: pointer to the 32-bit word of operand $b$.
+// `b`: 32-bit word of operand $b$.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -149,7 +149,8 @@
 // of the multiplier is loaded to `bw00` via base-address `bptr` and offset 0.
 
 .macro MULROW1
-    lw      bw00, 0(bptr)
+    // lw      bw00, 0(bptr)
+    mv      bw00, a2
     MADD_V1 rw01, rw00, aw00, bw00
     MADD_V2 rw02, rw01, aw01, bw00, rw01
     MADD_V2 rw03, rw02, aw02, bw00, rw02
