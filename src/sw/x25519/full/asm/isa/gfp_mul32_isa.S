@@ -1,4 +1,4 @@
-// void gfp_mul64_isa(uint64_t *r, const uint64_t *a, const uint64_t *b);
+// void gfp_mul32_isa(uint64_t *r, const uint64_t *a, uint32_t b);
 
 
 // registers 
@@ -93,9 +93,9 @@
 
 .section .text
 
-.global gfp_mul64_isa
+.global gfp_mul32_isa
 
-gfp_mul64_isa:
+gfp_mul32_isa:
   PROLOGUE
   LOAD_A
   MULTIPLY_B0

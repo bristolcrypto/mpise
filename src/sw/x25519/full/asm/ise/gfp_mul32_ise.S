@@ -1,4 +1,4 @@
-// void gfp_mul64_ise(uint64_t *r, const uint64_t *a, const uint64_t *b);
+// void gfp_mul32_ise(uint64_t *r, const uint64_t *a, uint32_t b);
 
 
 #include "ise_al.h"
@@ -98,9 +98,9 @@
 
 .section .text
 
-.global gfp_mul64_ise
+.global gfp_mul32_ise
 
-gfp_mul64_ise:
+gfp_mul32_ise:
   PROLOGUE
   LOAD_A
   MULTIPLY_B0
