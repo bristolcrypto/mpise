@@ -1,8 +1,8 @@
 #include "gfparith.h"
 
-void gfp_inv(uint64_t *r, const uint64_t *a)
+void gfp_inv(Word *r, const Word *a)
 {
-  uint64_t t0[NLMB64], t1[NLMB64], t2[NLMB64], t3[NLMB64];
+  Word t0[NWORDS], t1[NWORDS], t2[NWORDS], t3[NWORDS];
   int i;
 
   gfp_sqr(t0, a);

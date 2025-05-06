@@ -1,36 +1,34 @@
 #ifndef _GFPARITH_H
 #define _GFPARITH_H
 
-
 #include "share.h"
 
+void gfp_mul_isa(Word *r, const Word *a, const Word *b);
+void gfp_sqr_isa(Word *r, const Word *a);
+void gfp_add_isa(Word *r, const Word *a, const Word *b);
+void gfp_sub_isa(Word *r, const Word *a, const Word *b);
+void gfp_mul32_isa(Word *r, const Word *a, uint32_t b);
 
-void gfp_mul_isa(uint64_t *r, const uint64_t *a, const uint64_t *b);
-void gfp_sqr_isa(uint64_t *r, const uint64_t *a);
-void gfp_add_isa(uint64_t *r, const uint64_t *a, const uint64_t *b);
-void gfp_sub_isa(uint64_t *r, const uint64_t *a, const uint64_t *b);
-void gfp_mul64_isa(uint64_t *r, const uint64_t *a, const uint64_t b);
+void gfp_mul_ise(Word *r, const Word *a, const Word *b);
+void gfp_sqr_ise(Word *r, const Word *a);
+void gfp_add_ise(Word *r, const Word *a, const Word *b);
+void gfp_sub_ise(Word *r, const Word *a, const Word *b);
+void gfp_mul32_ise(Word *r, const Word *a, uint32_t b);
 
-void gfp_mul_ise(uint64_t *r, const uint64_t *a, const uint64_t *b);
-void gfp_sqr_ise(uint64_t *r, const uint64_t *a);
-void gfp_add_ise(uint64_t *r, const uint64_t *a, const uint64_t *b);
-void gfp_sub_ise(uint64_t *r, const uint64_t *a, const uint64_t *b);
-void gfp_mul64_ise(uint64_t *r, const uint64_t *a, const uint64_t b);
-
-void gfp_inv(uint64_t *r, const uint64_t *a);
+void gfp_inv(Word *r, const Word *a);
 
 #if   defined( MPISE_ISE )
-#define gfp_mul         gfp_mul_ise
-#define gfp_sqr(r, a)   gfp_mul_ise(r, a, a)
-#define gfp_add         gfp_add_ise
-#define gfp_sub         gfp_sub_ise
-#define gfp_mul64       gfp_mul64_ise
+#define gfp_mul(r, a, b)   gfp_mul_ise((r), (a), (b))
+#define gfp_sqr(r, a)      gfp_mul_ise((r), (a), (a))
+#define gfp_add(r, a, b)   gfp_add_ise((r), (a), (b))
+#define gfp_sub(r, a, b)   gfp_sub_ise((r), (a), (b))
+#define gfp_mul32(r, a, b) gfp_mul32_ise((r), (a), (b))
 #elif defined( MPISE_ISA )
-#define gfp_mul         gfp_mul_isa
-#define gfp_sqr         gfp_sqr_isa
-#define gfp_add         gfp_add_isa
-#define gfp_sub         gfp_sub_isa
-#define gfp_mul64       gfp_mul64_isa
+#define gfp_mul(r, a, b)   gfp_mul_isa((r), (a), (b))
+#define gfp_sqr(r, a)      gfp_sqr_isa((r), (a))
+#define gfp_add(r, a, b)   gfp_add_isa((r), (a), (b))
+#define gfp_sub(r, a, b)   gfp_sub_isa((r), (a), (b))
+#define gfp_mul32(r, a, b) gfp_mul32_isa((r), (a), (b))
 #endif
 
-#endif 
+#endif

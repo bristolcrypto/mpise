@@ -3,6 +3,7 @@
 #include "gfparith.h"
 #include "moncurve.h"
 
+#define NLMB64 4
 
 // macros for measuring CPU cycles
 
@@ -41,7 +42,7 @@ void test_gfp_arith()
 
 #if DEBUG
   // r := 0x359FEE6106B5DA2E7C347321EADF6B4942C8F7E2CF08FC64095D7CA3B3328D77;
-  mpi64_print("  r  = 0x", r, NLMB64);
+  mpi_print("  r  = 0x", r, NLMB64);
   memset(r, 0, sizeof(uint64_t)*NLMB64);
 #endif
 
@@ -56,7 +57,7 @@ void test_gfp_arith()
 
 #if DEBUG
   // r := 0x72CC9B9B881D163356F62CB64EB19AF43B1FBDD115461FB51F494EEBDBDAA465;
-  mpi64_print("  r  = 0x", r, NLMB64);
+  mpi_print("  r  = 0x", r, NLMB64);
   memset(r, 0, sizeof(uint64_t)*NLMB64);
 #endif
 
@@ -70,7 +71,7 @@ void test_gfp_arith()
 
 #if DEBUG
   //r  = 0x0acf13568acf13568acf13568acf13568acf13568acf13568acf13568acf1356
-  mpi64_print("  r  = 0x", r, NLMB64);
+  mpi_print("  r  = 0x", r, NLMB64);
   memset(r, 0, sizeof(uint64_t)*NLMB64);
 #endif
 
@@ -84,21 +85,21 @@ void test_gfp_arith()
 
 #if DEBUG
   //r  = 0x7777777888888887777777788888888777777778888888877777777888888875
-  mpi64_print("  r  = 0x", r, NLMB64);
+  mpi_print("  r  = 0x", r, NLMB64);
   memset(r, 0, sizeof(uint64_t)*NLMB64);
 #endif
 
   // ---------------------------------------------------------------------------
 
-  printf("- gfp mul64:     ");
+  printf("- gfp mul32:     ");
 
-  LOAD_CACHE(gfp_mul64(r, a, (CONSTA+2)/4), 100);
-  MEASURE_CYCLES(gfp_mul64(r, a, (CONSTA+2)/4), 1000);
+  LOAD_CACHE(gfp_mul32(r, a, (CONSTA+2)/4), 100);
+  MEASURE_CYCLES(gfp_mul32(r, a, (CONSTA+2)/4), 1000);
   printf("       #cycle = %lld\n", diff_cycles);
 
 #if DEBUG
   //r  = 0x3cdf012345658ebabcdf012345658ebabcdf012345658ebabcdf01234565dcd9
-  mpi64_print("  r  = 0x", r, NLMB64);
+  mpi_print("  r  = 0x", r, NLMB64);
   memset(r, 0, sizeof(uint64_t)*NLMB64);
 #endif
 }
@@ -145,10 +146,10 @@ void test_curve_arith()
   // x2 := 0x470F51948095E1CFB7C4EACC0FE04898287A84039F2AAF6099301D3BB17EC40A
   // z2 := 0x6BC1BD72824403011C63885844A207D88F7470C8B423A1FA6DC7CA52785B2725
   mon_ladder_step(&p, &q, xd); 
-  mpi64_print("  x3 = 0x", q.x, 4);
-  mpi64_print("  z3 = 0x", q.z, 4);
-  mpi64_print("  x2 = 0x", p.x, 4);
-  mpi64_print("  z2 = 0x", p.z, 4);
+  mpi_print("  x3 = 0x", q.x, 4);
+  mpi_print("  z3 = 0x", q.z, 4);
+  mpi_print("  x2 = 0x", p.x, 4);
+  mpi_print("  z2 = 0x", p.z, 4);
 #endif 
 
   // ---------------------------------------------------------------------------
@@ -166,7 +167,7 @@ void test_curve_arith()
 
 #if DEBUG
   // R := 0x5285A2775507B454F7711C4903CFEC324F088DF24DEA948E90C6E99D3755DAC3;
-  mpi64_print("  R  = 0x", r, 4);
+  mpi_print("  R  = 0x", r, 4);
 #endif
 
   printf("=============================================================\n");
@@ -197,22 +198,22 @@ void test_ecdh()
   memcpy(sk_b.t64, RFC7748_B, 32);
 
   printf("- private keys:\n");
-  mpi64_print("  alice: ", sk_a.t64, 4);
-  mpi64_print("  bob  : ", sk_b.t64, 4);
+  mpi_print("  alice: ", sk_a.t64, 4);
+  mpi_print("  bob  : ", sk_b.t64, 4);
 
   mon_mul_varbase(pk_a.t64, sk_a.t64, base_pt.t64);
   mon_mul_varbase(pk_b.t64, sk_b.t64, base_pt.t64);
 
   printf("- public keys:\n");
-  mpi64_print("  alice: ", pk_a.t64, 4);
-  mpi64_print("  bob  : ", pk_b.t64, 4);
+  mpi_print("  alice: ", pk_a.t64, 4);
+  mpi_print("  bob  : ", pk_b.t64, 4);
 
   mon_mul_varbase(ss_a.t64, sk_a.t64, pk_b.t64);
   mon_mul_varbase(ss_b.t64, sk_b.t64, pk_a.t64);
 
   printf("- shared secrets:\n");
-  mpi64_print("  alice: ", ss_a.t64, 4);
-  mpi64_print("  bob  : ", ss_b.t64, 4);
+  mpi_print("  alice: ", ss_a.t64, 4);
+  mpi_print("  bob  : ", ss_b.t64, 4);
 
   wrong = memcmp(ss_a.t64, ss_b.t64, 4);
 
@@ -229,22 +230,22 @@ void test_ecdh()
   rand_bytes((uint8_t *)sk_b.t64, 32);
 
   printf("- private keys:\n");
-  mpi64_print("  carol: ", sk_a.t64, 4);
-  mpi64_print("  dave : ", sk_b.t64, 4);
+  mpi_print("  carol: ", sk_a.t64, 4);
+  mpi_print("  dave : ", sk_b.t64, 4);
 
   mon_mul_varbase(pk_a.t64, sk_a.t64, base_pt.t64);
   mon_mul_varbase(pk_b.t64, sk_b.t64, base_pt.t64);
 
   printf("- public keys:\n");
-  mpi64_print("  carol: ", pk_a.t64, 4);
-  mpi64_print("  dave : ", pk_b.t64, 4);
+  mpi_print("  carol: ", pk_a.t64, 4);
+  mpi_print("  dave : ", pk_b.t64, 4);
 
   mon_mul_varbase(ss_a.t64, sk_a.t64, pk_b.t64);
   mon_mul_varbase(ss_b.t64, sk_b.t64, pk_a.t64);
 
   printf("- shared secrets:\n");
-  mpi64_print("  carol: ", ss_a.t64, 4);
-  mpi64_print("  dave : ", ss_b.t64, 4);
+  mpi_print("  carol: ", ss_a.t64, 4);
+  mpi_print("  dave : ", ss_b.t64, 4);
 
   wrong = memcmp(ss_a.t64, ss_b.t64, 4);
 

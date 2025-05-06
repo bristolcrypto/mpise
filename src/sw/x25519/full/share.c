@@ -14,7 +14,7 @@ void rand_bytes_fini() {
   fclose( rand_bytes_prg );
 }
 
-void rand_bytes(           uint8_t* x, int n ) {
+void rand_bytes( uint8_t* x, int n ) {
   if( n != fread( x, sizeof( uint8_t ), n, rand_bytes_prg ) ) {
     abort();
   }
@@ -28,7 +28,7 @@ void rand_bytes_fini() {
 
 }
 
-void rand_bytes(           uint8_t* x, int n ) {
+void rand_bytes( uint8_t* x, int n ) {
   for( int i = 0; i < n; i++ ) {
     x[ i ] = rand() & 0xFF;
   }
@@ -36,11 +36,11 @@ void rand_bytes(           uint8_t* x, int n ) {
 #endif
 
 
-void mpi64_print(const char *c, const uint64_t *a, int len)
+void mpi_print(const char *c, const Word *a, int len)
 {
   int i;
 
-  printf("%s", c);
-  for (i = len-1; i > 0; i--) printf("%016llX", a[i]);
-  printf("%016llX\n", a[0]);
+  if ((c != NULL) && (strlen(c) > 0)) printf("%s", c);
+  for (i = len - 1; i >= 0; i--) printf(FORMATSTR, a[i]);
+  printf("\n");
 }
