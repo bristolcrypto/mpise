@@ -1,3 +1,17 @@
+// ============================================================================
+
+#if   ( MPISE_XLEN == 32 )
+#define XBYTES 4
+#define XLOG2B 2
+#define XLOAD  lw
+#define XSTORE sw
+#elif ( MPISE_XLEN == 64 )
+#define XBYTES 8
+#define XLOG2B 3
+#define XLOAD  ld
+#define XSTORE sd
+#endif
+
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
@@ -22,7 +36,7 @@
 
 
 // The macro `MACC1X1` multiplies the word `aiw` by `bjw` and adds the double-
-// length product to the triple-length accumulator `rex|rhi|rlo`. The two words
+// length product to the triple-length accumulator `rex:rhi:rlo`. The two words
 // `tlo` and `thi` hold temporary results.
 
 .macro MACC1X1 rex:req, rhi:req, rlo:req, aiw:req, bjw:req, thi:req, tlo:req
@@ -41,8 +55,8 @@
 // register `aw0`.
 
 .macro LDW_OPA
-    ld      aw0, 0(aptr)
-    addi    aptr, aptr, 8
+    XLOAD   aw0, 0(aptr)
+    addi    aptr, aptr, XBYTES
 .endm
 
 
@@ -50,8 +64,8 @@
 // register `bw0`.
 
 .macro LDW_OPB
-    addi    bptr, bptr, -8
-    ld      bw0, 0(bptr)
+    addi    bptr, bptr, -XBYTES
+    XLOAD   bw0, 0(bptr)
 .endm
 
 
@@ -59,8 +73,8 @@
 // array `r` in RAM.
 
 .macro STW_RES
-    sd      rw0, 0(rptr)
-    addi    rptr, rptr, 8
+    XSTORE  rw0, 0(rptr)
+    addi    rptr, rptr, XBYTES
 .endm
 
 
@@ -87,22 +101,22 @@
 .text
 .global mpi_mul_1x1fr_isa_asm
 .type mpi_mul_1x1fr_isa_asm,%function
-.balign 16
+// .balign 16
 mpi_mul_1x1fr_isa_asm:
     CLRACCU
-    slli    len, len, 3
+    slli    len, len, XLOG2B
     mv      octr, zero
     // START OF FIRST OUTER LOOP
 .LOUTLOOP1:
     mv      ictr, zero
-    add     octr, octr, 8
+    add     octr, octr, XBYTES
     add     bptr, bptr, octr
     // START OF FIRST INNER LOOP
 .LINNLOOP1:     // the first inner loop is iterated $octr/16$ times
     LDW_OPA     // load four words of array `a` and put them in
     LDW_OPB     // load four words of array `b` and put them in
     MACC1X1 rw2, rw1, rw0, aw0, bw0, tmp0, tmp1
-    addi    ictr, ictr, 8           // increment inner-loop counter
+    addi    ictr, ictr, XBYTES      // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP1  // branch to start of loop if ictr != octr
     // END OF FIRST INNER LOOP
     STW_RES     // store the result-words in array `r` in RAM
@@ -112,7 +126,7 @@ mpi_mul_1x1fr_isa_asm:
     // END OF FIRST OUTER LOOP
     add     aptr, aptr, len        // set aptr to address of a[len}
     add     bptr, bptr, len        // set bptr to address of b[len}
-    addi    octr, octr, -8         // second outer loop is iterated len-1 times
+    addi    octr, octr, -XBYTES    // second outer loop is iterated len-1 times
     // START OF SECOND OUTER LOOP
 .LOUTLOOP2:
     mv      ictr, zero
@@ -122,13 +136,13 @@ mpi_mul_1x1fr_isa_asm:
     LDW_OPA     // load four words of array `a` and put them in
     LDW_OPB     // load four words of array `b` and put them in
     MACC1X1 rw2, rw1, rw0, aw0, bw0, tmp0, tmp1
-    addi    ictr, ictr, 8           // increment inner-loop counter
+    addi    ictr, ictr, XBYTES      // increment inner-loop counter
     bne     ictr, octr, .LINNLOOP2  // branch to start of loop if ictr != octr
     // END OF SECOND INNER LOOP
     STW_RES     // store the result-words in array `r` in RAM
     SHRACCU     //
     add     bptr, bptr, octr
-    addi    octr, octr, -8
+    addi    octr, octr, -XBYTES
     bne     octr, zero, .LOUTLOOP2  // branch to start of loop if octr != 0
     // END OF SECOND OUTER LOOP
     STW_RES     // store the result-words in array `r` in RAM
