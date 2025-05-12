@@ -1,5 +1,3 @@
-// ============================================================================
-
 #if   ( MPISE_XLEN == 32 )
 #define XBYTES 4
 #define XLOG2B 2
@@ -125,12 +123,12 @@ mpi_mul_1x1fr_isa_asm:
     LDW_OPA aw0                     // load a[j] via `aptr` to register `aw0`
     MACC1X1 sw2, sw1, sw0, aw0, bw0 // MAC operation: accu = accu + a[j]*b[k]
     addi    ictr, ictr, XBYTES      // increment i-loop counter by $XBYTES$
-    bne     ictr, octr, .LINNLOOP1  // branch to start of loop if ictr != octr
+    bltu    ictr, octr, .LINNLOOP1  // branch to start of loop if ictr < octr
     // --- END OF 1ST INNER LOOP ---
     STW_RES sw0                     // store word in `sw0` to r[i] via `rptr`
     SHRACCU sw2, sw1, sw0           // shift accu right by one word
     sub     aptr, aptr, octr        // set `aptr` to address of a[0]
-    bne     octr, blen, .LOUTLOOP1  // branch to start of loop if octr != blen
+    bltu    octr, blen, .LOUTLOOP1  // branch to start of loop if octr < blen
     // --- END OF 1ST OUTER LOOP ---
     add     aptr, aptr, blen        // set `aptr` to address of a[len]
     add     bptr, bptr, blen        // set `bptr` to address of b[len]
@@ -145,13 +143,13 @@ mpi_mul_1x1fr_isa_asm:
     LDW_OPA aw0                     // load a[j] via `aptr` to register `aw0`
     MACC1X1 sw2, sw1, sw0, aw0, bw0 // MAC operation: accu = accu + a[j]*b[k]
     addi    ictr, ictr, XBYTES      // increment i-loop counter by $XBYTES$
-    bne     ictr, octr, .LINNLOOP2  // branch to start of loop if ictr != octr
+    bltu    ictr, octr, .LINNLOOP2  // branch to start of loop if ictr < octr
     // --- END OF 2ND INNER LOOP ---
     STW_RES sw0                     // store word in `sw0` to r[i] via `rptr`
     SHRACCU sw2, sw1, sw0           // shift accu right by one word
     add     bptr, bptr, octr        // set `bptr` to address of b[len]
     addi    octr, octr, -XBYTES     // decrement o-loop counter by $XBYTES$
-    bne     octr, zero, .LOUTLOOP2  // branch to start of loop if octr != 0
+    bltu    zero, octr, .LOUTLOOP2  // branch to start of loop if 0 < octr
     // --- END OF 2ND OUTER LOOP ---
     STW_RES sw0                     // store word in `sw0` to r[i] via `rptr`
     ret

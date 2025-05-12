@@ -1,9 +1,7 @@
-// ============================================================================
-
 #ifdef RADIX
 #define LIMBBITS RADIX
 #else  // for testing!
-#define LIMBBITS 58
+#define LIMBBITS 60
 #endif
 
 #if   ( MPISE_XLEN == 32 )
@@ -81,14 +79,11 @@
  .endm
 
 
-// The macro `TOLIMB` converts lowest word of the double-length accumulator
-// `ahi:alo` into a limb of length `LIMBBITS` (determined by `RADIX`).
+// The macro `TOLIMB` converts the word `aw0` to a limb of length `LIMBBITS`
+// (determined by `RADIX`) and puts it in `rw0`.
 
-.macro TOLIMB ahi:req, alo:req
-    srli    tmp0, \alo, LIMBBITS
-    slli    \ahi, \ahi, (MPISE_XLEN-LIMBBITS)
-    and     \alo, \alo, mask
-    xor     \ahi, \ahi, tmp0
+.macro TOLIMB rw0:req, aw0:req
+    and     \rw0, \aw0, mask
 .endm
 
 
@@ -111,11 +106,13 @@
 
 
 // The macro `SHRACCU` shifts the double-length accumulator `ahi:alo` to the
-// right by one word.
+// right by one limb.
 
 .macro SHRACCU ahi:req, alo:req
-    mv      \alo, \ahi
-    mv      \ahi, zero
+    srli    \alo, \alo, LIMBBITS
+    slli    tmp0, \ahi, (MPISE_XLEN-LIMBBITS)
+    xor     \alo, \alo, tmp0
+    srli    \ahi, \ahi, LIMBBITS
 .endm
 
 
@@ -144,13 +141,13 @@ mpi_mul_1x1rr_isa_asm:
     LDW_OPA aw0                     // load a[j] via `aptr` to register `aw0`
     MACC1X1 sw1, sw0, aw0, bw0      // MAC operation: accu = accu + a[j]*b[k]
     addi    ictr, ictr, XBYTES      // increment i-loop counter by $XBYTES$
-    bne     ictr, octr, .LINNLOOP1  // branch to start of loop if ictr != octr
+    bltu    ictr, octr, .LINNLOOP1  // branch to start of loop if ictr < octr
     // --- END OF 1ST INNER LOOP ---
-    TOLIMB  sw1, sw0                // convert lower accu-word into a limb
-    STW_RES sw0                     // store limb in `sw0` to r[i] via `rptr`
-    SHRACCU sw1, sw0                // shift accu right by $LIMBBITS$ bits
+    TOLIMB  tmp0, sw0               // convert lower accu-word into a limb
+    STW_RES tmp0                    // store limb in `sw0` to r[i] via `rptr`
+    SHRACCU sw1, sw0                // shift accu right by one limb
     sub     aptr, aptr, octr        // set `aptr` to address of a[0]
-    bne     octr, blen, .LOUTLOOP1  // branch to start of loop if octr != blen
+    bltu    octr, blen, .LOUTLOOP1  // branch to start of loop if octr < blen
     // --- END OF 1ST OUTER LOOP ---
     add     aptr, aptr, blen        // set `aptr` to address of a[len]
     add     bptr, bptr, blen        // set `bptr` to address of b[len]
@@ -165,14 +162,14 @@ mpi_mul_1x1rr_isa_asm:
     LDW_OPA aw0                     // load a[j] via `aptr` to register `aw0`
     MACC1X1 sw1, sw0, aw0, bw0      // MAC operation: accu = accu + a[j]*b[k]
     addi    ictr, ictr, XBYTES      // increment i-loop counter by $XBYTES$
-    bne     ictr, octr, .LINNLOOP2  // branch to start of loop if ictr != octr
+    bltu    ictr, octr, .LINNLOOP2  // branch to start of loop if ictr < octr
     // --- END OF 2ND INNER LOOP ---
-    TOLIMB  sw1, sw0                // convert lower accu-word into a limb
-    STW_RES sw0                     // store limb in `sw0` to r[i] via `rptr`
-    SHRACCU sw1, sw0                // shift accu right by $LIMBBITS$ bits
+    TOLIMB  tmp0, sw0               // convert lower accu-word into a limb
+    STW_RES tmp0                    // store limb in `sw0` to r[i] via `rptr`
+    SHRACCU sw1, sw0                // shift accu right by one limb
     add     bptr, bptr, octr        // set `bptr` to address of b[len]
     addi    octr, octr, -XBYTES     // decrement o-loop counter by $XBYTES$
-    bne     octr, zero, .LOUTLOOP2  // branch to start of loop if octr != 0
+    bltu    zero, octr, .LOUTLOOP2  // branch to start of loop if 0 < octr
     // --- END OF 2ND OUTER LOOP ---
     TOLIMB  sw1, sw0                // convert lower accu-word into a limb
     STW_RES sw0                     // store limb in `sw0` to r[i] via `rptr`
