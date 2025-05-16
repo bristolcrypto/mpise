@@ -6,19 +6,21 @@ endif
 
 ifdef RADIX_REDUCED
 export BASE = ${CURDIR}/reduced
-
-ifneq "${RADIX}" "51"
-  $(error "found that RADIX=${RADIX}, but can only support RADIX=51")
 endif
+
+ifeq "${XLEN}", "64"
+  ifneq "${RADIX}" "51"
+    $(error "you set RADIX='${RADIX}', but can only support RADIX='51'")
+  endif
 endif
 
 export INCLUDES  +=            ${BASE}
 export INCLUDES  +=            ${BASE}/asm
 
 export  HEADERS  += $(wildcard ${BASE}/*.h)
-export  HEADERS  += $(wildcard ${BASE}/asm/isa/*.h)
-export  HEADERS  += $(wildcard ${BASE}/asm/ise/*.h)
+export  HEADERS  += $(wildcard ${BASE}/asm/isa_${ARCH}/*.h)
+export  HEADERS  += $(wildcard ${BASE}/asm/ise_${ARCH}/*.h)
 
 export  SOURCES  += $(wildcard ${BASE}/*.c) 
-export  SOURCES  += $(wildcard ${BASE}/asm/isa/*.S)
-export  SOURCES  += $(wildcard ${BASE}/asm/ise/*.S) 
+export  SOURCES  += $(wildcard ${BASE}/asm/isa_${ARCH}/*.S)
+export  SOURCES  += $(wildcard ${BASE}/asm/ise_${ARCH}/*.S) 
