@@ -1,7 +1,7 @@
-#ifdef RADIX
-#define LIMBBITS RADIX
+#ifdef MPISE_RADIX
+#define LIMBBITS MPISE_RADIX
 #else  // for testing!
-#define LIMBBITS 60
+#define LIMBBITS 51
 #endif
 
 #if   ( MPISE_XLEN == 32 )
