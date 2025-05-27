@@ -7,11 +7,11 @@ endif
 ifdef RADIX_REDUCED
 export BASE = ${CURDIR}/reduced
 
-ifeq "${XLEN}" "64"
-  ifneq "${RADIX}" "51"
-    $(error "you set RADIX='${RADIX}', but can only support RADIX='51'")
+  ifeq "${XLEN}" "64"
+    ifneq "${RADIX}" "51"
+      $(error "you set RADIX='${RADIX}', but can only support RADIX='51'")
+    endif
   endif
-endif
 endif
 
 export INCLUDES  +=            ${BASE}
