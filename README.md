@@ -36,9 +36,9 @@
 
   This initializes the environment variables `REPO_HOME`, `RISCV_SPIKE`, and `RISCV_CVA6`:
   note that two RISC-V toolchains are used, with
-  one installed in `${RISCV_SPIKE} (for simulation               using     `spike`)
+  one installed in `${RISCV_SPIKE}` (for simulation               using     `spike`)
   and 
-  one installed in `${RISCV_CVA6}  (for simulation of CVA6-MPISE using `verilator`).
+  one installed in `${RISCV_CVA6}`  (for simulation of CVA6-MPISE using `verilator`).
 
 - Fix configuration, e.g., 
 
