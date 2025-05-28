@@ -10,12 +10,12 @@
 
 #if   ( MPISE_XLEN == 32 )
 #define IMM_SHIFT 2
-#define IMM_INC   16
+#define IMM_INC   4
 #define ALL1WORD 0xFFFFFFFFULL
 #define LIMBMASK (ALL1WORD >> (32 - (LIMBBITS)))
 #elif ( MPISE_XLEN == 64 )
 #define IMM_SHIFT 3
-#define IMM_INC   32
+#define IMM_INC   8
 #define ALL1WORD 0xFFFFFFFFFFFFFFFFULL
 #define LIMBMASK (ALL1WORD >> (64 - (LIMBBITS)))
 #endif
@@ -91,7 +91,7 @@
 
 .macro TOLIMB
     // li      mask, LIMBMASK
-    sraiadd rwh, rwh, rwl, LIMBBITS
+    srliadd rwh, rwh, rwl, LIMBBITS
     and     rwl, rwl, mask
 .endm
 

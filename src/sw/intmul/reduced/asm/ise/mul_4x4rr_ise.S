@@ -237,21 +237,21 @@
 
 .macro TOLIMB
     // li      mask, LIMBMASK
-    sraiadd rw1l, rw1l, rw0l, LIMBBITS
+    srliadd rw1l, rw1l, rw0l, LIMBBITS
     and     rw0l, rw0l, mask
-    sraiadd rw1h, rw1h, rw0h, LIMBBITS
+    srliadd rw1h, rw1h, rw0h, LIMBBITS
     and     rw0h, rw0h, mask
-    sraiadd rw2l, rw2l, rw1l, LIMBBITS
+    srliadd rw2l, rw2l, rw1l, LIMBBITS
     and     rw1l, rw1l, mask
-    sraiadd rw2h, rw2h, rw1h, LIMBBITS
+    srliadd rw2h, rw2h, rw1h, LIMBBITS
     and     rw1h, rw1h, mask
-    sraiadd rw3l, rw3l, rw2l, LIMBBITS
+    srliadd rw3l, rw3l, rw2l, LIMBBITS
     and     rw2l, rw2l, mask
-    sraiadd rw3h, rw3h, rw2h, LIMBBITS
+    srliadd rw3h, rw3h, rw2h, LIMBBITS
     and     rw2h, rw2h, mask
-    sraiadd rw4l, rw4l, rw3l, LIMBBITS
+    srliadd rw4l, rw4l, rw3l, LIMBBITS
     and     rw3l, rw3l, mask
-    sraiadd rw5l, rw5l, rw4l, LIMBBITS
+    srliadd rw5l, rw5l, rw4l, LIMBBITS
     and     rw4l, rw4l, mask
     
     add     rw1l, rw1l, rw0h
@@ -259,11 +259,11 @@
     add     rw3l, rw3l, rw2h
     add     rw4l, rw4l, rw3h
     
-    sraiadd rw2l, rw2l, rw1l, LIMBBITS
+    srliadd rw2l, rw2l, rw1l, LIMBBITS
     and     rw1l, rw1l, mask
-    sraiadd rw3l, rw3l, rw2l, LIMBBITS
+    srliadd rw3l, rw3l, rw2l, LIMBBITS
     and     rw2l, rw2l, mask
-    sraiadd rw4l, rw4l, rw3l, LIMBBITS
+    srliadd rw4l, rw4l, rw3l, LIMBBITS
     and     rw3l, rw3l, mask
 .endm
 
