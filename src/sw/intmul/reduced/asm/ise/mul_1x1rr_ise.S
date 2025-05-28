@@ -91,7 +91,7 @@
 
 .macro TOLIMB
     // li      mask, LIMBMASK
-    srliadd rwh, rwh, rwl, LIMBBITS
+    sraiadd rwh, rwh, rwl, LIMBBITS
     and     rwl, rwl, mask
 .endm
 
