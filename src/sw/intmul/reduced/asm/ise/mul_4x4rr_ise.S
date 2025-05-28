@@ -2,6 +2,12 @@
 
 // ============================================================================
 
+#ifdef MPISE_RADIX
+#define LIMBBITS MPISE_RADIX
+#else  // for testing!
+#define LIMBBITS 51
+#endif
+
 #if   ( MPISE_XLEN == 32 )
 #define IMM_SHIFT 2
 #define IMM_INC   16
@@ -12,12 +18,6 @@
 #define IMM_INC   32
 #define ALL1WORD 0xFFFFFFFFFFFFFFFFULL
 #define LIMBMASK (ALL1WORD >> (64 - (LIMBBITS)))
-#endif
-
-#ifdef MPISE_RADIX
-#define LIMBBITS MPISE_RADIX
-#else  // for testing!
-#define LIMBBITS 51
 #endif
 
 // Register `rptr` holds the start address of array `r`

@@ -1,0 +1,106 @@
+===============================================================================
+
+# Step 1: configure
+
+- Do standard configuration, i.e.,
+
+  bash$ source ./bin/conf.sh 
+
+  bash$ export MPISE_DESTRUCTIVE="0"
+  bash$ export MPISE_STATELESS="1"
+
+  bash$ export RISCV_SPIKE="${REPO_HOME}/build/riscv"
+
+  assuming that the RISC-V toolchain, and matching spike are pre-built.
+
+- Fix working directory
+ 
+  bash$ cd ${REPO_HOME}/src/sw/intmul
+
+-------------------------------------------------------------------------------
+
+# Step 2: initialise
+
+- (Re)initialise output directory
+
+  bash$ ./scan.sh clean
+  bash$ ./scan.sh build
+
+-------------------------------------------------------------------------------
+
+# Step 3: collect (the binaries)
+
+- Scan through parameters; collect benchmark executables in output directory:
+
+  bash$ ARCH="rv32" ./scan.sh collect
+  bash$ ARCH="rv64" ./scan.sh collect
+
+- Note that we should see something similar to
+
+  bash$ ls ./scan
+  intmul-rv32_isa_25_hybrid.elf*  intmul-rv32_ise_25_hybrid.elf*  intmul-rv64_isa_50_hybrid.elf*  intmul-rv64_isa_58_hybrid.elf*  intmul-rv64_ise_51_hybrid.elf*  intmul-rv64_ise_59_hybrid.elf*
+  intmul-rv32_isa_25_simple.elf*  intmul-rv32_ise_25_simple.elf*  intmul-rv64_isa_50_simple.elf*  intmul-rv64_isa_58_simple.elf*  intmul-rv64_ise_51_simple.elf*  intmul-rv64_ise_59_simple.elf*
+  intmul-rv32_isa_26_hybrid.elf*  intmul-rv32_ise_26_hybrid.elf*  intmul-rv64_isa_51_hybrid.elf*  intmul-rv64_isa_59_hybrid.elf*  intmul-rv64_ise_52_hybrid.elf*  intmul-rv64_ise_60_hybrid.elf*
+  intmul-rv32_isa_26_simple.elf*  intmul-rv32_ise_26_simple.elf*  intmul-rv64_isa_51_simple.elf*  intmul-rv64_isa_59_simple.elf*  intmul-rv64_ise_52_simple.elf*  intmul-rv64_ise_60_simple.elf*
+  intmul-rv32_isa_27_hybrid.elf*  intmul-rv32_ise_27_hybrid.elf*  intmul-rv64_isa_52_hybrid.elf*  intmul-rv64_isa_60_hybrid.elf*  intmul-rv64_ise_53_hybrid.elf*  intmul-rv64_ise_61_hybrid.elf*
+  intmul-rv32_isa_27_simple.elf*  intmul-rv32_ise_27_simple.elf*  intmul-rv64_isa_52_simple.elf*  intmul-rv64_isa_60_simple.elf*  intmul-rv64_ise_53_simple.elf*  intmul-rv64_ise_61_simple.elf*
+  intmul-rv32_isa_28_hybrid.elf*  intmul-rv32_ise_28_hybrid.elf*  intmul-rv64_isa_53_hybrid.elf*  intmul-rv64_isa_61_hybrid.elf*  intmul-rv64_ise_54_hybrid.elf*  intmul-rv64_ise_62_hybrid.elf*
+  intmul-rv32_isa_28_simple.elf*  intmul-rv32_ise_28_simple.elf*  intmul-rv64_isa_53_simple.elf*  intmul-rv64_isa_61_simple.elf*  intmul-rv64_ise_54_simple.elf*  intmul-rv64_ise_62_simple.elf*
+  intmul-rv32_isa_29_hybrid.elf*  intmul-rv32_ise_29_hybrid.elf*  intmul-rv64_isa_54_hybrid.elf*  intmul-rv64_isa_62_hybrid.elf*  intmul-rv64_ise_55_hybrid.elf*  intmul-rv64_ise_63_hybrid.elf*
+  intmul-rv32_isa_29_simple.elf*  intmul-rv32_ise_29_simple.elf*  intmul-rv64_isa_54_simple.elf*  intmul-rv64_isa_62_simple.elf*  intmul-rv64_ise_55_simple.elf*  intmul-rv64_ise_63_simple.elf*
+  intmul-rv32_isa_30_hybrid.elf*  intmul-rv32_ise_30_hybrid.elf*  intmul-rv64_isa_55_hybrid.elf*  intmul-rv64_isa_63_hybrid.elf*  intmul-rv64_ise_56_hybrid.elf*  intmul-rv64_ise_64_hybrid.elf*
+  intmul-rv32_isa_30_simple.elf*  intmul-rv32_ise_30_simple.elf*  intmul-rv64_isa_55_simple.elf*  intmul-rv64_isa_63_simple.elf*  intmul-rv64_ise_56_simple.elf*  intmul-rv64_ise_64_simple.elf*
+  intmul-rv32_isa_31_hybrid.elf*  intmul-rv32_ise_31_hybrid.elf*  intmul-rv64_isa_56_hybrid.elf*  intmul-rv64_isa_64_hybrid.elf*  intmul-rv64_ise_57_hybrid.elf*
+  intmul-rv32_isa_31_simple.elf*  intmul-rv32_ise_31_simple.elf*  intmul-rv64_isa_56_simple.elf*  intmul-rv64_isa_64_simple.elf*  intmul-rv64_ise_57_simple.elf*
+  intmul-rv32_isa_32_hybrid.elf*  intmul-rv32_ise_32_hybrid.elf*  intmul-rv64_isa_57_hybrid.elf*  intmul-rv64_ise_50_hybrid.elf*  intmul-rv64_ise_58_hybrid.elf*
+  intmul-rv32_isa_32_simple.elf*  intmul-rv32_ise_32_simple.elf*  intmul-rv64_isa_57_simple.elf*  intmul-rv64_ise_50_simple.elf*  intmul-rv64_ise_58_simple.elf*
+
+- Note that decoupling this step from the next one means we can pre-compile
+  the benchmark executables on, e.g., some host workstation, then take them
+  (via an SD card) for execution on the FPGA.
+
+-------------------------------------------------------------------------------
+  
+# Step 4: execute (the binaries)
+
+- Scan through parameters; execute benchmark executables in output directory to produce log of output:
+
+  bash$ ARCH="rv32" ./scan.sh execute
+  bash$ ARCH="rv64" ./scan.sh execute
+
+- Note that we should see something similar to
+
+  bash$ ls ./scan
+  intmul-rv32_isa_25_hybrid.elf*  intmul-rv32_isa_32_simple.log   intmul-rv32_ise_32_simple.elf*  intmul-rv64_isa_57_hybrid.log   intmul-rv64_ise_50_hybrid.elf*  intmul-rv64_ise_57_simple.log
+  intmul-rv32_isa_25_hybrid.log   intmul-rv32_ise_25_hybrid.elf*  intmul-rv32_ise_32_simple.log   intmul-rv64_isa_57_simple.elf*  intmul-rv64_ise_50_hybrid.log   intmul-rv64_ise_58_hybrid.elf*
+  intmul-rv32_isa_25_simple.elf*  intmul-rv32_ise_25_hybrid.log   intmul-rv64_isa_50_hybrid.elf*  intmul-rv64_isa_57_simple.log   intmul-rv64_ise_50_simple.elf*  intmul-rv64_ise_58_hybrid.log
+  intmul-rv32_isa_25_simple.log   intmul-rv32_ise_25_simple.elf*  intmul-rv64_isa_50_hybrid.log   intmul-rv64_isa_58_hybrid.elf*  intmul-rv64_ise_50_simple.log   intmul-rv64_ise_58_simple.elf*
+  intmul-rv32_isa_26_hybrid.elf*  intmul-rv32_ise_25_simple.log   intmul-rv64_isa_50_simple.elf*  intmul-rv64_isa_58_hybrid.log   intmul-rv64_ise_51_hybrid.elf*  intmul-rv64_ise_58_simple.log
+  intmul-rv32_isa_26_hybrid.log   intmul-rv32_ise_26_hybrid.elf*  intmul-rv64_isa_50_simple.log   intmul-rv64_isa_58_simple.elf*  intmul-rv64_ise_51_hybrid.log   intmul-rv64_ise_59_hybrid.elf*
+  intmul-rv32_isa_26_simple.elf*  intmul-rv32_ise_26_hybrid.log   intmul-rv64_isa_51_hybrid.elf*  intmul-rv64_isa_58_simple.log   intmul-rv64_ise_51_simple.elf*  intmul-rv64_ise_59_hybrid.log
+  intmul-rv32_isa_26_simple.log   intmul-rv32_ise_26_simple.elf*  intmul-rv64_isa_51_hybrid.log   intmul-rv64_isa_59_hybrid.elf*  intmul-rv64_ise_51_simple.log   intmul-rv64_ise_59_simple.elf*
+  intmul-rv32_isa_27_hybrid.elf*  intmul-rv32_ise_26_simple.log   intmul-rv64_isa_51_simple.elf*  intmul-rv64_isa_59_hybrid.log   intmul-rv64_ise_52_hybrid.elf*  intmul-rv64_ise_59_simple.log
+  intmul-rv32_isa_27_hybrid.log   intmul-rv32_ise_27_hybrid.elf*  intmul-rv64_isa_51_simple.log   intmul-rv64_isa_59_simple.elf*  intmul-rv64_ise_52_hybrid.log   intmul-rv64_ise_60_hybrid.elf*
+  intmul-rv32_isa_27_simple.elf*  intmul-rv32_ise_27_hybrid.log   intmul-rv64_isa_52_hybrid.elf*  intmul-rv64_isa_59_simple.log   intmul-rv64_ise_52_simple.elf*  intmul-rv64_ise_60_hybrid.log
+  intmul-rv32_isa_27_simple.log   intmul-rv32_ise_27_simple.elf*  intmul-rv64_isa_52_hybrid.log   intmul-rv64_isa_60_hybrid.elf*  intmul-rv64_ise_52_simple.log   intmul-rv64_ise_60_simple.elf*
+  intmul-rv32_isa_28_hybrid.elf*  intmul-rv32_ise_27_simple.log   intmul-rv64_isa_52_simple.elf*  intmul-rv64_isa_60_hybrid.log   intmul-rv64_ise_53_hybrid.elf*  intmul-rv64_ise_60_simple.log
+  intmul-rv32_isa_28_hybrid.log   intmul-rv32_ise_28_hybrid.elf*  intmul-rv64_isa_52_simple.log   intmul-rv64_isa_60_simple.elf*  intmul-rv64_ise_53_hybrid.log   intmul-rv64_ise_61_hybrid.elf*
+  intmul-rv32_isa_28_simple.elf*  intmul-rv32_ise_28_hybrid.log   intmul-rv64_isa_53_hybrid.elf*  intmul-rv64_isa_60_simple.log   intmul-rv64_ise_53_simple.elf*  intmul-rv64_ise_61_hybrid.log
+  intmul-rv32_isa_28_simple.log   intmul-rv32_ise_28_simple.elf*  intmul-rv64_isa_53_hybrid.log   intmul-rv64_isa_61_hybrid.elf*  intmul-rv64_ise_53_simple.log   intmul-rv64_ise_61_simple.elf*
+  intmul-rv32_isa_29_hybrid.elf*  intmul-rv32_ise_28_simple.log   intmul-rv64_isa_53_simple.elf*  intmul-rv64_isa_61_hybrid.log   intmul-rv64_ise_54_hybrid.elf*  intmul-rv64_ise_61_simple.log
+  intmul-rv32_isa_29_hybrid.log   intmul-rv32_ise_29_hybrid.elf*  intmul-rv64_isa_53_simple.log   intmul-rv64_isa_61_simple.elf*  intmul-rv64_ise_54_hybrid.log   intmul-rv64_ise_62_hybrid.elf*
+  intmul-rv32_isa_29_simple.elf*  intmul-rv32_ise_29_hybrid.log   intmul-rv64_isa_54_hybrid.elf*  intmul-rv64_isa_61_simple.log   intmul-rv64_ise_54_simple.elf*  intmul-rv64_ise_62_hybrid.log
+  intmul-rv32_isa_29_simple.log   intmul-rv32_ise_29_simple.elf*  intmul-rv64_isa_54_hybrid.log   intmul-rv64_isa_62_hybrid.elf*  intmul-rv64_ise_54_simple.log   intmul-rv64_ise_62_simple.elf*
+  intmul-rv32_isa_30_hybrid.elf*  intmul-rv32_ise_29_simple.log   intmul-rv64_isa_54_simple.elf*  intmul-rv64_isa_62_hybrid.log   intmul-rv64_ise_55_hybrid.elf*  intmul-rv64_ise_62_simple.log
+  intmul-rv32_isa_30_hybrid.log   intmul-rv32_ise_30_hybrid.elf*  intmul-rv64_isa_54_simple.log   intmul-rv64_isa_62_simple.elf*  intmul-rv64_ise_55_hybrid.log   intmul-rv64_ise_63_hybrid.elf*
+  intmul-rv32_isa_30_simple.elf*  intmul-rv32_ise_30_hybrid.log   intmul-rv64_isa_55_hybrid.elf*  intmul-rv64_isa_62_simple.log   intmul-rv64_ise_55_simple.elf*  intmul-rv64_ise_63_hybrid.log
+  intmul-rv32_isa_30_simple.log   intmul-rv32_ise_30_simple.elf*  intmul-rv64_isa_55_hybrid.log   intmul-rv64_isa_63_hybrid.elf*  intmul-rv64_ise_55_simple.log   intmul-rv64_ise_63_simple.elf*
+  intmul-rv32_isa_31_hybrid.elf*  intmul-rv32_ise_30_simple.log   intmul-rv64_isa_55_simple.elf*  intmul-rv64_isa_63_hybrid.log   intmul-rv64_ise_56_hybrid.elf*  intmul-rv64_ise_63_simple.log
+  intmul-rv32_isa_31_hybrid.log   intmul-rv32_ise_31_hybrid.elf*  intmul-rv64_isa_55_simple.log   intmul-rv64_isa_63_simple.elf*  intmul-rv64_ise_56_hybrid.log   intmul-rv64_ise_64_hybrid.elf*
+  intmul-rv32_isa_31_simple.elf*  intmul-rv32_ise_31_hybrid.log   intmul-rv64_isa_56_hybrid.elf*  intmul-rv64_isa_63_simple.log   intmul-rv64_ise_56_simple.elf*  intmul-rv64_ise_64_hybrid.log
+  intmul-rv32_isa_31_simple.log   intmul-rv32_ise_31_simple.elf*  intmul-rv64_isa_56_hybrid.log   intmul-rv64_isa_64_hybrid.elf*  intmul-rv64_ise_56_simple.log   intmul-rv64_ise_64_simple.elf*
+  intmul-rv32_isa_32_hybrid.elf*  intmul-rv32_ise_31_simple.log   intmul-rv64_isa_56_simple.elf*  intmul-rv64_isa_64_hybrid.log   intmul-rv64_ise_57_hybrid.elf*  intmul-rv64_ise_64_simple.log
+  intmul-rv32_isa_32_hybrid.log   intmul-rv32_ise_32_hybrid.elf*  intmul-rv64_isa_56_simple.log   intmul-rv64_isa_64_simple.elf*  intmul-rv64_ise_57_hybrid.log
+  intmul-rv32_isa_32_simple.elf*  intmul-rv32_ise_32_hybrid.log   intmul-rv64_isa_57_hybrid.elf*  intmul-rv64_isa_64_simple.log   intmul-rv64_ise_57_simple.elf*
+
+===============================================================================
