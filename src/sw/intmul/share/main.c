@@ -51,8 +51,13 @@ int main( int argc, char* argv[] ) {
   #endif
   
   for( int j = MIN_LIMBS; j <= MAX_LIMBS; j += LIMB_STEP ) {
-    #if defined( MPISE_RADIX_REDUCED )
-    if( j > ( 1 << ( ( 2 * MPISE_XLEN ) - ( 2 * LIMBBITS ) ) ) ) { // maximum limbs bounded by 2^( 2*MPISE_XLEN - 2*LIMBBITS )
+    #if defined( MPISE_ISA ) && defined( MPISE_RADIX_REDUCED )
+    if( j > ( 1 << ( ( 2 * MPISE_XLEN ) - ( 2 * LIMBBITS ) ) ) ) { // ISA implementation maximum limbs bounded by 2^( 2*MPISE_XLEN - 2*LIMBBITS )
+      continue;
+    }
+    #endif
+    #if defined( MPISE_ISE ) && defined( MPISE_RADIX_REDUCED )
+    if( j > ( 1 << ( (     MPISE_XLEN ) - (     LIMBBITS ) ) ) ) { // ISE implementation maximum limbs bounded by 2^(   MPISE_XLEN -   LIMBBITS )
       continue;
     }
     #endif
