@@ -50,9 +50,18 @@ case ${1} in
     for RADIX in ${RADIXES} ; do
       export RADIX
       export VERSION="simple"
+      echo "Collecting ${ARCH} ${TYPE} ${RADIX} ${VERSION}"
       make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
+      if   [ "${PLATFORM}" = "cva6-verilator" ] ; then
+        make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/${ARCH}/mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
+      fi
+
       export VERSION="hybrid"
+      echo "Collecting ${ARCH} ${TYPE} ${RADIX} ${VERSION}"
       make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
+      if   [ "${PLATFORM}" = "cva6-verilator" ] ; then
+        make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/${ARCH}/mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
+      fi
     done
     # build then relocate ISE-based benchmarks
     export TYPE="ise"
@@ -61,9 +70,17 @@ case ${1} in
     for RADIX in ${RADIXES} ; do
       export RADIX
       export VERSION="simple"
+      echo "Collecting ${ARCH} ${TYPE} ${RADIX} ${VERSION}"
       make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
+      if   [ "${PLATFORM}" = "cva6-verilator" ] ; then
+        make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/${ARCH}/mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
+      fi
       export VERSION="hybrid"
+      echo "Collecting ${ARCH} ${TYPE} ${RADIX} ${VERSION}"
       make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
+      if   [ "${PLATFORM}" = "cva6-verilator" ] ; then
+        make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/${ARCH}/mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
+      fi
     done
     ;;
 
