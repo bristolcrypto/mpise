@@ -40,11 +40,11 @@ endif
 ifeq "${RADIX}" "${XLEN}"
 export RADIX_FULL    = 1
 export RADIX_IMM     = $(shell printf '0x%X' $$(( ${RADIX} - ${XLEN} + 15 )))
-export GCC_FLAGS +=  -DMPISE_RADIX="${RADIX}" -DMPISE_RADIX_FULL    -DMPISE_RADIX_IMM="${RADIX_IMM}"
+export GCC_FLAGS +=  -DMPISE_RADIX="${RADIX}" -DMPISE_RADIX_FULL    -DMPISE_RADIX_IMM="${RADIX_IMM}" -DMPISE_RADIX_STR="\"${RADIX_IMM}\""
 else
 export RADIX_REDUCED = 1
 export RADIX_IMM     = $(shell printf '0x%X' $$(( ${RADIX} - ${XLEN} + 15 )))
-export GCC_FLAGS +=  -DMPISE_RADIX="${RADIX}" -DMPISE_RADIX_REDUCED -DMPISE_RADIX_IMM="${RADIX_IMM}"
+export GCC_FLAGS +=  -DMPISE_RADIX="${RADIX}" -DMPISE_RADIX_REDUCED -DMPISE_RADIX_IMM="${RADIX_IMM}" -DMPISE_RADIX_STR="\"${RADIX_IMM}\""
 endif
 
 export GCC_FLAGS += -DMPISE_DESTRUCTIVE="${MPISE_DESTRUCTIVE}" -DMPISE_STATELESS="${MPISE_STATELESS}"
@@ -73,11 +73,11 @@ ${REPO_HOME}/build/${ALG} :
 	@mkdir --parents ${@}
 
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf : $${SOURCES}
-	@${RISCV}/bin/${GCC_PREFIX}-gcc ${GCC_FLAGS} ${GCC_PATHS} $(addprefix -I ,${INCLUDES}) ${CONF} -Wall -std='gnu99' -O3 -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
+	${RISCV}/bin/${GCC_PREFIX}-gcc ${GCC_FLAGS} ${GCC_PATHS} $(addprefix -I ,${INCLUDES}) ${CONF} -Wall -std='gnu99' -O3 -o ${@} $(filter %.c, ${^}) $(filter %.S, ${^}) ${GCC_LIBS}
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.bin : ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
-	@${RISCV}/bin/${GCC_PREFIX}-objcopy --output-target='binary' ${<} ${@}
+	${RISCV}/bin/${GCC_PREFIX}-objcopy --output-target='binary' ${<} ${@}
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.asm : ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
-	@${RISCV}/bin/${GCC_PREFIX}-objdump --disassemble-all ${<} > ${@}
+	${RISCV}/bin/${GCC_PREFIX}-objdump --disassemble-all ${<} > ${@}
 
 # -----------------------------------------------------------------------------
 

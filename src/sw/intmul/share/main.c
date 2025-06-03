@@ -38,7 +38,7 @@ limb_t x[ 2*MAX_LIMBS ];
 
 int main( int argc, char* argv[] ) {
   #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
-  asm( "csrrwi x0, 0x801, " MPISE_RADIX_IMM );
+  asm( "csrrwi x0, 0x801, " MPISE_RADIX_STR );
   #endif
   
   // initialise
