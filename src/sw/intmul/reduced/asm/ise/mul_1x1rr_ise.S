@@ -53,6 +53,10 @@
     madd51lu \rlo, \aiw, \bjw, \rlo
     madd51hu \rhi, \aiw, \bjw, \rhi
 #endif
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    madd51lu \rlo, \aiw, \bjw
+    madd51hu \rhi, \aiw, \bjw
+#endif
 .endm
 
 // ----------------------------------------------------------------------------
