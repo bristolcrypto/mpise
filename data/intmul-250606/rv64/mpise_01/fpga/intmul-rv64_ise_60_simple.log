@@ -1,0 +1,6 @@
+! 60, ise, 64, 0, 1, 8, 480, 1006, 1006, 1047
+  result is correct!
+! 60, ise, 64, 0, 1, 12, 720, 2018, 2018, 2098
+  result is correct!
+! 60, ise, 64, 0, 1, 16, 960, 3382, 3382, 3523
+  result is correct!

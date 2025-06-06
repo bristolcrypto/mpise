@@ -1,0 +1,34 @@
+! 56, ise, 64, 1, 1, 8, 448, 1005, 1005, 1055
+  result is correct!
+! 56, ise, 64, 1, 1, 12, 672, 2017, 2017, 2119
+  result is correct!
+! 56, ise, 64, 1, 1, 16, 896, 3381, 3381, 3523
+  result is correct!
+! 56, ise, 64, 1, 1, 20, 1120, 5097, 5097, 5300
+  result is correct!
+! 56, ise, 64, 1, 1, 24, 1344, 7165, 7165, 7470
+  result is correct!
+! 56, ise, 64, 1, 1, 28, 1568, 9585, 9585, 10053
+  result is correct!
+! 56, ise, 64, 1, 1, 32, 1792, 12357, 12357, 12864
+  result is correct!
+! 56, ise, 64, 1, 1, 36, 2016, 15481, 15481, 16152
+  result is correct!
+! 56, ise, 64, 1, 1, 40, 2240, 18957, 18957, 19955
+  result is correct!
+! 56, ise, 64, 1, 1, 44, 2464, 22785, 22785, 23950
+  result is correct!
+! 56, ise, 64, 1, 1, 48, 2688, 26965, 26965, 28312
+  result is correct!
+! 56, ise, 64, 1, 1, 52, 2912, 31497, 31497, 32988
+  result is correct!
+! 56, ise, 64, 1, 1, 56, 3136, 36381, 36381, 37978
+  result is correct!
+! 56, ise, 64, 1, 1, 60, 3360, 41617, 41617, 43633
+  result is correct!
+! 56, ise, 64, 1, 1, 64, 3584, 47205, 67617, 49402
+  result is correct!
+! 56, ise, 64, 1, 1, 68, 3808, 53145, 53145, 55628
+  result is correct!
+! 56, ise, 64, 1, 1, 72, 4032, 59437, 59437, 62274
+  result is correct!

@@ -1,0 +1,6 @@
+! 60, ise, 64, 0, 1, 8, 480, 511, 540, 565
+  result is correct!
+! 60, ise, 64, 0, 1, 12, 720, 865, 895, 940
+  result is correct!
+! 60, ise, 64, 0, 1, 16, 960, 1331, 1361, 1422
+  result is correct!

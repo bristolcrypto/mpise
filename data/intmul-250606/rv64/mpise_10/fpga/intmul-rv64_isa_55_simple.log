@@ -1,0 +1,34 @@
+! 55, isa, 64, 1, 0, 8, 440, 1212, 1216, 1277
+  result is correct!
+! 55, isa, 64, 1, 0, 12, 660, 2476, 2480, 2580
+  result is correct!
+! 55, isa, 64, 1, 0, 16, 880, 4188, 4192, 4371
+  result is correct!
+! 55, isa, 64, 1, 0, 20, 1100, 6348, 6352, 6782
+  result is correct!
+! 55, isa, 64, 1, 0, 24, 1320, 8956, 8960, 9321
+  result is correct!
+! 55, isa, 64, 1, 0, 28, 1540, 12012, 12016, 12514
+  result is correct!
+! 55, isa, 64, 1, 0, 32, 1760, 15516, 15520, 16177
+  result is correct!
+! 55, isa, 64, 1, 0, 36, 1980, 19468, 19472, 20476
+  result is correct!
+! 55, isa, 64, 1, 0, 40, 2200, 23868, 23868, 25069
+  result is correct!
+! 55, isa, 64, 1, 0, 44, 2420, 28716, 28720, 30153
+  result is correct!
+! 55, isa, 64, 1, 0, 48, 2640, 34012, 34016, 35442
+  result is correct!
+! 55, isa, 64, 1, 0, 52, 2860, 39756, 39760, 41624
+  result is correct!
+! 55, isa, 64, 1, 0, 56, 3080, 45948, 45952, 48053
+  result is correct!
+! 55, isa, 64, 1, 0, 60, 3300, 52588, 52592, 55024
+  result is correct!
+! 55, isa, 64, 1, 0, 64, 3520, 59676, 59680, 62410
+  result is correct!
+! 55, isa, 64, 1, 0, 68, 3740, 67212, 87411, 70214
+  result is correct!
+! 55, isa, 64, 1, 0, 72, 3960, 75196, 95008, 78609
+  result is correct!
