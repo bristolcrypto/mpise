@@ -94,7 +94,7 @@ int main( int argc, char* argv[] ) {
       rdtsc_r = rdtsc_y - rdtsc_x;
 
       rdtsc_min = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
-      rdtsc_max = ( rdtsc_r >= rdtsc_min ) ? rdtsc_r : rdtsc_max;
+      rdtsc_max = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
       rdtsc_avr =                            rdtsc_r + rdtsc_avr;
     }
 
