@@ -1,0 +1,1365 @@
+for i in *.log ; do echo "-----------------Showing $i-----------------" ; cat 
+$i ; done
+-----------------Showing intmul-rv32_isa_20_hybrid.log-----------------
+! 20, isa, 32, 1, 1, 8, 160, 837, 64483, 1216
+  result is correct!
+! 20, isa, 32, 1, 1, 12, 240, 1622, 67271, 2382
+  result is correct!
+! 20, isa, 32, 1, 1, 16, 320, 2671, 66188, 3869
+  result is correct!
+! 20, isa, 32, 1, 1, 20, 400, 3946, 67606, 5777
+  result is correct!
+! 20, isa, 32, 1, 1, 24, 480, 5479, 69584, 8016
+  result is correct!
+! 20, isa, 32, 1, 1, 28, 560, 7266, 72500, 10559
+  result is correct!
+! 20, isa, 32, 1, 1, 32, 640, 9307, 336959, 14140
+  result is correct!
+! 20, isa, 32, 1, 1, 36, 720, 11602, 156221, 17252
+  result is correct!
+! 20, isa, 32, 1, 1, 40, 800, 14151, 78873, 20778
+  result is correct!
+! 20, isa, 32, 1, 1, 44, 880, 16954, 172688, 25122
+  result is correct!
+! 20, isa, 32, 1, 1, 48, 960, 20011, 166527, 29593
+  result is correct!
+! 20, isa, 32, 1, 1, 52, 1040, 23322, 352144, 35194
+  result is correct!
+! 20, isa, 32, 1, 1, 56, 1120, 26887, 190646, 40230
+  result is correct!
+! 20, isa, 32, 1, 1, 60, 1200, 30706, 360934, 46241
+  result is correct!
+! 20, isa, 32, 1, 1, 64, 1280, 34779, 376022, 52173
+  result is correct!
+! 20, isa, 32, 1, 1, 68, 1360, 39106, 368962, 59077
+  result is correct!
+! 20, isa, 32, 1, 1, 72, 1440, 43687, 372804, 65434
+  result is correct!
+-----------------Showing intmul-rv32_isa_20_simple.log-----------------
+! 20, isa, 32, 1, 1, 8, 160, 1226, 62552, 1833
+  result is correct!
+! 20, isa, 32, 1, 1, 12, 240, 2490, 180063, 3774
+  result is correct!
+! 20, isa, 32, 1, 1, 16, 320, 4202, 66077, 5968
+  result is correct!
+! 20, isa, 32, 1, 1, 20, 400, 6362, 67699, 9160
+  result is correct!
+! 20, isa, 32, 1, 1, 24, 480, 8970, 335176, 13569
+  result is correct!
+! 20, isa, 32, 1, 1, 28, 560, 12026, 164634, 17657
+  result is correct!
+! 20, isa, 32, 1, 1, 32, 640, 15530, 77540, 22315
+  result is correct!
+! 20, isa, 32, 1, 1, 36, 720, 19482, 171871, 28384
+  result is correct!
+! 20, isa, 32, 1, 1, 40, 800, 23882, 350161, 35201
+  result is correct!
+! 20, isa, 32, 1, 1, 44, 880, 28730, 357294, 42340
+  result is correct!
+! 20, isa, 32, 1, 1, 48, 960, 34026, 361820, 50166
+  result is correct!
+! 20, isa, 32, 1, 1, 52, 1040, 39770, 367907, 58891
+  result is correct!
+! 20, isa, 32, 1, 1, 56, 1120, 45962, 372897, 67701
+  result is correct!
+! 20, isa, 32, 1, 1, 60, 1200, 52602, 377733, 77442
+  result is correct!
+! 20, isa, 32, 1, 1, 64, 1280, 59690, 387158, 88223
+  result is correct!
+! 20, isa, 32, 1, 1, 68, 1360, 67226, 395070, 99606
+  result is correct!
+! 20, isa, 32, 1, 1, 72, 1440, 75210, 402628, 111248
+  result is correct!
+-----------------Showing intmul-rv32_isa_21_hybrid.log-----------------
+! 21, isa, 32, 1, 1, 8, 168, 837, 147156, 1371
+  result is correct!
+! 21, isa, 32, 1, 1, 12, 252, 1622, 64694, 2315
+  result is correct!
+! 21, isa, 32, 1, 1, 16, 336, 2671, 66310, 3934
+  result is correct!
+! 21, isa, 32, 1, 1, 20, 420, 3946, 68077, 5783
+  result is correct!
+! 21, isa, 32, 1, 1, 24, 504, 5479, 70028, 7948
+  result is correct!
+! 21, isa, 32, 1, 1, 28, 588, 7266, 71273, 10624
+  result is correct!
+! 21, isa, 32, 1, 1, 32, 672, 9307, 179580, 13804
+  result is correct!
+! 21, isa, 32, 1, 1, 36, 756, 11602, 341236, 17456
+  result is correct!
+! 21, isa, 32, 1, 1, 40, 840, 14151, 342612, 21380
+  result is correct!
+! 21, isa, 32, 1, 1, 44, 924, 16954, 347711, 25422
+  result is correct!
+! 21, isa, 32, 1, 1, 48, 1008, 20011, 346781, 30023
+  result is correct!
+! 21, isa, 32, 1, 1, 52, 1092, 23322, 406722, 36277
+  result is correct!
+! 21, isa, 32, 1, 1, 56, 1176, 26887, 355374, 40574
+  result is correct!
+! 21, isa, 32, 1, 1, 60, 1260, 30706, 186896, 45799
+  result is correct!
+! 21, isa, 32, 1, 1, 64, 1344, 34779, 363313, 52339
+  result is correct!
+! 21, isa, 32, 1, 1, 68, 1428, 39106, 369587, 58885
+  result is correct!
+! 21, isa, 32, 1, 1, 72, 1512, 43687, 371825, 65535
+  result is correct!
+-----------------Showing intmul-rv32_isa_21_simple.log-----------------
+! 21, isa, 32, 1, 1, 8, 168, 1226, 62571, 1652
+  result is correct!
+! 21, isa, 32, 1, 1, 12, 252, 2490, 64244, 3584
+  result is correct!
+! 21, isa, 32, 1, 1, 16, 336, 4202, 65629, 6027
+  result is correct!
+! 21, isa, 32, 1, 1, 20, 420, 6362, 191099, 9366
+  result is correct!
+! 21, isa, 32, 1, 1, 24, 504, 8970, 149836, 13089
+  result is correct!
+! 21, isa, 32, 1, 1, 28, 588, 12026, 336976, 17967
+  result is correct!
+! 21, isa, 32, 1, 1, 32, 672, 15530, 340024, 23152
+  result is correct!
+! 21, isa, 32, 1, 1, 36, 756, 19482, 344387, 28842
+  result is correct!
+! 21, isa, 32, 1, 1, 40, 840, 23882, 350097, 35156
+  result is correct!
+! 21, isa, 32, 1, 1, 44, 924, 28730, 354604, 42380
+  result is correct!
+! 21, isa, 32, 1, 1, 48, 1008, 34026, 360688, 50180
+  result is correct!
+! 21, isa, 32, 1, 1, 52, 1092, 39770, 365406, 58445
+  result is correct!
+! 21, isa, 32, 1, 1, 56, 1176, 45962, 374259, 67805
+  result is correct!
+! 21, isa, 32, 1, 1, 60, 1260, 52602, 380361, 77859
+  result is correct!
+! 21, isa, 32, 1, 1, 64, 1344, 59690, 387271, 88346
+  result is correct!
+! 21, isa, 32, 1, 1, 68, 1428, 67226, 393578, 99346
+  result is correct!
+! 21, isa, 32, 1, 1, 72, 1512, 75210, 401454, 111035
+  result is correct!
+-----------------Showing intmul-rv32_isa_22_hybrid.log-----------------
+! 22, isa, 32, 1, 1, 8, 176, 837, 64764, 1216
+  result is correct!
+! 22, isa, 32, 1, 1, 12, 264, 1622, 65084, 2379
+  result is correct!
+! 22, isa, 32, 1, 1, 16, 352, 2671, 67021, 3935
+  result is correct!
+! 22, isa, 32, 1, 1, 20, 440, 3946, 169076, 5960
+  result is correct!
+! 22, isa, 32, 1, 1, 24, 528, 5479, 69097, 7943
+  result is correct!
+! 22, isa, 32, 1, 1, 28, 616, 7266, 300852, 10867
+  result is correct!
+! 22, isa, 32, 1, 1, 32, 704, 9307, 80229, 13642
+  result is correct!
+! 22, isa, 32, 1, 1, 36, 792, 11602, 76149, 17011
+  result is correct!
+! 22, isa, 32, 1, 1, 40, 880, 14151, 341574, 21711
+  result is correct!
+! 22, isa, 32, 1, 1, 44, 968, 16954, 347081, 25716
+  result is correct!
+! 22, isa, 32, 1, 1, 48, 1056, 20011, 349693, 30181
+  result is correct!
+! 22, isa, 32, 1, 1, 52, 1144, 23322, 168851, 34474
+  result is correct!
+! 22, isa, 32, 1, 1, 56, 1232, 26887, 355177, 40284
+  result is correct!
+! 22, isa, 32, 1, 1, 60, 1320, 30706, 368472, 46177
+  result is correct!
+! 22, isa, 32, 1, 1, 64, 1408, 34779, 365110, 52151
+  result is correct!
+! 22, isa, 32, 1, 1, 68, 1496, 39106, 369890, 58641
+  result is correct!
+! 22, isa, 32, 1, 1, 72, 1584, 43687, 373952, 66252
+  result is correct!
+-----------------Showing intmul-rv32_isa_22_simple.log-----------------
+! 22, isa, 32, 1, 1, 8, 176, 1226, 62307, 1772
+  result is correct!
+! 22, isa, 32, 1, 1, 12, 264, 2490, 63994, 3586
+  result is correct!
+! 22, isa, 32, 1, 1, 16, 352, 4202, 65850, 6087
+  result is correct!
+! 22, isa, 32, 1, 1, 20, 440, 6362, 149204, 9328
+  result is correct!
+! 22, isa, 32, 1, 1, 24, 528, 8970, 176525, 13226
+  result is correct!
+! 22, isa, 32, 1, 1, 28, 616, 12026, 155825, 17441
+  result is correct!
+! 22, isa, 32, 1, 1, 32, 704, 15530, 341996, 22988
+  result is correct!
+! 22, isa, 32, 1, 1, 36, 792, 19482, 344467, 28731
+  result is correct!
+! 22, isa, 32, 1, 1, 40, 880, 23882, 300819, 34974
+  result is correct!
+! 22, isa, 32, 1, 1, 44, 968, 28730, 354052, 42112
+  result is correct!
+! 22, isa, 32, 1, 1, 48, 1056, 34026, 359960, 50086
+  result is correct!
+! 22, isa, 32, 1, 1, 52, 1144, 39770, 366445, 58540
+  result is correct!
+! 22, isa, 32, 1, 1, 56, 1232, 45962, 374483, 67629
+  result is correct!
+! 22, isa, 32, 1, 1, 60, 1320, 52602, 379688, 77351
+  result is correct!
+! 22, isa, 32, 1, 1, 64, 1408, 59690, 384843, 87795
+  result is correct!
+! 22, isa, 32, 1, 1, 68, 1496, 67226, 394616, 99257
+  result is correct!
+! 22, isa, 32, 1, 1, 72, 1584, 75210, 401342, 111098
+  result is correct!
+-----------------Showing intmul-rv32_isa_23_hybrid.log-----------------
+! 23, isa, 32, 1, 1, 8, 184, 837, 64131, 1214
+  result is correct!
+! 23, isa, 32, 1, 1, 12, 276, 1622, 158067, 2547
+  result is correct!
+! 23, isa, 32, 1, 1, 16, 368, 2671, 147415, 4027
+  result is correct!
+! 23, isa, 32, 1, 1, 20, 460, 3946, 67624, 5777
+  result is correct!
+! 23, isa, 32, 1, 1, 24, 552, 5479, 149155, 8171
+  result is correct!
+! 23, isa, 32, 1, 1, 28, 644, 7266, 151843, 10768
+  result is correct!
+! 23, isa, 32, 1, 1, 32, 736, 9307, 336499, 14494
+  result is correct!
+! 23, isa, 32, 1, 1, 36, 828, 11602, 157075, 17167
+  result is correct!
+! 23, isa, 32, 1, 1, 40, 920, 14151, 160583, 20930
+  result is correct!
+! 23, isa, 32, 1, 1, 44, 1012, 16954, 162576, 24955
+  result is correct!
+! 23, isa, 32, 1, 1, 48, 1104, 20011, 174078, 29730
+  result is correct!
+! 23, isa, 32, 1, 1, 52, 1196, 23322, 352013, 35208
+  result is correct!
+! 23, isa, 32, 1, 1, 56, 1288, 26887, 181546, 40141
+  result is correct!
+! 23, isa, 32, 1, 1, 60, 1380, 30706, 359533, 45985
+  result is correct!
+! 23, isa, 32, 1, 1, 64, 1472, 34779, 364973, 52308
+  result is correct!
+! 23, isa, 32, 1, 1, 68, 1564, 39106, 368938, 59039
+  result is correct!
+! 23, isa, 32, 1, 1, 72, 1656, 43687, 374083, 65324
+  result is correct!
+-----------------Showing intmul-rv32_isa_23_simple.log-----------------
+! 23, isa, 32, 1, 1, 8, 184, 1226, 62491, 1771
+  result is correct!
+! 23, isa, 32, 1, 1, 12, 276, 2490, 328755, 4096
+  result is correct!
+! 23, isa, 32, 1, 1, 16, 368, 4202, 147633, 6187
+  result is correct!
+! 23, isa, 32, 1, 1, 20, 460, 6362, 67889, 9162
+  result is correct!
+! 23, isa, 32, 1, 1, 24, 552, 8970, 335534, 13389
+  result is correct!
+! 23, isa, 32, 1, 1, 28, 644, 12026, 175794, 17709
+  result is correct!
+! 23, isa, 32, 1, 1, 32, 736, 15530, 166818, 22811
+  result is correct!
+! 23, isa, 32, 1, 1, 36, 828, 19482, 169427, 28321
+  result is correct!
+! 23, isa, 32, 1, 1, 40, 920, 23882, 348857, 35532
+  result is correct!
+! 23, isa, 32, 1, 1, 44, 1012, 28730, 180125, 41918
+  result is correct!
+! 23, isa, 32, 1, 1, 48, 1104, 34026, 593473, 51088
+  result is correct!
+! 23, isa, 32, 1, 1, 52, 1196, 39770, 366565, 58547
+  result is correct!
+! 23, isa, 32, 1, 1, 56, 1288, 45962, 371408, 67763
+  result is correct!
+! 23, isa, 32, 1, 1, 60, 1380, 52602, 379012, 77177
+  result is correct!
+! 23, isa, 32, 1, 1, 64, 1472, 59690, 387360, 88354
+  result is correct!
+! 23, isa, 32, 1, 1, 68, 1564, 67226, 393423, 99082
+  result is correct!
+! 23, isa, 32, 1, 1, 72, 1656, 75210, 402075, 110879
+  result is correct!
+-----------------Showing intmul-rv32_isa_24_hybrid.log-----------------
+! 24, isa, 32, 1, 1, 8, 192, 838, 63518, 1277
+  result is correct!
+! 24, isa, 32, 1, 1, 12, 288, 1623, 65171, 2379
+  result is correct!
+! 24, isa, 32, 1, 1, 16, 384, 2672, 68923, 3942
+  result is correct!
+! 24, isa, 32, 1, 1, 20, 480, 3947, 67913, 5777
+  result is correct!
+! 24, isa, 32, 1, 1, 24, 576, 5480, 69544, 8071
+  result is correct!
+! 24, isa, 32, 1, 1, 28, 672, 7267, 350711, 11176
+  result is correct!
+! 24, isa, 32, 1, 1, 32, 768, 9308, 73334, 13679
+  result is correct!
+! 24, isa, 32, 1, 1, 36, 864, 11603, 340246, 17616
+  result is correct!
+! 24, isa, 32, 1, 1, 40, 960, 14152, 343002, 21565
+  result is correct!
+! 24, isa, 32, 1, 1, 44, 1056, 16955, 346196, 25728
+  result is correct!
+! 24, isa, 32, 1, 1, 48, 1152, 20012, 349095, 30172
+  result is correct!
+! 24, isa, 32, 1, 1, 52, 1248, 23323, 170155, 34469
+  result is correct!
+! 24, isa, 32, 1, 1, 56, 1344, 26888, 356786, 40565
+  result is correct!
+! 24, isa, 32, 1, 1, 60, 1440, 30707, 360322, 46099
+  result is correct!
+! 24, isa, 32, 1, 1, 64, 1536, 34780, 365394, 52321
+  result is correct!
+! 24, isa, 32, 1, 1, 68, 1632, 39107, 368946, 58682
+  result is correct!
+! 24, isa, 32, 1, 1, 72, 1728, 43688, 371994, 65944
+  result is correct!
+-----------------Showing intmul-rv32_isa_24_simple.log-----------------
+! 24, isa, 32, 1, 1, 8, 192, 1220, 62740, 1767
+  result is correct!
+! 24, isa, 32, 1, 1, 12, 288, 2480, 63852, 3573
+  result is correct!
+! 24, isa, 32, 1, 1, 16, 384, 4188, 181376, 6211
+  result is correct!
+! 24, isa, 32, 1, 1, 20, 480, 6344, 331103, 9594
+  result is correct!
+! 24, isa, 32, 1, 1, 24, 576, 8948, 71775, 12797
+  result is correct!
+! 24, isa, 32, 1, 1, 28, 672, 12000, 335697, 17922
+  result is correct!
+! 24, isa, 32, 1, 1, 32, 768, 15500, 342234, 23106
+  result is correct!
+! 24, isa, 32, 1, 1, 36, 864, 19448, 345814, 28549
+  result is correct!
+! 24, isa, 32, 1, 1, 40, 960, 23844, 349626, 35178
+  result is correct!
+! 24, isa, 32, 1, 1, 44, 1056, 28688, 352840, 42366
+  result is correct!
+! 24, isa, 32, 1, 1, 48, 1152, 33980, 359388, 50173
+  result is correct!
+! 24, isa, 32, 1, 1, 52, 1248, 39720, 366181, 58425
+  result is correct!
+! 24, isa, 32, 1, 1, 56, 1344, 45908, 372906, 67773
+  result is correct!
+! 24, isa, 32, 1, 1, 60, 1440, 52544, 377718, 77863
+  result is correct!
+! 24, isa, 32, 1, 1, 64, 1536, 59628, 387602, 88017
+  result is correct!
+! 24, isa, 32, 1, 1, 68, 1632, 67160, 395008, 99235
+  result is correct!
+! 24, isa, 32, 1, 1, 72, 1728, 75140, 403438, 111233
+  result is correct!
+-----------------Showing intmul-rv32_isa_25_hybrid.log-----------------
+! 25, isa, 32, 1, 1, 8, 200, 837, 64748, 1215
+  result is correct!
+! 25, isa, 32, 1, 1, 12, 300, 1622, 65091, 2381
+  result is correct!
+! 25, isa, 32, 1, 1, 16, 400, 2671, 66374, 3811
+  result is correct!
+! 25, isa, 32, 1, 1, 20, 500, 3946, 67651, 5773
+  result is correct!
+! 25, isa, 32, 1, 1, 24, 600, 5479, 184968, 8215
+  result is correct!
+! 25, isa, 32, 1, 1, 28, 700, 7266, 162333, 10806
+  result is correct!
+! 25, isa, 32, 1, 1, 32, 800, 9307, 181414, 13973
+  result is correct!
+! 25, isa, 32, 1, 1, 36, 900, 11602, 75920, 17067
+  result is correct!
+! 25, isa, 32, 1, 1, 40, 1000, 14151, 160174, 20940
+  result is correct!
+! 25, isa, 32, 1, 1, 44, 1100, 16954, 345770, 25539
+  result is correct!
+! 25, isa, 32, 1, 1, 48, 1200, 20011, 165693, 29489
+  result is correct!
+! 25, isa, 32, 1, 1, 52, 1300, 23322, 352092, 35107
+  result is correct!
+! 25, isa, 32, 1, 1, 56, 1400, 26887, 357983, 40190
+  result is correct!
+! 25, isa, 32, 1, 1, 60, 1500, 30706, 358437, 46146
+  result is correct!
+! 25, isa, 32, 1, 1, 64, 1600, 34779, 364030, 52170
+  result is correct!
+! 25, isa, 32, 1, 1, 68, 1700, 39106, 368792, 58665
+  result is correct!
+! 25, isa, 32, 1, 1, 72, 1800, 43687, 374207, 65854
+  result is correct!
+-----------------Showing intmul-rv32_isa_25_simple.log-----------------
+! 25, isa, 32, 1, 1, 8, 200, 1226, 62655, 1773
+  result is correct!
+! 25, isa, 32, 1, 1, 12, 300, 2490, 145530, 3549
+  result is correct!
+! 25, isa, 32, 1, 1, 16, 400, 4202, 331041, 6353
+  result is correct!
+! 25, isa, 32, 1, 1, 20, 500, 6362, 149151, 9258
+  result is correct!
+! 25, isa, 32, 1, 1, 24, 600, 8970, 151386, 13097
+  result is correct!
+! 25, isa, 32, 1, 1, 28, 700, 12026, 177623, 17462
+  result is correct!
+! 25, isa, 32, 1, 1, 32, 800, 15530, 165922, 22702
+  result is correct!
+! 25, isa, 32, 1, 1, 36, 900, 19482, 170561, 28384
+  result is correct!
+! 25, isa, 32, 1, 1, 40, 1000, 23882, 174025, 34763
+  result is correct!
+! 25, isa, 32, 1, 1, 44, 1100, 28730, 354837, 42438
+  result is correct!
+! 25, isa, 32, 1, 1, 48, 1200, 34026, 360096, 50124
+  result is correct!
+! 25, isa, 32, 1, 1, 52, 1300, 39770, 366218, 58766
+  result is correct!
+! 25, isa, 32, 1, 1, 56, 1400, 45962, 371987, 67490
+  result is correct!
+! 25, isa, 32, 1, 1, 60, 1500, 52602, 379389, 77397
+  result is correct!
+! 25, isa, 32, 1, 1, 64, 1600, 59690, 396096, 87990
+  result is correct!
+! 25, isa, 32, 1, 1, 68, 1700, 67226, 392480, 99370
+  result is correct!
+! 25, isa, 32, 1, 1, 72, 1800, 75211, 401548, 111165
+  result is correct!
+-----------------Showing intmul-rv32_isa_26_hybrid.log-----------------
+! 26, isa, 32, 1, 1, 8, 208, 837, 63800, 1278
+  result is correct!
+! 26, isa, 32, 1, 1, 12, 312, 1622, 65302, 2379
+  result is correct!
+! 26, isa, 32, 1, 1, 16, 416, 2671, 183265, 4230
+  result is correct!
+! 26, isa, 32, 1, 1, 20, 520, 3946, 335388, 6235
+  result is correct!
+! 26, isa, 32, 1, 1, 24, 624, 5479, 153087, 8176
+  result is correct!
+! 26, isa, 32, 1, 1, 28, 728, 7266, 153120, 10853
+  result is correct!
+! 26, isa, 32, 1, 1, 32, 832, 9307, 163568, 13950
+  result is correct!
+! 26, isa, 32, 1, 1, 36, 936, 11602, 338820, 17657
+  result is correct!
+! 26, isa, 32, 1, 1, 40, 1040, 14151, 295207, 21000
+  result is correct!
+! 26, isa, 32, 1, 1, 44, 1144, 16954, 171372, 25196
+  result is correct!
+! 26, isa, 32, 1, 1, 48, 1248, 20011, 350035, 30267
+  result is correct!
+! 26, isa, 32, 1, 1, 52, 1352, 23322, 352475, 35023
+  result is correct!
+! 26, isa, 32, 1, 1, 56, 1456, 26887, 182519, 40077
+  result is correct!
+! 26, isa, 32, 1, 1, 60, 1560, 30706, 361463, 46147
+  result is correct!
+! 26, isa, 32, 1, 1, 64, 1664, 34779, 366466, 52114
+  result is correct!
+! 26, isa, 32, 1, 1, 68, 1768, 39106, 369162, 59203
+  result is correct!
+! 26, isa, 32, 1, 1, 72, 1872, 43687, 374585, 65705
+  result is correct!
+-----------------Showing intmul-rv32_isa_26_simple.log-----------------
+! 26, isa, 32, 1, 1, 8, 208, 1226, 62438, 1651
+  result is correct!
+! 26, isa, 32, 1, 1, 12, 312, 2490, 63627, 3522
+  result is correct!
+! 26, isa, 32, 1, 1, 16, 416, 4202, 66926, 6028
+  result is correct!
+! 26, isa, 32, 1, 1, 20, 520, 6362, 147746, 9262
+  result is correct!
+! 26, isa, 32, 1, 1, 24, 624, 8970, 335801, 13547
+  result is correct!
+! 26, isa, 32, 1, 1, 28, 728, 12026, 156471, 17433
+  result is correct!
+! 26, isa, 32, 1, 1, 32, 832, 15530, 157360, 22474
+  result is correct!
+! 26, isa, 32, 1, 1, 36, 936, 19482, 158651, 28218
+  result is correct!
+! 26, isa, 32, 1, 1, 40, 1040, 23882, 348692, 35376
+  result is correct!
+! 26, isa, 32, 1, 1, 44, 1144, 28730, 308496, 41885
+  result is correct!
+! 26, isa, 32, 1, 1, 48, 1248, 34026, 361276, 50025
+  result is correct!
+! 26, isa, 32, 1, 1, 52, 1352, 39770, 365724, 58807
+  result is correct!
+! 26, isa, 32, 1, 1, 56, 1456, 45962, 371912, 67686
+  result is correct!
+! 26, isa, 32, 1, 1, 60, 1560, 52602, 390282, 77026
+  result is correct!
+! 26, isa, 32, 1, 1, 64, 1664, 59690, 386820, 88433
+  result is correct!
+! 26, isa, 32, 1, 1, 68, 1768, 67226, 394331, 99719
+  result is correct!
+! 26, isa, 32, 1, 1, 72, 1872, 75211, 402362, 111115
+  result is correct!
+-----------------Showing intmul-rv32_isa_27_hybrid.log-----------------
+! 27, isa, 32, 1, 1, 8, 216, 837, 64213, 1215
+  result is correct!
+! 27, isa, 32, 1, 1, 12, 324, 1622, 65080, 2317
+  result is correct!
+! 27, isa, 32, 1, 1, 16, 432, 2671, 66501, 3936
+  result is correct!
+! 27, isa, 32, 1, 1, 20, 540, 3946, 67738, 5713
+  result is correct!
+! 27, isa, 32, 1, 1, 24, 648, 5479, 193765, 8216
+  result is correct!
+! 27, isa, 32, 1, 1, 28, 756, 7266, 335045, 11140
+  result is correct!
+! 27, isa, 32, 1, 1, 32, 864, 9307, 178261, 13810
+  result is correct!
+! 27, isa, 32, 1, 1, 36, 972, 11602, 157175, 17171
+  result is correct!
+! 27, isa, 32, 1, 1, 40, 1080, 14151, 344832, 21102
+  result is correct!
+! 27, isa, 32, 1, 1, 44, 1188, 16954, 342923, 25534
+  result is correct!
+! 27, isa, 32, 1, 1, 48, 1296, 20011, 347136, 30010
+  result is correct!
+! 27, isa, 32, 1, 1, 52, 1404, 23322, 177861, 34686
+  result is correct!
+! 27, isa, 32, 1, 1, 56, 1512, 26887, 354902, 40283
+  result is correct!
+! 27, isa, 32, 1, 1, 60, 1620, 30706, 359920, 46148
+  result is correct!
+! 27, isa, 32, 1, 1, 64, 1728, 34779, 364141, 52323
+  result is correct!
+! 27, isa, 32, 1, 1, 68, 1836, 39106, 369168, 59071
+  result is correct!
+! 27, isa, 32, 1, 1, 72, 1944, 43687, 374612, 65845
+  result is correct!
+-----------------Showing intmul-rv32_isa_27_simple.log-----------------
+! 27, isa, 32, 1, 1, 8, 216, 1226, 62518, 1770
+  result is correct!
+! 27, isa, 32, 1, 1, 12, 324, 2490, 141090, 3674
+  result is correct!
+! 27, isa, 32, 1, 1, 16, 432, 4202, 146148, 6183
+  result is correct!
+! 27, isa, 32, 1, 1, 20, 540, 6362, 334035, 9554
+  result is correct!
+! 27, isa, 32, 1, 1, 24, 648, 8970, 70654, 12932
+  result is correct!
+! 27, isa, 32, 1, 1, 28, 756, 12026, 338552, 18029
+  result is correct!
+! 27, isa, 32, 1, 1, 32, 864, 15530, 343404, 23073
+  result is correct!
+! 27, isa, 32, 1, 1, 36, 972, 19482, 346109, 28920
+  result is correct!
+! 27, isa, 32, 1, 1, 40, 1080, 23882, 175062, 34705
+  result is correct!
+! 27, isa, 32, 1, 1, 44, 1188, 28730, 354172, 42382
+  result is correct!
+! 27, isa, 32, 1, 1, 48, 1296, 34026, 361366, 50204
+  result is correct!
+! 27, isa, 32, 1, 1, 52, 1404, 39770, 376925, 58228
+  result is correct!
+! 27, isa, 32, 1, 1, 56, 1512, 45962, 373475, 68156
+  result is correct!
+! 27, isa, 32, 1, 1, 60, 1620, 52602, 378378, 77942
+  result is correct!
+! 27, isa, 32, 1, 1, 64, 1728, 59690, 386856, 87701
+  result is correct!
+! 27, isa, 32, 1, 1, 68, 1836, 67226, 394129, 99364
+  result is correct!
+! 27, isa, 32, 1, 1, 72, 1944, 75210, 402074, 111412
+  result is correct!
+-----------------Showing intmul-rv32_isa_28_hybrid.log-----------------
+! 28, isa, 32, 1, 1, 8, 224, 838, 64322, 1154
+  result is correct!
+! 28, isa, 32, 1, 1, 12, 336, 1623, 65023, 2379
+  result is correct!
+! 28, isa, 32, 1, 1, 16, 448, 2672, 66527, 3872
+  result is correct!
+! 28, isa, 32, 1, 1, 20, 560, 3947, 148635, 5876
+  result is correct!
+! 28, isa, 32, 1, 1, 24, 672, 5480, 334491, 8522
+  result is correct!
+! 28, isa, 32, 1, 1, 28, 784, 7267, 71307, 10683
+  result is correct!
+! 28, isa, 32, 1, 1, 32, 896, 9308, 338754, 14141
+  result is correct!
+! 28, isa, 32, 1, 1, 36, 1008, 11603, 166026, 17364
+  result is correct!
+! 28, isa, 32, 1, 1, 40, 1120, 14152, 166858, 21042
+  result is correct!
+! 28, isa, 32, 1, 1, 44, 1232, 16955, 170209, 25224
+  result is correct!
+! 28, isa, 32, 1, 1, 48, 1344, 20012, 174465, 29893
+  result is correct!
+! 28, isa, 32, 1, 1, 52, 1456, 23323, 355234, 35397
+  result is correct!
+! 28, isa, 32, 1, 1, 56, 1568, 26888, 355130, 40451
+  result is correct!
+! 28, isa, 32, 1, 1, 60, 1680, 30707, 193634, 45973
+  result is correct!
+! 28, isa, 32, 1, 1, 64, 1792, 34780, 365264, 52199
+  result is correct!
+! 28, isa, 32, 1, 1, 68, 1904, 39107, 370875, 58875
+  result is correct!
+! 28, isa, 32, 1, 1, 72, 2016, 43688, 372574, 65634
+  result is correct!
+-----------------Showing intmul-rv32_isa_28_simple.log-----------------
+! 28, isa, 32, 1, 1, 8, 224, 1220, 62758, 1769
+  result is correct!
+! 28, isa, 32, 1, 1, 12, 336, 2480, 63846, 3576
+  result is correct!
+! 28, isa, 32, 1, 1, 16, 448, 4188, 332341, 6471
+  result is correct!
+! 28, isa, 32, 1, 1, 20, 560, 6344, 145684, 9244
+  result is correct!
+! 28, isa, 32, 1, 1, 24, 672, 8948, 72013, 12928
+  result is correct!
+! 28, isa, 32, 1, 1, 28, 784, 12000, 73964, 17322
+  result is correct!
+! 28, isa, 32, 1, 1, 32, 896, 15500, 158367, 22532
+  result is correct!
+! 28, isa, 32, 1, 1, 36, 1008, 19448, 161505, 28152
+  result is correct!
+! 28, isa, 32, 1, 1, 40, 1120, 23844, 350960, 35141
+  result is correct!
+! 28, isa, 32, 1, 1, 44, 1232, 28688, 363660, 42473
+  result is correct!
+! 28, isa, 32, 1, 1, 48, 1344, 33980, 358950, 50252
+  result is correct!
+! 28, isa, 32, 1, 1, 52, 1456, 39720, 366430, 58572
+  result is correct!
+! 28, isa, 32, 1, 1, 56, 1568, 45908, 369988, 67370
+  result is correct!
+! 28, isa, 32, 1, 1, 60, 1680, 52544, 381075, 77392
+  result is correct!
+! 28, isa, 32, 1, 1, 64, 1792, 59628, 387452, 88414
+  result is correct!
+! 28, isa, 32, 1, 1, 68, 1904, 67160, 394763, 99579
+  result is correct!
+! 28, isa, 32, 1, 1, 72, 2016, 75140, 403266, 111197
+  result is correct!
+-----------------Showing intmul-rv32_isa_29_hybrid.log-----------------
+! 29, isa, 32, 1, 1, 8, 232, 836, 64265, 1214
+  result is correct!
+! 29, isa, 32, 1, 1, 12, 348, 1621, 148247, 2542
+  result is correct!
+! 29, isa, 32, 1, 1, 16, 464, 2670, 66803, 3933
+  result is correct!
+! 29, isa, 32, 1, 1, 20, 580, 3945, 67610, 5717
+  result is correct!
+! 29, isa, 32, 1, 1, 24, 696, 5478, 190693, 8217
+  result is correct!
+! 29, isa, 32, 1, 1, 28, 812, 7265, 153435, 10790
+  result is correct!
+! 29, isa, 32, 1, 1, 32, 928, 9306, 176952, 13973
+  result is correct!
+! 29, isa, 32, 1, 1, 36, 1044, 11601, 339470, 17527
+  result is correct!
+! 29, isa, 32, 1, 1, 40, 1160, 14150, 159076, 21029
+  result is correct!
+! 29, isa, 32, 1, 1, 44, 1276, 16953, 163215, 25030
+  result is correct!
+! 29, isa, 32, 1, 1, 48, 1392, 20010, 349871, 30020
+  result is correct!
+! 29, isa, 32, 1, 1, 52, 1508, 23321, 354928, 35215
+  result is correct!
+! 29, isa, 32, 1, 1, 56, 1624, 26886, 357160, 40256
+  result is correct!
+! 29, isa, 32, 1, 1, 60, 1740, 30705, 359242, 46165
+  result is correct!
+! 29, isa, 32, 1, 1, 64, 1856, 34778, 366155, 52191
+  result is correct!
+-----------------Showing intmul-rv32_isa_29_simple.log-----------------
+! 29, isa, 32, 1, 1, 8, 232, 1218, 62901, 1769
+  result is correct!
+! 29, isa, 32, 1, 1, 12, 348, 2478, 63930, 3576
+  result is correct!
+! 29, isa, 32, 1, 1, 16, 464, 4186, 66022, 6021
+  result is correct!
+! 29, isa, 32, 1, 1, 20, 580, 6342, 68231, 9156
+  result is correct!
+! 29, isa, 32, 1, 1, 24, 696, 8946, 71370, 12865
+  result is correct!
+! 29, isa, 32, 1, 1, 28, 812, 11998, 338599, 17976
+  result is correct!
+! 29, isa, 32, 1, 1, 32, 928, 15498, 340959, 23006
+  result is correct!
+! 29, isa, 32, 1, 1, 36, 1044, 19446, 345038, 28910
+  result is correct!
+! 29, isa, 32, 1, 1, 40, 1160, 23842, 349850, 35332
+  result is correct!
+! 29, isa, 32, 1, 1, 44, 1276, 28686, 366528, 42257
+  result is correct!
+! 29, isa, 32, 1, 1, 48, 1392, 33978, 360557, 50040
+  result is correct!
+! 29, isa, 32, 1, 1, 52, 1508, 39718, 365532, 58430
+  result is correct!
+! 29, isa, 32, 1, 1, 56, 1624, 45906, 373802, 67986
+  result is correct!
+! 29, isa, 32, 1, 1, 60, 1740, 52542, 380426, 77853
+  result is correct!
+! 29, isa, 32, 1, 1, 64, 1856, 59626, 385893, 88140
+  result is correct!
+-----------------Showing intmul-rv32_isa_30_hybrid.log-----------------
+! 30, isa, 32, 1, 1, 8, 240, 837, 64273, 1216
+  result is correct!
+! 30, isa, 32, 1, 1, 12, 360, 1622, 330603, 2712
+  result is correct!
+! 30, isa, 32, 1, 1, 16, 480, 2671, 66806, 3938
+  result is correct!
+-----------------Showing intmul-rv32_isa_30_simple.log-----------------
+! 30, isa, 32, 1, 1, 8, 240, 1226, 63271, 1776
+  result is correct!
+! 30, isa, 32, 1, 1, 12, 360, 2490, 64214, 3588
+  result is correct!
+! 30, isa, 32, 1, 1, 16, 480, 4202, 146323, 6266
+  result is correct!
+-----------------Showing intmul-rv32_isa_32_hybrid.log-----------------
+! 32, isa, 32, 1, 1, 8, 256, 757, 63559, 1133
+  result is correct!
+! 32, isa, 32, 1, 1, 12, 384, 1604, 64644, 2357
+  result is correct!
+! 32, isa, 32, 1, 1, 16, 512, 2757, 66570, 4074
+  result is correct!
+! 32, isa, 32, 1, 1, 20, 640, 4209, 67723, 6096
+  result is correct!
+! 32, isa, 32, 1, 1, 24, 768, 5973, 69472, 8744
+  result is correct!
+! 32, isa, 32, 1, 1, 28, 896, 8049, 153064, 11933
+  result is correct!
+! 32, isa, 32, 1, 1, 32, 1024, 10437, 338528, 15922
+  result is correct!
+! 32, isa, 32, 1, 1, 36, 1152, 13137, 186166, 19573
+  result is correct!
+! 32, isa, 32, 1, 1, 40, 1280, 16149, 294521, 24111
+  result is correct!
+! 32, isa, 32, 1, 1, 44, 1408, 19473, 172268, 28818
+  result is correct!
+! 32, isa, 32, 1, 1, 48, 1536, 23109, 351432, 34716
+  result is correct!
+! 32, isa, 32, 1, 1, 52, 1664, 27057, 180360, 40270
+  result is correct!
+! 32, isa, 32, 1, 1, 56, 1792, 31329, 359233, 46793
+  result is correct!
+! 32, isa, 32, 1, 1, 60, 1920, 35901, 365180, 53911
+  result is correct!
+! 32, isa, 32, 1, 1, 64, 2048, 40785, 371291, 61699
+  result is correct!
+-----------------Showing intmul-rv32_isa_32_simple.log-----------------
+! 32, isa, 32, 1, 1, 8, 256, 1318, 62262, 1864
+  result is correct!
+! 32, isa, 32, 1, 1, 12, 384, 2726, 64406, 3944
+  result is correct!
+! 32, isa, 32, 1, 1, 16, 512, 4646, 66150, 6714
+  result is correct!
+! 32, isa, 32, 1, 1, 20, 640, 7078, 186696, 10543
+  result is correct!
+! 32, isa, 32, 1, 1, 24, 768, 10022, 152764, 14577
+  result is correct!
+! 32, isa, 32, 1, 1, 28, 896, 13478, 75331, 19467
+  result is correct!
+! 32, isa, 32, 1, 1, 32, 1024, 17446, 295237, 25601
+  result is correct!
+! 32, isa, 32, 1, 1, 36, 1152, 21926, 163529, 31716
+  result is correct!
+! 32, isa, 32, 1, 1, 40, 1280, 26918, 353328, 39882
+  result is correct!
+! 32, isa, 32, 1, 1, 44, 1408, 32422, 358260, 47756
+  result is correct!
+! 32, isa, 32, 1, 1, 48, 1536, 38438, 364332, 56504
+  result is correct!
+! 32, isa, 32, 1, 1, 52, 1664, 44966, 382549, 66361
+  result is correct!
+! 32, isa, 32, 1, 1, 56, 1792, 52009, 377994, 76943
+  result is correct!
+! 32, isa, 32, 1, 1, 60, 1920, 59561, 386112, 87969
+  result is correct!
+! 32, isa, 32, 1, 1, 64, 2048, 67625, 393808, 99815
+  result is correct!
+-----------------Showing intmul-rv32_ise_20_hybrid.log-----------------
+! 20, ise, 32, 1, 1, 8, 160, 475, 71169, 672
+  result is correct!
+! 20, ise, 32, 1, 1, 12, 240, 845, 64231, 1158
+  result is correct!
+! 20, ise, 32, 1, 1, 16, 320, 1308, 64055, 1933
+  result is correct!
+! 20, ise, 32, 1, 1, 20, 400, 1847, 64852, 2724
+  result is correct!
+! 20, ise, 32, 1, 1, 24, 480, 2486, 65603, 3616
+  result is correct!
+! 20, ise, 32, 1, 1, 28, 560, 3221, 66497, 4666
+  result is correct!
+! 20, ise, 32, 1, 1, 32, 640, 4052, 67242, 5871
+  result is correct!
+! 20, ise, 32, 1, 1, 36, 720, 4979, 311751, 7565
+  result is correct!
+! 20, ise, 32, 1, 1, 40, 800, 6002, 69729, 8776
+  result is correct!
+! 20, ise, 32, 1, 1, 44, 880, 7121, 70699, 10406
+  result is correct!
+! 20, ise, 32, 1, 1, 48, 960, 8336, 336769, 12710
+  result is correct!
+! 20, ise, 32, 1, 1, 52, 1040, 9647, 162434, 14319
+  result is correct!
+! 20, ise, 32, 1, 1, 56, 1120, 11054, 156695, 16234
+  result is correct!
+! 20, ise, 32, 1, 1, 60, 1200, 12557, 341459, 19085
+  result is correct!
+! 20, ise, 32, 1, 1, 64, 1280, 14156, 282653, 21478
+  result is correct!
+! 20, ise, 32, 1, 1, 68, 1360, 15851, 167847, 23588
+  result is correct!
+! 20, ise, 32, 1, 1, 72, 1440, 17642, 170056, 26199
+  result is correct!
+-----------------Showing intmul-rv32_ise_20_simple.log-----------------
+! 20, ise, 32, 1, 1, 8, 160, 1023, 62384, 1511
+  result is correct!
+! 20, ise, 32, 1, 1, 12, 240, 2039, 143838, 3109
+  result is correct!
+! 20, ise, 32, 1, 1, 16, 320, 3407, 64994, 4935
+  result is correct!
+! 20, ise, 32, 1, 1, 20, 400, 5127, 147168, 7545
+  result is correct!
+! 20, ise, 32, 1, 1, 24, 480, 7199, 332111, 10830
+  result is correct!
+! 20, ise, 32, 1, 1, 28, 560, 9623, 176213, 14338
+  result is correct!
+! 20, ise, 32, 1, 1, 32, 640, 12399, 154424, 18016
+  result is correct!
+! 20, ise, 32, 1, 1, 36, 720, 15527, 340511, 23018
+  result is correct!
+! 20, ise, 32, 1, 1, 40, 800, 19007, 345448, 28375
+  result is correct!
+! 20, ise, 32, 1, 1, 44, 880, 22839, 175631, 33644
+  result is correct!
+! 20, ise, 32, 1, 1, 48, 960, 27023, 353461, 39882
+  result is correct!
+! 20, ise, 32, 1, 1, 52, 1040, 31559, 358515, 46360
+  result is correct!
+! 20, ise, 32, 1, 1, 56, 1120, 36447, 361619, 53785
+  result is correct!
+! 20, ise, 32, 1, 1, 60, 1200, 41687, 369937, 61472
+  result is correct!
+! 20, ise, 32, 1, 1, 64, 1280, 47279, 374405, 69812
+  result is correct!
+! 20, ise, 32, 1, 1, 68, 1360, 53223, 379241, 78999
+  result is correct!
+! 20, ise, 32, 1, 1, 72, 1440, 59519, 386437, 87410
+  result is correct!
+-----------------Showing intmul-rv32_ise_21_hybrid.log-----------------
+! 21, ise, 32, 1, 1, 8, 168, 475, 63026, 663
+  result is correct!
+! 21, ise, 32, 1, 1, 12, 252, 845, 66626, 1285
+  result is correct!
+! 21, ise, 32, 1, 1, 16, 336, 1308, 64149, 1871
+  result is correct!
+! 21, ise, 32, 1, 1, 20, 420, 1847, 64671, 2720
+  result is correct!
+! 21, ise, 32, 1, 1, 24, 504, 2486, 65539, 3677
+  result is correct!
+! 21, ise, 32, 1, 1, 28, 588, 3221, 147909, 4761
+  result is correct!
+! 21, ise, 32, 1, 1, 32, 672, 4052, 332985, 6591
+  result is correct!
+! 21, ise, 32, 1, 1, 36, 756, 4979, 149352, 7405
+  result is correct!
+! 21, ise, 32, 1, 1, 40, 840, 6002, 69601, 8772
+  result is correct!
+! 21, ise, 32, 1, 1, 44, 924, 7121, 334862, 11104
+  result is correct!
+! 21, ise, 32, 1, 1, 48, 1008, 8336, 72294, 12185
+  result is correct!
+! 21, ise, 32, 1, 1, 52, 1092, 9647, 337300, 14695
+  result is correct!
+! 21, ise, 32, 1, 1, 56, 1176, 11054, 155839, 16275
+  result is correct!
+! 21, ise, 32, 1, 1, 60, 1260, 12557, 207961, 18754
+  result is correct!
+! 21, ise, 32, 1, 1, 64, 1344, 14156, 342539, 21366
+  result is correct!
+! 21, ise, 32, 1, 1, 68, 1428, 15851, 344805, 24093
+  result is correct!
+! 21, ise, 32, 1, 1, 72, 1512, 17642, 348360, 26711
+  result is correct!
+-----------------Showing intmul-rv32_ise_21_simple.log-----------------
+! 21, ise, 32, 1, 1, 8, 168, 1023, 62386, 1509
+  result is correct!
+! 21, ise, 32, 1, 1, 12, 252, 2039, 63381, 2891
+  result is correct!
+! 21, ise, 32, 1, 1, 16, 336, 3407, 179596, 5121
+  result is correct!
+! 21, ise, 32, 1, 1, 20, 420, 5127, 66827, 7385
+  result is correct!
+! 21, ise, 32, 1, 1, 24, 504, 7199, 69576, 10381
+  result is correct!
+! 21, ise, 32, 1, 1, 28, 588, 9623, 335149, 14362
+  result is correct!
+! 21, ise, 32, 1, 1, 32, 672, 12399, 164601, 18355
+  result is correct!
+! 21, ise, 32, 1, 1, 36, 756, 15527, 167300, 22663
+  result is correct!
+! 21, ise, 32, 1, 1, 40, 840, 19007, 297715, 27597
+  result is correct!
+! 21, ise, 32, 1, 1, 44, 924, 22839, 349814, 33919
+  result is correct!
+! 21, ise, 32, 1, 1, 48, 1008, 27023, 187448, 39646
+  result is correct!
+! 21, ise, 32, 1, 1, 52, 1092, 31559, 358786, 46578
+  result is correct!
+! 21, ise, 32, 1, 1, 56, 1176, 36447, 363034, 53798
+  result is correct!
+! 21, ise, 32, 1, 1, 60, 1260, 41687, 369320, 61707
+  result is correct!
+! 21, ise, 32, 1, 1, 64, 1344, 47279, 374773, 69761
+  result is correct!
+! 21, ise, 32, 1, 1, 68, 1428, 53223, 379770, 78575
+  result is correct!
+! 21, ise, 32, 1, 1, 72, 1512, 59519, 387345, 88373
+  result is correct!
+-----------------Showing intmul-rv32_ise_22_hybrid.log-----------------
+! 22, ise, 32, 1, 1, 8, 176, 475, 63298, 724
+  result is correct!
+! 22, ise, 32, 1, 1, 12, 264, 845, 63702, 1219
+  result is correct!
+! 22, ise, 32, 1, 1, 16, 352, 1308, 73522, 1950
+  result is correct!
+! 22, ise, 32, 1, 1, 20, 440, 1847, 64943, 2661
+  result is correct!
+! 22, ise, 32, 1, 1, 24, 528, 2486, 331415, 4127
+  result is correct!
+! 22, ise, 32, 1, 1, 28, 616, 3221, 66454, 4724
+  result is correct!
+! 22, ise, 32, 1, 1, 32, 704, 4052, 67615, 5868
+  result is correct!
+! 22, ise, 32, 1, 1, 36, 792, 4979, 150647, 7403
+  result is correct!
+! 22, ise, 32, 1, 1, 40, 880, 6002, 334931, 9227
+  result is correct!
+! 22, ise, 32, 1, 1, 44, 968, 7121, 70853, 10402
+  result is correct!
+! 22, ise, 32, 1, 1, 48, 1056, 8336, 336408, 12528
+  result is correct!
+! 22, ise, 32, 1, 1, 52, 1144, 9647, 203441, 14437
+  result is correct!
+! 22, ise, 32, 1, 1, 56, 1232, 11054, 340268, 16968
+  result is correct!
+! 22, ise, 32, 1, 1, 60, 1320, 12557, 157406, 18550
+  result is correct!
+! 22, ise, 32, 1, 1, 64, 1408, 14156, 159026, 20945
+  result is correct!
+! 22, ise, 32, 1, 1, 68, 1496, 15851, 159630, 23375
+  result is correct!
+! 22, ise, 32, 1, 1, 72, 1584, 17642, 161042, 26159
+  result is correct!
+-----------------Showing intmul-rv32_ise_22_simple.log-----------------
+! 22, ise, 32, 1, 1, 8, 176, 1023, 330059, 1898
+  result is correct!
+! 22, ise, 32, 1, 1, 12, 264, 2039, 66972, 2900
+  result is correct!
+! 22, ise, 32, 1, 1, 16, 352, 3407, 65098, 4931
+  result is correct!
+! 22, ise, 32, 1, 1, 20, 440, 5127, 66944, 7326
+  result is correct!
+! 22, ise, 32, 1, 1, 24, 528, 7199, 333779, 10955
+  result is correct!
+! 22, ise, 32, 1, 1, 28, 616, 9623, 163379, 14078
+  result is correct!
+! 22, ise, 32, 1, 1, 32, 704, 12399, 339206, 18865
+  result is correct!
+! 22, ise, 32, 1, 1, 36, 792, 15527, 345724, 23335
+  result is correct!
+! 22, ise, 32, 1, 1, 40, 880, 19007, 354599, 28129
+  result is correct!
+! 22, ise, 32, 1, 1, 44, 968, 22839, 350997, 33547
+  result is correct!
+! 22, ise, 32, 1, 1, 48, 1056, 27023, 353906, 40141
+  result is correct!
+! 22, ise, 32, 1, 1, 52, 1144, 31559, 358655, 46518
+  result is correct!
+! 22, ise, 32, 1, 1, 56, 1232, 36447, 362671, 53697
+  result is correct!
+! 22, ise, 32, 1, 1, 60, 1320, 41687, 366822, 61314
+  result is correct!
+! 22, ise, 32, 1, 1, 64, 1408, 47279, 373407, 70137
+  result is correct!
+! 22, ise, 32, 1, 1, 68, 1496, 53223, 379706, 78905
+  result is correct!
+! 22, ise, 32, 1, 1, 72, 1584, 59519, 386087, 87831
+  result is correct!
+-----------------Showing intmul-rv32_ise_23_hybrid.log-----------------
+! 23, ise, 32, 1, 1, 8, 184, 475, 63052, 663
+  result is correct!
+! 23, ise, 32, 1, 1, 12, 276, 845, 63655, 1157
+  result is correct!
+! 23, ise, 32, 1, 1, 16, 368, 1308, 64142, 1872
+  result is correct!
+! 23, ise, 32, 1, 1, 20, 460, 1847, 64684, 2720
+  result is correct!
+! 23, ise, 32, 1, 1, 24, 552, 2486, 65537, 3675
+  result is correct!
+! 23, ise, 32, 1, 1, 28, 644, 3221, 66997, 4727
+  result is correct!
+! 23, ise, 32, 1, 1, 32, 736, 4052, 67180, 5936
+  result is correct!
+! 23, ise, 32, 1, 1, 36, 828, 4979, 68728, 7311
+  result is correct!
+! 23, ise, 32, 1, 1, 40, 920, 6002, 175288, 8959
+  result is correct!
+! 23, ise, 32, 1, 1, 44, 1012, 7121, 202458, 10614
+  result is correct!
+! 23, ise, 32, 1, 1, 48, 1104, 8336, 155449, 12351
+  result is correct!
+! 23, ise, 32, 1, 1, 52, 1196, 9647, 338015, 14588
+  result is correct!
+! 23, ise, 32, 1, 1, 56, 1288, 11054, 162875, 16387
+  result is correct!
+! 23, ise, 32, 1, 1, 60, 1380, 12557, 157154, 18554
+  result is correct!
+! 23, ise, 32, 1, 1, 64, 1472, 14156, 341159, 21374
+  result is correct!
+! 23, ise, 32, 1, 1, 68, 1564, 15851, 343371, 23841
+  result is correct!
+! 23, ise, 32, 1, 1, 72, 1656, 17642, 347533, 26480
+  result is correct!
+-----------------Showing intmul-rv32_ise_23_simple.log-----------------
+! 23, ise, 32, 1, 1, 8, 184, 1023, 62573, 1449
+  result is correct!
+! 23, ise, 32, 1, 1, 12, 276, 2039, 140637, 3046
+  result is correct!
+! 23, ise, 32, 1, 1, 16, 368, 3407, 146155, 5030
+  result is correct!
+! 23, ise, 32, 1, 1, 20, 460, 5127, 329936, 7834
+  result is correct!
+! 23, ise, 32, 1, 1, 24, 552, 7199, 184993, 10573
+  result is correct!
+! 23, ise, 32, 1, 1, 28, 644, 9623, 335870, 14469
+  result is correct!
+! 23, ise, 32, 1, 1, 32, 736, 12399, 153396, 18072
+  result is correct!
+! 23, ise, 32, 1, 1, 36, 828, 15527, 168304, 22572
+  result is correct!
+! 23, ise, 32, 1, 1, 40, 920, 19007, 170614, 27853
+  result is correct!
+! 23, ise, 32, 1, 1, 44, 1012, 22839, 346778, 33664
+  result is correct!
+! 23, ise, 32, 1, 1, 48, 1104, 27023, 353717, 39920
+  result is correct!
+! 23, ise, 32, 1, 1, 52, 1196, 31559, 357281, 46576
+  result is correct!
+! 23, ise, 32, 1, 1, 56, 1288, 36447, 361686, 53635
+  result is correct!
+! 23, ise, 32, 1, 1, 60, 1380, 41687, 368737, 61585
+  result is correct!
+! 23, ise, 32, 1, 1, 64, 1472, 47279, 383238, 69700
+  result is correct!
+! 23, ise, 32, 1, 1, 68, 1564, 53223, 381386, 78247
+  result is correct!
+! 23, ise, 32, 1, 1, 72, 1656, 59519, 385272, 88295
+  result is correct!
+-----------------Showing intmul-rv32_ise_24_hybrid.log-----------------
+! 24, ise, 32, 1, 1, 8, 192, 476, 63403, 726
+  result is correct!
+! 24, ise, 32, 1, 1, 12, 288, 836, 63312, 1209
+  result is correct!
+! 24, ise, 32, 1, 1, 16, 384, 1299, 64060, 1924
+  result is correct!
+! 24, ise, 32, 1, 1, 20, 480, 1838, 147469, 2873
+  result is correct!
+! 24, ise, 32, 1, 1, 24, 576, 2477, 65883, 3544
+  result is correct!
+! 24, ise, 32, 1, 1, 28, 672, 3212, 333349, 5102
+  result is correct!
+! 24, ise, 32, 1, 1, 32, 768, 4043, 70893, 5926
+  result is correct!
+! 24, ise, 32, 1, 1, 36, 864, 4970, 68103, 7227
+  result is correct!
+! 24, ise, 32, 1, 1, 40, 960, 5993, 69910, 8757
+  result is correct!
+! 24, ise, 32, 1, 1, 44, 1056, 7112, 153028, 10541
+  result is correct!
+! 24, ise, 32, 1, 1, 48, 1152, 8327, 160913, 12383
+  result is correct!
+! 24, ise, 32, 1, 1, 52, 1248, 9638, 154875, 14273
+  result is correct!
+! 24, ise, 32, 1, 1, 56, 1344, 11045, 340018, 16618
+  result is correct!
+! 24, ise, 32, 1, 1, 60, 1440, 12548, 291304, 18688
+  result is correct!
+! 24, ise, 32, 1, 1, 64, 1536, 14147, 78725, 20732
+  result is correct!
+! 24, ise, 32, 1, 1, 68, 1632, 15842, 161224, 23367
+  result is correct!
+! 24, ise, 32, 1, 1, 72, 1728, 17633, 171335, 26165
+  result is correct!
+-----------------Showing intmul-rv32_ise_24_simple.log-----------------
+! 24, ise, 32, 1, 1, 8, 192, 1020, 62603, 1508
+  result is correct!
+! 24, ise, 32, 1, 1, 12, 288, 2036, 327830, 3400
+  result is correct!
+! 24, ise, 32, 1, 1, 16, 384, 3404, 147889, 5027
+  result is correct!
+! 24, ise, 32, 1, 1, 20, 480, 5124, 66939, 7386
+  result is correct!
+! 24, ise, 32, 1, 1, 24, 576, 7196, 145995, 10533
+  result is correct!
+! 24, ise, 32, 1, 1, 28, 672, 9620, 72661, 13914
+  result is correct!
+! 24, ise, 32, 1, 1, 32, 768, 12396, 337276, 18454
+  result is correct!
+! 24, ise, 32, 1, 1, 36, 864, 15524, 341950, 23076
+  result is correct!
+! 24, ise, 32, 1, 1, 40, 960, 19004, 346877, 28044
+  result is correct!
+! 24, ise, 32, 1, 1, 44, 1056, 22836, 350818, 33789
+  result is correct!
+! 24, ise, 32, 1, 1, 48, 1152, 27020, 352903, 39821
+  result is correct!
+! 24, ise, 32, 1, 1, 52, 1248, 31556, 190156, 46386
+  result is correct!
+! 24, ise, 32, 1, 1, 56, 1344, 36444, 363471, 54173
+  result is correct!
+! 24, ise, 32, 1, 1, 60, 1440, 41684, 368902, 61762
+  result is correct!
+! 24, ise, 32, 1, 1, 64, 1536, 47276, 374473, 70057
+  result is correct!
+! 24, ise, 32, 1, 1, 68, 1632, 53220, 380210, 79082
+  result is correct!
+! 24, ise, 32, 1, 1, 72, 1728, 59516, 386813, 88333
+  result is correct!
+-----------------Showing intmul-rv32_ise_25_hybrid.log-----------------
+! 25, ise, 32, 1, 1, 8, 200, 475, 63516, 726
+  result is correct!
+! 25, ise, 32, 1, 1, 12, 300, 845, 63610, 1280
+  result is correct!
+! 25, ise, 32, 1, 1, 16, 400, 1308, 179507, 2130
+  result is correct!
+! 25, ise, 32, 1, 1, 20, 500, 1847, 64524, 2720
+  result is correct!
+! 25, ise, 32, 1, 1, 24, 600, 2486, 65075, 3549
+  result is correct!
+! 25, ise, 32, 1, 1, 28, 700, 3221, 66195, 4720
+  result is correct!
+! 25, ise, 32, 1, 1, 32, 800, 4052, 148047, 6031
+  result is correct!
+! 25, ise, 32, 1, 1, 36, 900, 4979, 331548, 7939
+  result is correct!
+! 25, ise, 32, 1, 1, 40, 1000, 6002, 69427, 8770
+  result is correct!
+! 25, ise, 32, 1, 1, 44, 1100, 7121, 150339, 10493
+  result is correct!
+! 25, ise, 32, 1, 1, 48, 1200, 8336, 152621, 12343
+  result is correct!
+! 25, ise, 32, 1, 1, 52, 1300, 9647, 153716, 14227
+  result is correct!
+! 25, ise, 32, 1, 1, 56, 1400, 11054, 77717, 16243
+  result is correct!
+! 25, ise, 32, 1, 1, 60, 1500, 12557, 339281, 19167
+  result is correct!
+! 25, ise, 32, 1, 1, 64, 1600, 14156, 342064, 21543
+  result is correct!
+! 25, ise, 32, 1, 1, 68, 1700, 15851, 343053, 24004
+  result is correct!
+! 25, ise, 32, 1, 1, 72, 1800, 17642, 348150, 26863
+  result is correct!
+-----------------Showing intmul-rv32_ise_25_simple.log-----------------
+! 25, ise, 32, 1, 1, 8, 200, 1023, 62345, 1509
+  result is correct!
+! 25, ise, 32, 1, 1, 12, 300, 2039, 63295, 2950
+  result is correct!
+! 25, ise, 32, 1, 1, 16, 400, 3407, 64810, 4928
+  result is correct!
+! 25, ise, 32, 1, 1, 20, 500, 5127, 182804, 7460
+  result is correct!
+! 25, ise, 32, 1, 1, 24, 600, 7199, 148862, 10474
+  result is correct!
+! 25, ise, 32, 1, 1, 28, 700, 9623, 174531, 14196
+  result is correct!
+! 25, ise, 32, 1, 1, 32, 800, 12399, 166733, 18082
+  result is correct!
+! 25, ise, 32, 1, 1, 36, 900, 15527, 157443, 22558
+  result is correct!
+! 25, ise, 32, 1, 1, 40, 1000, 19007, 162531, 27656
+  result is correct!
+! 25, ise, 32, 1, 1, 44, 1100, 22839, 175440, 33476
+  result is correct!
+! 25, ise, 32, 1, 1, 48, 1200, 27023, 353071, 39721
+  result is correct!
+! 25, ise, 32, 1, 1, 52, 1300, 31559, 357448, 46512
+  result is correct!
+! 25, ise, 32, 1, 1, 56, 1400, 36447, 361769, 53471
+  result is correct!
+! 25, ise, 32, 1, 1, 60, 1500, 41687, 369033, 61580
+  result is correct!
+! 25, ise, 32, 1, 1, 64, 1600, 47279, 375096, 69594
+  result is correct!
+! 25, ise, 32, 1, 1, 68, 1700, 53223, 379399, 78432
+  result is correct!
+! 25, ise, 32, 1, 1, 72, 1800, 59519, 388583, 88313
+  result is correct!
+-----------------Showing intmul-rv32_ise_26_hybrid.log-----------------
+! 26, ise, 32, 1, 1, 8, 208, 475, 62964, 664
+  result is correct!
+! 26, ise, 32, 1, 1, 12, 312, 844, 63224, 1218
+  result is correct!
+! 26, ise, 32, 1, 1, 16, 416, 1307, 64070, 1930
+  result is correct!
+! 26, ise, 32, 1, 1, 20, 520, 1846, 64537, 2718
+  result is correct!
+! 26, ise, 32, 1, 1, 24, 624, 2485, 148085, 3769
+  result is correct!
+! 26, ise, 32, 1, 1, 28, 728, 3220, 66385, 4661
+  result is correct!
+! 26, ise, 32, 1, 1, 32, 832, 4051, 67353, 5928
+  result is correct!
+! 26, ise, 32, 1, 1, 36, 936, 4978, 68200, 7114
+  result is correct!
+! 26, ise, 32, 1, 1, 40, 1040, 6001, 151113, 8924
+  result is correct!
+! 26, ise, 32, 1, 1, 44, 1144, 7120, 153948, 10561
+  result is correct!
+! 26, ise, 32, 1, 1, 48, 1248, 8335, 154132, 12343
+  result is correct!
+! 26, ise, 32, 1, 1, 52, 1352, 9646, 160168, 14462
+  result is correct!
+! 26, ise, 32, 1, 1, 56, 1456, 11053, 164776, 16502
+  result is correct!
+! 26, ise, 32, 1, 1, 60, 1560, 12556, 156613, 18531
+  result is correct!
+! 26, ise, 32, 1, 1, 64, 1664, 14155, 294233, 20974
+  result is correct!
+-----------------Showing intmul-rv32_ise_26_simple.log-----------------
+! 26, ise, 32, 1, 1, 8, 208, 1019, 62774, 1447
+  result is correct!
+! 26, ise, 32, 1, 1, 12, 312, 2035, 63782, 2949
+  result is correct!
+! 26, ise, 32, 1, 1, 16, 416, 3403, 65328, 4930
+  result is correct!
+! 26, ise, 32, 1, 1, 20, 520, 5123, 158696, 7635
+  result is correct!
+! 26, ise, 32, 1, 1, 24, 624, 7195, 148207, 10472
+  result is correct!
+! 26, ise, 32, 1, 1, 28, 728, 9619, 177085, 14131
+  result is correct!
+! 26, ise, 32, 1, 1, 32, 832, 12395, 339473, 18374
+  result is correct!
+! 26, ise, 32, 1, 1, 36, 936, 15523, 341084, 22956
+  result is correct!
+! 26, ise, 32, 1, 1, 40, 1040, 19003, 345767, 28216
+  result is correct!
+! 26, ise, 32, 1, 1, 44, 1144, 22835, 347542, 33786
+  result is correct!
+! 26, ise, 32, 1, 1, 48, 1248, 27019, 351442, 39549
+  result is correct!
+! 26, ise, 32, 1, 1, 52, 1352, 31555, 359753, 46720
+  result is correct!
+! 26, ise, 32, 1, 1, 56, 1456, 36443, 362879, 53723
+  result is correct!
+! 26, ise, 32, 1, 1, 60, 1560, 41683, 368846, 61654
+  result is correct!
+! 26, ise, 32, 1, 1, 64, 1664, 47275, 374599, 70349
+  result is correct!
+-----------------Showing intmul-rv32_ise_27_hybrid.log-----------------
+! 27, ise, 32, 1, 1, 8, 216, 475, 63128, 723
+  result is correct!
+! 27, ise, 32, 1, 1, 12, 324, 844, 63380, 1216
+  result is correct!
+! 27, ise, 32, 1, 1, 16, 432, 1307, 64391, 1868
+  result is correct!
+! 27, ise, 32, 1, 1, 20, 540, 1846, 64548, 2658
+  result is correct!
+! 27, ise, 32, 1, 1, 24, 648, 2485, 65189, 3608
+  result is correct!
+! 27, ise, 32, 1, 1, 28, 756, 3220, 182188, 4918
+  result is correct!
+! 27, ise, 32, 1, 1, 32, 864, 4051, 67271, 5930
+  result is correct!
+-----------------Showing intmul-rv32_ise_27_simple.log-----------------
+! 27, ise, 32, 1, 1, 8, 216, 1019, 62103, 1505
+  result is correct!
+! 27, ise, 32, 1, 1, 12, 324, 2035, 63356, 2887
+  result is correct!
+! 27, ise, 32, 1, 1, 16, 432, 3403, 146863, 5021
+  result is correct!
+! 27, ise, 32, 1, 1, 20, 540, 5123, 332148, 7895
+  result is correct!
+! 27, ise, 32, 1, 1, 24, 648, 7195, 69250, 10317
+  result is correct!
+! 27, ise, 32, 1, 1, 28, 756, 9619, 175905, 14194
+  result is correct!
+! 27, ise, 32, 1, 1, 32, 864, 12395, 74852, 17871
+  result is correct!
+-----------------Showing intmul-rv32_ise_28_hybrid.log-----------------
+! 28, ise, 32, 1, 1, 8, 224, 477, 62959, 727
+  result is correct!
+! 28, ise, 32, 1, 1, 12, 336, 846, 329958, 1489
+  result is correct!
+! 28, ise, 32, 1, 1, 16, 448, 1309, 64400, 1933
+  result is correct!
+-----------------Showing intmul-rv32_ise_28_simple.log-----------------
+! 28, ise, 32, 1, 1, 8, 224, 1020, 62625, 1386
+  result is correct!
+! 28, ise, 32, 1, 1, 12, 336, 2036, 63918, 2953
+  result is correct!
+! 28, ise, 32, 1, 1, 16, 448, 3404, 65179, 4932
+  result is correct!
+-----------------Showing intmul-rv32_ise_29_hybrid.log-----------------
+! 29, ise, 32, 1, 1, 8, 232, 480, 63486, 731
+  result is correct!
+-----------------Showing intmul-rv32_ise_29_simple.log-----------------
+! 29, ise, 32, 1, 1, 8, 232, 1017, 62505, 1445
+  result is correct!
+-----------------Showing intmul-rv32_ise_32_hybrid.log-----------------
+! 32, ise, 32, 1, 1, 8, 256, 565, 63631, 817
+  result is correct!
+! 32, ise, 32, 1, 1, 12, 384, 1171, 64480, 1673
+  result is correct!
+! 32, ise, 32, 1, 1, 16, 512, 1985, 65282, 2867
+  result is correct!
+! 32, ise, 32, 1, 1, 20, 640, 3007, 147888, 4561
+  result is correct!
+! 32, ise, 32, 1, 1, 24, 768, 4245, 333736, 6715
+  result is correct!
+! 32, ise, 32, 1, 1, 28, 896, 5699, 149159, 8507
+  result is correct!
+! 32, ise, 32, 1, 1, 32, 1024, 7369, 176323, 11118
+  result is correct!
+! 32, ise, 32, 1, 1, 36, 1152, 9255, 154556, 13714
+  result is correct!
+! 32, ise, 32, 1, 1, 40, 1280, 11357, 340408, 17434
+  result is correct!
+! 32, ise, 32, 1, 1, 44, 1408, 13675, 165443, 20348
+  result is correct!
+! 32, ise, 32, 1, 1, 48, 1536, 16209, 168923, 24091
+  result is correct!
+! 32, ise, 32, 1, 1, 52, 1664, 18959, 170959, 28061
+  result is correct!
+! 32, ise, 32, 1, 1, 56, 1792, 21937, 351556, 33085
+  result is correct!
+! 32, ise, 32, 1, 1, 60, 1920, 25119, 354411, 37698
+  result is correct!
+! 32, ise, 32, 1, 1, 64, 2048, 28517, 357966, 42695
+  result is correct!
+-----------------Showing intmul-rv32_ise_32_simple.log-----------------
+! 32, ise, 32, 1, 1, 8, 256, 1128, 62797, 1611
+  result is correct!
+! 32, ise, 32, 1, 1, 12, 384, 2296, 145664, 3420
+  result is correct!
+! 32, ise, 32, 1, 1, 16, 512, 3880, 65369, 5576
+  result is correct!
+! 32, ise, 32, 1, 1, 20, 640, 5880, 147450, 8585
+  result is correct!
+! 32, ise, 32, 1, 1, 24, 768, 8296, 149308, 12099
+  result is correct!
+! 32, ise, 32, 1, 1, 28, 896, 11128, 176303, 16279
+  result is correct!
+! 32, ise, 32, 1, 1, 32, 1024, 14376, 339311, 21324
+  result is correct!
+! 32, ise, 32, 1, 1, 36, 1152, 18040, 343040, 26577
+  result is correct!
+! 32, ise, 32, 1, 1, 40, 1280, 22120, 349188, 32620
+  result is correct!
+! 32, ise, 32, 1, 1, 44, 1408, 26616, 351519, 38968
+  result is correct!
+! 32, ise, 32, 1, 1, 48, 1536, 31528, 357282, 46529
+  result is correct!
+! 32, ise, 32, 1, 1, 52, 1664, 36856, 364319, 54524
+  result is correct!
+! 32, ise, 32, 1, 1, 56, 1792, 42602, 368801, 62679
+  result is correct!
+! 32, ise, 32, 1, 1, 60, 1920, 48762, 375134, 72308
+  result is correct!
+! 32, ise, 32, 1, 1, 64, 2048, 55338, 391263, 81603
+  result is correct!
+# 

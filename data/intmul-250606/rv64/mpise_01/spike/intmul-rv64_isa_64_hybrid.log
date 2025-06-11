@@ -1,0 +1,44 @@
+====
+REPO_HOME         := /home/gk24545/Documents/software/Github/mpise-releases/v22052025
+RISCV             := /home/gk24545/Documents/software/Github/mpise-releases/v22052025/build/riscv-spike
+MPISE_DESTRUCTIVE := 0
+MPISE_STATELESS   := 1
+----
+ARCH              := rv64
+TYPE              := isa
+RADIX             := 64
+PLATFORM          := spike
+VERSION           := hybrid
+<<<<
+bbl loader
+! 64, isa, 64, 0, 1, 8, 512, 668, 668, 668
+  result is correct!
+! 64, isa, 64, 0, 1, 12, 768, 1406, 1406, 1406
+  result is correct!
+! 64, isa, 64, 0, 1, 16, 1024, 2424, 2424, 2424
+  result is correct!
+! 64, isa, 64, 0, 1, 20, 1280, 3722, 3722, 3722
+  result is correct!
+! 64, isa, 64, 0, 1, 24, 1536, 5300, 5300, 5300
+  result is correct!
+! 64, isa, 64, 0, 1, 28, 1792, 7158, 7158, 7158
+  result is correct!
+! 64, isa, 64, 0, 1, 32, 2048, 9296, 9296, 9296
+  result is correct!
+! 64, isa, 64, 0, 1, 36, 2304, 11714, 11714, 11714
+  result is correct!
+! 64, isa, 64, 0, 1, 40, 2560, 14412, 14412, 14412
+  result is correct!
+! 64, isa, 64, 0, 1, 44, 2816, 17390, 17390, 17390
+  result is correct!
+! 64, isa, 64, 0, 1, 48, 3072, 20648, 20648, 20648
+  result is correct!
+! 64, isa, 64, 0, 1, 52, 3328, 24186, 24186, 24186
+  result is correct!
+! 64, isa, 64, 0, 1, 56, 3584, 28004, 28004, 28004
+  result is correct!
+! 64, isa, 64, 0, 1, 60, 3840, 32102, 32102, 32102
+  result is correct!
+! 64, isa, 64, 0, 1, 64, 4096, 36480, 36480, 36480
+  result is correct!
+>>>>

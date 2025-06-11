@@ -1,0 +1,30 @@
+! 32, ise, 32, 1, 1, 8, 256, 565, 63631, 817
+  result is correct!
+! 32, ise, 32, 1, 1, 12, 384, 1171, 64480, 1673
+  result is correct!
+! 32, ise, 32, 1, 1, 16, 512, 1985, 65282, 2867
+  result is correct!
+! 32, ise, 32, 1, 1, 20, 640, 3007, 147888, 4561
+  result is correct!
+! 32, ise, 32, 1, 1, 24, 768, 4245, 333736, 6715
+  result is correct!
+! 32, ise, 32, 1, 1, 28, 896, 5699, 149159, 8507
+  result is correct!
+! 32, ise, 32, 1, 1, 32, 1024, 7369, 176323, 11118
+  result is correct!
+! 32, ise, 32, 1, 1, 36, 1152, 9255, 154556, 13714
+  result is correct!
+! 32, ise, 32, 1, 1, 40, 1280, 11357, 340408, 17434
+  result is correct!
+! 32, ise, 32, 1, 1, 44, 1408, 13675, 165443, 20348
+  result is correct!
+! 32, ise, 32, 1, 1, 48, 1536, 16209, 168923, 24091
+  result is correct!
+! 32, ise, 32, 1, 1, 52, 1664, 18959, 170959, 28061
+  result is correct!
+! 32, ise, 32, 1, 1, 56, 1792, 21937, 351556, 33085
+  result is correct!
+! 32, ise, 32, 1, 1, 60, 1920, 25119, 354411, 37698
+  result is correct!
+! 32, ise, 32, 1, 1, 64, 2048, 28517, 357966, 42695
+  result is correct!

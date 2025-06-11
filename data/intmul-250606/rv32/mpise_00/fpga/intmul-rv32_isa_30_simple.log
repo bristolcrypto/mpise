@@ -1,0 +1,6 @@
+! 30, isa, 32, 0, 0, 8, 240, 1226, 62520, 1773
+  result is correct!
+! 30, isa, 32, 0, 0, 12, 360, 2490, 64147, 3647
+  result is correct!
+! 30, isa, 32, 0, 0, 16, 480, 4202, 65866, 6035
+  result is correct!

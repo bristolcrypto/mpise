@@ -1,0 +1,16 @@
+====
+REPO_HOME         := /home/gk24545/Documents/software/Github/mpise-releases/v22052025
+RISCV             := /home/gk24545/Documents/software/Github/mpise-releases/v22052025/build/riscv-spike
+MPISE_DESTRUCTIVE := 1
+MPISE_STATELESS   := 0
+----
+ARCH              := rv32
+TYPE              := ise
+RADIX             := 29
+PLATFORM          := spike
+VERSION           := hybrid
+<<<<
+bbl loader
+! 29, ise, 32, 1, 0, 8, 232, 420, 420, 420
+  result is correct!
+>>>>

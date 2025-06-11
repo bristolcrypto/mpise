@@ -1,0 +1,34 @@
+! 25, ise, 32, 0, 1, 8, 200, 1023, 62260, 1510
+  result is correct!
+! 25, ise, 32, 0, 1, 12, 300, 2039, 63319, 2952
+  result is correct!
+! 25, ise, 32, 0, 1, 16, 400, 3407, 180994, 5126
+  result is correct!
+! 25, ise, 32, 0, 1, 20, 500, 5127, 148673, 7540
+  result is correct!
+! 25, ise, 32, 0, 1, 24, 600, 7199, 180569, 10732
+  result is correct!
+! 25, ise, 32, 0, 1, 28, 700, 9623, 152561, 14004
+  result is correct!
+! 25, ise, 32, 0, 1, 32, 800, 12399, 163780, 18180
+  result is correct!
+! 25, ise, 32, 0, 1, 36, 900, 15527, 341085, 23342
+  result is correct!
+! 25, ise, 32, 0, 1, 40, 1000, 19007, 346435, 28277
+  result is correct!
+! 25, ise, 32, 0, 1, 44, 1100, 22839, 174021, 33418
+  result is correct!
+! 25, ise, 32, 0, 1, 48, 1200, 27023, 352928, 39981
+  result is correct!
+! 25, ise, 32, 0, 1, 52, 1300, 31559, 356689, 46288
+  result is correct!
+! 25, ise, 32, 0, 1, 56, 1400, 36447, 361180, 53544
+  result is correct!
+! 25, ise, 32, 0, 1, 60, 1500, 41687, 366385, 61391
+  result is correct!
+! 25, ise, 32, 0, 1, 64, 1600, 47279, 372328, 70068
+  result is correct!
+! 25, ise, 32, 0, 1, 68, 1700, 53223, 395041, 79009
+  result is correct!
+! 25, ise, 32, 0, 1, 72, 1800, 59519, 384642, 87594
+  result is correct!
