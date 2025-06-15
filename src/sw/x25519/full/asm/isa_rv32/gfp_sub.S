@@ -78,16 +78,16 @@
 // the result is stored in `r[i]` in RAM.
 
 .macro SUBW_V2 shi:req, slo:req, cin:req, i:req
-    lw      tmp0, \i(aptr)
+    lw      \slo, \i(aptr)
     lw      tmp1, \i(bptr)
-    srai    \shi, \cin, 1
-    add     \slo, \cin, tmp0
-    sltu    tmp0, \slo, tmp0
+    srai    tmp0, \cin, 1
+    add     \slo, \slo, \cin
+    sltu    \shi, \slo, \cin
     add     \shi, \shi, tmp0
     sltu    tmp0, \slo, tmp1
-    sub     tmp1, \slo, tmp1
+    sub     \slo, \slo, tmp1
     sub     \shi, \shi, tmp0
-    sw      tmp1, \i(rptr)
+    sw      \slo, \i(rptr)
 .endm
 
 
