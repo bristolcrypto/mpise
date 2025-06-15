@@ -5,10 +5,10 @@ static void mon_cswap_point(ProPoint *p, ProPoint *q, int cbit)
 {
   Word mask, tx, tz;
   int i;
-
+  
   cbit &= 1;  
   mask = ~((Word) cbit) + 1;
-
+  
   for (i = 0; i < NWORDS; i++) {
     tx = (p->x[i] ^ q->x[i]) & mask;
     tz = (p->z[i] ^ q->z[i]) & mask;
@@ -43,12 +43,13 @@ void mon_ladder_step(ProPoint *p, ProPoint *q, const Word *xd)
   gfp_mul(q->z, tmp2, xd);
 }
 
+
 void mon_mul_varbase(Word *r, const Word *k, const Word *x)
 {
   ProPoint p1, p2;
   Word kp[NWORDS];
   int i, b, s = 0;
-
+  
   // prune scalar k
   for (i = 0; i < NWORDS; i++) kp[i] = k[i];
   kp[0] &= (~((Word) 7));                        // 0xFFF..FF8 
@@ -77,25 +78,3 @@ void mon_mul_varbase(Word *r, const Word *k, const Word *x)
   gfp_inv(p2.y, p1.z);
   gfp_mul(r, p2.y, p1.x);
 }
-
-
-
-
-/*
-void mon_test25519(void)
-{
-  uint32_t x[8] = {                                 \
-    0x6768DBE6, 0xDB303058, 0xA4C19435, 0x7C5FB124, \
-    0xEC246672, 0x3B35B326, 0xA603A910, 0x4C1CABD0 };
-  uint32_t k[8] = {                                 \
-    0x6BE346A0, 0x9D7C52F0, 0x4B15163B, 0xDD5E4682, \
-    0x0A4C1462, 0x185AFCC1, 0x44226A50, 0x449A44BA };
-  uint32_t r[8];
-  
-  mon_mul_varbase((Word *) r, (const Word *) k, (const Word *) x);
-  mpi_print("r = 0x", r, NWORDS);
-  
-  // correct result:
-  // r = 0x5285A2775507B454F7711C4903CFEC324F088DF24DEA948E90C6E99D3755DAC3
-}
-*/
