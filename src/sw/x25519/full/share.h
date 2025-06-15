@@ -27,6 +27,8 @@ typedef uint64_t Word;
 
 // auxiliary functions
 void rand_bytes(uint8_t *x, int n);
+int  hex_to_int(Word *r, const char *hexstring, int len);
+void int_to_hex(char *hexstring, const Word *a, int len);
 void mpi_print(const char *c, const Word *a, int len);
 
 #endif
