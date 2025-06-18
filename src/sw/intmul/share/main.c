@@ -9,6 +9,10 @@
 #define TRIALS 1000
 #endif
 
+#ifndef THRESHOLD
+#define THRESHOLD 20000
+#endif
+
 #if !defined( VERSION_SIMPLE ) && !defined( VERSION_HYBRID )
 #define VERSION_HYBRID 1
 #endif
@@ -80,6 +84,8 @@ int main( int argc, char* argv[] ) {
       #endif
     }
 
+    int trials = 0;
+
     // execute
     for( int i = 0; i < TRIALS; i++ ) {
       rdtsc_x = rdtsc();
@@ -93,18 +99,22 @@ int main( int argc, char* argv[] ) {
 
       rdtsc_r = rdtsc_y - rdtsc_x;
 
-      rdtsc_min = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
-      rdtsc_max = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
-      rdtsc_avr =                            rdtsc_r + rdtsc_avr;
+      if( rdtsc_r < THRESHOLD ) {
+        rdtsc_min  = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
+        rdtsc_max  = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
+        rdtsc_avr  =                            rdtsc_r + rdtsc_avr;
+
+        trials    += 1;
+      }
     }
 
-    rdtsc_avr /= TRIALS;
+    rdtsc_avr /= trials;
 
     // report
     #if   defined( MPISE_RADIX_FULL    )
-    printf("! %d, %s, %d, %d, %d, %d, %d, %lld, %lld, %lld\n", LIMBBITS, TYPE, MPISE_XLEN, MPISE_DESTRUCTIVE, MPISE_STATELESS, j, j * MPISE_XLEN, rdtsc_min, rdtsc_max, rdtsc_avr );
+    printf("! %d, %s, %d, %d, %d, %d, %d, %d, %d, %lld, %lld, %lld\n", LIMBBITS, TYPE, MPISE_XLEN, MPISE_DESTRUCTIVE, MPISE_STATELESS, j, j * MPISE_XLEN, TRIALS, trials, rdtsc_min, rdtsc_max, rdtsc_avr );
     #elif defined( MPISE_RADIX_REDUCED )
-    printf("! %d, %s, %d, %d, %d, %d, %d, %lld, %lld, %lld\n", LIMBBITS, TYPE, MPISE_XLEN, MPISE_DESTRUCTIVE, MPISE_STATELESS, j, j * LIMBBITS,   rdtsc_min, rdtsc_max, rdtsc_avr );
+    printf("! %d, %s, %d, %d, %d, %d, %d, %d, %d, %lld, %lld, %lld\n", LIMBBITS, TYPE, MPISE_XLEN, MPISE_DESTRUCTIVE, MPISE_STATELESS, j, j * LIMBBITS,   TRIALS, trials, rdtsc_min, rdtsc_max, rdtsc_avr );
     #endif
 
     // test/debug
