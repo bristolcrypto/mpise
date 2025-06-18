@@ -10,18 +10,21 @@ def parse() :
   for line in sys.stdin.readlines() :
     line = [ t.strip() for t in line.split( ',' ) ]
   
-    conf_radix       = int( line[ 0 ] )
-    conf_type        = str( line[ 1 ] )
-    conf_xlen        = int( line[ 2 ] )
-    conf_destructive = int( line[ 3 ] )
-    conf_stateless   = int( line[ 4 ] )
+    conf_radix       = int( line[  0 ] )
+    conf_type        = str( line[  1 ] )
+    conf_xlen        = int( line[  2 ] )
+    conf_destructive = int( line[  3 ] )
+    conf_stateless   = int( line[  4 ] )
     
-    operand_limbs    = int( line[ 5 ] )
-    operand_bits     = int( line[ 6 ] )
+    operand_limbs    = int( line[  5 ] )
+    operand_bits     = int( line[  6 ] )
+
+    trials_total     = int( line[  7 ] )
+    trials_valid     = int( line[  8 ] )
   
-    rdtsc_min        = int( line[ 7 ] )
-    rdtsc_max        = int( line[ 8 ] )
-    rdtsc_avr        = int( line[ 9 ] )
+    rdtsc_min        = int( line[  9 ] )
+    rdtsc_max        = int( line[ 10 ] )
+    rdtsc_avr        = int( line[ 11 ] )
 
     if ( conf_type != str( argv.type ) ) :
       continue
