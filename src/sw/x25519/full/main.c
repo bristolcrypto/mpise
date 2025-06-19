@@ -205,7 +205,7 @@ void test_curve_arith(int iter)
     "0x5285A2775507B454F7711C4903CFEC324F088DF24DEA948E90C6E99D3755DAC3";
   if (strcmp(rh, resh) != 0) printf("  result R is wrong!!!\n");
 #endif
-
+  
   printf("=============================================================\n");
 }
 
@@ -291,6 +291,41 @@ void test_ecdh(void)
 }
 
 
+/*
+// prototype of mike scott's x25519 implementation
+extern int X25519_SHARED_SECRET(char *SK, char *PK, char *SS);
+
+void test_scott(int iter)
+{
+  uint64_t start_cycles, end_cycles, diff_cycles;
+  Word rf[NWORDS], kf[NWORDS], xf[NWORDS];  // full-radix
+  unsigned char resh[2*WBYTES*NWORDS+3];
+  int i;
+  
+  static const unsigned char kh[] =  // scalar k for testing
+    "0xC49A44BA44226A50185AFCC10A4C1462DD5E46824B15163B9D7C52F06BE346A5";
+  static const unsigned char xh[] =  // x-coordinate for testing
+    "0x4C1CABD0A603A9103B35B326EC2466727C5FB124A4C19435DB3030586768DBE6";
+  
+  hex_to_int(kf, kh, NWORDS);
+  hex_to_int(xf, xh, NWORDS);
+  
+  printf("- mike scott's x25519:     ");
+  LOAD_CACHE(X25519_SHARED_SECRET((char *) kf, (char *) xf, (char *) rf), 10);
+  MEASURE_CYCLES(X25519_SHARED_SECRET((char *) kf, (char *) xf, (char *) rf), iter);
+  printf(" #cycles = %lld\n", diff_cycles);
+  
+#if DEBUG
+  int_to_hex(resh, rf, NWORDS);
+  printf("  R  = %s\n", resh);
+  static const unsigned char rh[] =  // expected result for R
+    "0x5285A2775507B454F7711C4903CFEC324F088DF24DEA948E90C6E99D3755DAC3";
+  if (strcmp(rh, resh) != 0) printf("  result R is wrong!!!\n");
+#endif
+}
+*/
+
+
 int main( int argc, char* argv[] ) {
   #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
   asm( "csrrwi x0, 0x801, " MPISE_RADIX_IMM );
@@ -299,6 +334,7 @@ int main( int argc, char* argv[] ) {
   test_gfp_arith(1000);
   test_curve_arith(50);
   test_ecdh();
+  // test_scott(50);
   
   return 0;
 }
