@@ -9,10 +9,6 @@
 #define TRIALS 1000
 #endif
 
-#ifndef THRESHOLD
-#define THRESHOLD 20000
-#endif
-
 #if !defined( VERSION_SIMPLE ) && !defined( VERSION_HYBRID )
 #define VERSION_HYBRID 1
 #endif
@@ -39,7 +35,18 @@ limb_t r[ 2*MAX_LIMBS ];
 #if DEBUG
 limb_t x[ 2*MAX_LIMBS ];
 #endif
-
+#if PERF_DEBUG
+unsigned long long rdtsc_debug[TRIALS];
+#endif
+#if THRESHOLD_STATIC
+#define THRESHOLD 20000
+unsigned long long rdtsc_trial[TRIALS];
+#endif
+#if THRESHOLD_DYNAMIC
+#define THRESHOLD_WINDOW_SIZE 5
+#define THRESHOLD_FACTOR 3
+unsigned long long rdtsc_window[THRESHOLD_WINDOW_SIZE];
+#endif
 int main( int argc, char* argv[] ) {
   #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
   asm( "csrrwi x0, 0x801, " MPISE_RADIX_STR );
@@ -86,6 +93,15 @@ int main( int argc, char* argv[] ) {
 
     int trials = 0;
 
+#if THRESHOLD_DYNAMIC
+    int rdtsc_last_index=0;               // index tracking the window's last element.
+    unsigned long long rdtsc_last_value;  // rdtsc element that is about to be evicted from the window
+    unsigned long long rdtsc_avr_temp;    // temp value of rdtsc average
+    // Initialize the window's elements to zero
+    for (int i = 0; i < THRESHOLD_WINDOW_SIZE; i++) {
+      rdtsc_window[i] = 0;
+    }
+#endif
     // execute
     for( int i = 0; i < TRIALS; i++ ) {
       rdtsc_x = rdtsc();
@@ -99,13 +115,47 @@ int main( int argc, char* argv[] ) {
 
       rdtsc_r = rdtsc_y - rdtsc_x;
 
-      if( rdtsc_r < THRESHOLD ) {
+#if PERF_DEBUG
+      rdtsc_debug[i] = rdtsc_r;
+#endif
+
+#if THRESHOLD_STATIC
+      if( rdtsc_r < THRESHOLD_FACTOR ) {
         rdtsc_min  = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
         rdtsc_max  = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
         rdtsc_avr  =                            rdtsc_r + rdtsc_avr;
 
         trials    += 1;
       }
+#elif THRESHOLD_DYNAMIC
+        rdtsc_last_value = rdtsc_window[rdtsc_last_index];
+        rdtsc_avr_temp  = rdtsc_avr + rdtsc_r - rdtsc_last_value;
+        if (rdtsc_avr_temp * THRESHOLD_WINDOW_SIZE > THRESHOLD_FACTOR * rdtsc_avr) { // spike detected
+          // Discard this trial
+          // Don't replace rdtsc_window[rdtsc_last_index] with rdtsc_r,
+          // Don't advance rdtsc_last_index,
+          // Don't adjust rdtsc_avr, don't adjust rdtsc_min and rdtsc_max
+          // Don't adjust trials
+          rdtsc_window[rdtsc_last_index] = rdtsc_last_value;
+          rdtsc_last_index  =  (rdtsc_last_index + 0) % THRESHOLD_WINDOW_SIZE;
+          rdtsc_min         = rdtsc_min;
+          rdtsc_max         = rdtsc_max;
+          rdtsc_avr         = rdtsc_avr;
+          trials           += 0;
+        } else {
+          rdtsc_window[rdtsc_last_index] = rdtsc_r;
+          rdtsc_last_index  =  (rdtsc_last_index + 1) % THRESHOLD_WINDOW_SIZE;
+          rdtsc_min  	    = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
+          rdtsc_max         = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
+          rdtsc_avr         = rdtsc_avr_temp;
+          trials           += 1;
+        }
+#else
+      rdtsc_min = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
+      rdtsc_max = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
+      rdtsc_avr =                            rdtsc_r + rdtsc_avr;
+      trials    += 1;
+#endif
     }
 
     rdtsc_avr /= trials;
@@ -118,6 +168,17 @@ int main( int argc, char* argv[] ) {
     #endif
 
     // test/debug
+
+#if PERF_DEBUG
+    for (int i = 0; i < TRIALS/100; i++) {
+        printf("\n! @ ");
+        for (int j = 0; j < 100; j++) {
+            printf(" %lld", rdtsc_debug[100*i + j] );
+	}
+    }
+    printf("\n");
+#endif
+
     #if DEBUG
     #if   defined( MPISE_RADIX_FULL    )
     mpi_mul_1x1fr_isa( x, a, b, j );
