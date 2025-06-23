@@ -9,6 +9,7 @@
 ifeq "${PLATFORM}" "spike"
 export GCC_PREFIX  = riscv64-unknown-elf
 export GCC_FLAGS  += -march='rv64imafdc_zicsr_zifencei_zicntr' -mabi='lp64d'
+export GCC_FLAGS  += -DTHRESHOLD_DYNAMIC
 export GCC_PATHS  += 
 export GCC_LIBS   += 
 endif
@@ -16,7 +17,7 @@ endif
 ifeq "${PLATFORM}" "cva6-verilator"
 export GCC_PREFIX  = riscv-none-elf
 export GCC_FLAGS  += -march='rv64imafdc_zicsr_zifencei'        -mabi='lp64d'
-export GCC_FLAGS  += -DMPISE_STDC_RAND -DPERF_DEBUG -DTHRESHOLD_DYNAMIC
+export GCC_FLAGS  += -DMPISE_STDC_RAND -DTHRESHOLD_DYNAMIC
 endif
 
 ifeq "${PLATFORM}" "cva6-fpga"

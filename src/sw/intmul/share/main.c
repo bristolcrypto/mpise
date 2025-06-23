@@ -35,11 +35,11 @@ limb_t r[ 2*MAX_LIMBS ];
 #if DEBUG
 limb_t x[ 2*MAX_LIMBS ];
 #endif
-#if PERF_DEBUG
+#if THRESHOLD_DEBUG
 unsigned long long rdtsc_debug[TRIALS];
 #endif
 #if THRESHOLD_STATIC
-#define THRESHOLD 20000
+#define THRESHOLD_ABSOLUTE 20000
 unsigned long long rdtsc_trial[TRIALS];
 #endif
 #if THRESHOLD_DYNAMIC
@@ -93,15 +93,16 @@ int main( int argc, char* argv[] ) {
 
     int trials = 0;
 
-#if THRESHOLD_DYNAMIC
-    int rdtsc_last_index=0;               // index tracking the window's last element.
-    unsigned long long rdtsc_last_value;  // rdtsc element that is about to be evicted from the window
-    unsigned long long rdtsc_avr_temp;    // temp value of rdtsc average
+    #if THRESHOLD_DYNAMIC
+    int rdtsc_last_index=0;               	// index tracking the window's last element.
+    unsigned long long rdtsc_last_value;  	// rdtsc element that is about to be evicted from the window
+    unsigned long long rdtsc_avr_temp;    	// temp value of rdtsc window average
+    unsigned long long rdtsc_avr_window = 0;    // current value of rdtsc window average
     // Initialize the window's elements to zero
     for (int i = 0; i < THRESHOLD_WINDOW_SIZE; i++) {
       rdtsc_window[i] = 0;
     }
-#endif
+    #endif
     // execute
     for( int i = 0; i < TRIALS; i++ ) {
       rdtsc_x = rdtsc();
@@ -115,47 +116,50 @@ int main( int argc, char* argv[] ) {
 
       rdtsc_r = rdtsc_y - rdtsc_x;
 
-#if PERF_DEBUG
+      #if THRESHOLD_DEBUG
       rdtsc_debug[i] = rdtsc_r;
-#endif
+      #endif // THRESHOLD_DEBUG
 
-#if THRESHOLD_STATIC
-      if( rdtsc_r < THRESHOLD_FACTOR ) {
+    #if THRESHOLD_STATIC
+      if( rdtsc_r < THRESHOLD_ABSOLUTE ) {
         rdtsc_min  = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
         rdtsc_max  = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
         rdtsc_avr  =                            rdtsc_r + rdtsc_avr;
-
         trials    += 1;
       }
-#elif THRESHOLD_DYNAMIC
-        rdtsc_last_value = rdtsc_window[rdtsc_last_index];
-        rdtsc_avr_temp  = rdtsc_avr + rdtsc_r - rdtsc_last_value;
-        if (rdtsc_avr_temp * THRESHOLD_WINDOW_SIZE > THRESHOLD_FACTOR * rdtsc_avr) { // spike detected
+    #elif THRESHOLD_DYNAMIC
+        rdtsc_last_value = (i==0) ? 0 : rdtsc_window[rdtsc_last_index];  // this value is zero for the first trial
+        rdtsc_avr_temp  = rdtsc_avr_window + rdtsc_r - rdtsc_last_value; // 
+        // After the first few trials, if rdtsc_r is greater than the moving average, then treat it as an outlier spike.
+        if (i > THRESHOLD_WINDOW_SIZE  && THRESHOLD_FACTOR * rdtsc_avr_window < rdtsc_r * THRESHOLD_WINDOW_SIZE ) {
           // Discard this trial
           // Don't replace rdtsc_window[rdtsc_last_index] with rdtsc_r,
           // Don't advance rdtsc_last_index,
           // Don't adjust rdtsc_avr, don't adjust rdtsc_min and rdtsc_max
           // Don't adjust trials
+	  printf(" Dynamic thresholding :: i = %d : rdtsc_r = %lld, rdtsc_avr = %lld\n", i, rdtsc_r, rdtsc_avr_temp / THRESHOLD_WINDOW_SIZE);
           rdtsc_window[rdtsc_last_index] = rdtsc_last_value;
           rdtsc_last_index  =  (rdtsc_last_index + 0) % THRESHOLD_WINDOW_SIZE;
           rdtsc_min         = rdtsc_min;
           rdtsc_max         = rdtsc_max;
-          rdtsc_avr         = rdtsc_avr;
+          rdtsc_avr_window  = rdtsc_avr_window; // no change to window average
+	  rdtsc_avr         = rdtsc_avr;
           trials           += 0;
         } else {
           rdtsc_window[rdtsc_last_index] = rdtsc_r;
           rdtsc_last_index  =  (rdtsc_last_index + 1) % THRESHOLD_WINDOW_SIZE;
           rdtsc_min  	    = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
           rdtsc_max         = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
-          rdtsc_avr         = rdtsc_avr_temp;
+          rdtsc_avr_window  = rdtsc_avr_temp; // update window average
+	  rdtsc_avr         = rdtsc_avr + rdtsc_r; // update total average
           trials           += 1;
         }
-#else
+    #else
       rdtsc_min = ( rdtsc_r <= rdtsc_min ) ? rdtsc_r : rdtsc_min;
       rdtsc_max = ( rdtsc_r >= rdtsc_max ) ? rdtsc_r : rdtsc_max;
       rdtsc_avr =                            rdtsc_r + rdtsc_avr;
       trials    += 1;
-#endif
+    #endif // THRESHOLD_STATIC || THRESHOLD_DYNAMIC
     }
 
     rdtsc_avr /= trials;
@@ -169,7 +173,14 @@ int main( int argc, char* argv[] ) {
 
     // test/debug
 
-#if PERF_DEBUG
+    #if THRESHOLD_DEBUG
+    # if TRIALS < 100
+    printf("\n! @ ");
+    for (int j = 0; j < trials; j++) {
+        printf(" %lld", rdtsc_debug[j] );
+    }
+    printf("\n");
+    #else
     for (int i = 0; i < TRIALS/100; i++) {
         printf("\n! @ ");
         for (int j = 0; j < 100; j++) {
@@ -177,8 +188,8 @@ int main( int argc, char* argv[] ) {
 	}
     }
     printf("\n");
-#endif
-
+    #endif // TRIALS
+    #endif // THRESHOLD_DEBUG
     #if DEBUG
     #if   defined( MPISE_RADIX_FULL    )
     mpi_mul_1x1fr_isa( x, a, b, j );

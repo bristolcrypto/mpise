@@ -14,9 +14,17 @@ export CVA6="${REPO_HOME}/build/cva6"
 
 export RISCV_SPIKE="${REPO_HOME}/build/riscv-spike"
 export RISCV_CVA6="${REPO_HOME}/build/riscv-cva6"
+
 # CVA6-specific parameters
+if ! [ -n "$MPISE_DESTRUCTIVE" ]; then
+  export MPISE_DESTRUCTIVE="0"
+fi
+if ! [ -n "$MPISE_STATELESS" ]; then
+  export MPISE_STATELESS="1"
+fi
 export DV_SIMULATORS=veri-testharness
 export DV_TARGET=cv64a6_imafdc_sv39_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}
+# End : CVA6-specific parameters
 
 export REPO_VERSION_MAJOR="0"
 export REPO_VERSION_MINOR="1"
