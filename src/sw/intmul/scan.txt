@@ -103,4 +103,19 @@
   intmul-rv32_isa_32_hybrid.log   intmul-rv32_ise_32_hybrid.elf*  intmul-rv64_isa_56_simple.log   intmul-rv64_isa_64_simple.elf*  intmul-rv64_ise_57_hybrid.log
   intmul-rv32_isa_32_simple.elf*  intmul-rv32_ise_32_hybrid.log   intmul-rv64_isa_57_hybrid.elf*  intmul-rv64_isa_64_simple.log   intmul-rv64_ise_57_simple.elf*
 
+Step 5 : Plotting
+  Requires : pdfjam (apt install)
+
+  -- Setup python environment
+  bash$ cd ${REPO_HOME}/data/intmul-fpga-250627
+  bash$ python3 -m venv venv
+  bash$ source venv/bin/activate
+  bash$ cd ${REPO_HOME}/src/sw/intmul
+
+  -- Run the following command : 
+  bash$ MPISE_DESTRUCTIVE="x" MPISE_STATELESS="y" ARCH="rv32" RISCV="$RISCV_CVA6"./scan.sh plot
+  where, x,y can take values 0 or 1.
+
+  This should generate four pdf images in scan/ folder for two choices of type (ise, isa) and version (simple, hybrid).
+  To get a combined image of these four images look for a file with name similar to "intmul-rv32_2x2_mpise_00.pdf".
 ===============================================================================
