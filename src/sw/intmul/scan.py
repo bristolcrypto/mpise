@@ -58,7 +58,7 @@ def plot( data ) :
     ax.plot( xs, ys, c = c, linestyle = 'dotted', marker = m, label = 'Radix $2^{{{0:d}}}$'.format( radix ) )
     plt.errorbar( xs, ys, yerr = es, ecolor = c, elinewidth = 1, capsize = 2, fmt = 'none' )
   
-  ax.set( xlabel = 'Operand length (bits)', ylabel = 'Cycles', title = r'$\mbox{{type}} = \mbox{{{0:s}}}$, $\mbox{{\tt xlen}} = {1:s}$'.format( argv.type.upper(), argv.xlen ) )
+  ax.set( xlabel = 'Operand length (bits)', ylabel = 'Cycles', title = r'$\mbox{{type}} = \mbox{{{0:s}}}$, $\mbox{{\tt xlen}} = {1:s}$, $\mbox{{\tt version}} = {2:s}$'.format( argv.type.upper(), argv.xlen, argv.version ) )
   ax.legend( loc = 'upper left' ) ; ax.grid( True )
   
 # -----------------------------------------------------------------------------
@@ -68,6 +68,7 @@ if ( __name__ == '__main__' ) :
 
   parser.add_argument( '--type',   action = 'store', choices = [ 'isa', 'ise' ] )
   parser.add_argument( '--xlen',   action = 'store', choices = [  '32',  '64' ] )
+  parser.add_argument( '--version', action = 'store', choices = [ 'simple', 'hybrid' ] )
 
   parser.add_argument( '--output-ht', action = 'store', type = int, default =  6 )
   parser.add_argument( '--output-wd', action = 'store', type = int, default = 12 )
@@ -79,5 +80,4 @@ if ( __name__ == '__main__' ) :
   plot( parse() )
 
   plt.savefig( argv.output, transparent = True, bbox_inches = 'tight', pad_inches = 0.1 )
-
 # =============================================================================

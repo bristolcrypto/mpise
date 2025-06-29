@@ -73,6 +73,13 @@ endif
 ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}.pdf :
 	@cat ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_*_${VERSION}.log | grep '^!' | cut -c 3- | python3 ${REPO_HOME}/src/sw/intmul/scan.py --type="${TYPE}" --xlen="${XLEN}" --output="${@}"
 
+${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}.pdf :
+	@cat ${REPO_HOME}/data/intmul-fpga-250627/generated-logs/rv32_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}_generated/intmul-${ARCH}_${TYPE}_*_${VERSION}.log | grep '^!' | cut -c 3- | python3 ${REPO_HOME}/src/sw/intmul/scan.py --type="${TYPE}" --xlen="${XLEN}" --version="${VERSION}" --output="${@}"
+
+${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_2x2_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}.pdf :
+	@pdfjam --nup 2x2 --landscape --outfile "${@}" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_*_*.pdf
+	@echo "\033[32mSuccessfully created ${@}.\033[0m"
+	#@soffice "${@}"
 # -----------------------------------------------------------------------------
 
 build :
