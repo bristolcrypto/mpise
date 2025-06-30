@@ -94,7 +94,7 @@ def main():
     
     # Print the detailed statistics table first
     header =    "Limb | Int. Latency | Min    | Orig. Max  | Filt. Max  | % Drop  | Orig. Avg (RMSE)         | Filt. Avg (RMSE)         | % Drop Avg (RMSE)   | Outliers"
-    separator = "---- | ------------ | ------ | ---------- | ---------- | ------- | -------------------------- | -------------------------- | ------------------- | --------"
+    separator = "---- | ------------ | ------ | ---------- | ---------- | ------- | ------------------------ | ------------------------ | ------------------- | --------"
     print(header)
     print(separator)
 

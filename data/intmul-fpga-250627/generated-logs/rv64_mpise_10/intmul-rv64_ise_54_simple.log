@@ -1,0 +1,48 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 1
+MPISE_STATELESS   := 0
+----
+ARCH              := rv64
+TYPE              := ise
+RADIX             := 54
+PLATFORM          := cva6-fpga
+VERSION           := simple
+<<<<
+bbl loader
+! 54, ise, 64, 1, 0, 8, 432, 1000, 996, 1006, 1006, 1006
+  result is correct!
+! 54, ise, 64, 1, 0, 12, 648, 1000, 994, 2018, 2018, 2018
+  result is correct!
+! 54, ise, 64, 1, 0, 16, 864, 1000, 986, 3382, 3382, 3382
+  result is correct!
+! 54, ise, 64, 1, 0, 20, 1080, 1000, 983, 5098, 5098, 5098
+  result is correct!
+! 54, ise, 64, 1, 0, 24, 1296, 1000, 975, 7166, 7166, 7166
+  result is correct!
+! 54, ise, 64, 1, 0, 28, 1512, 1000, 970, 9586, 9586, 9586
+  result is correct!
+! 54, ise, 64, 1, 0, 32, 1728, 1000, 962, 12358, 12358, 12358
+  result is correct!
+! 54, ise, 64, 1, 0, 36, 1944, 1000, 946, 15482, 15482, 15482
+  result is correct!
+! 54, ise, 64, 1, 0, 40, 2160, 1000, 937, 18958, 18958, 18958
+  result is correct!
+! 54, ise, 64, 1, 0, 44, 2376, 1000, 926, 22786, 22786, 22786
+  result is correct!
+! 54, ise, 64, 1, 0, 48, 2592, 1000, 912, 26966, 26966, 26966
+  result is correct!
+! 54, ise, 64, 1, 0, 52, 2808, 1000, 899, 31498, 31498, 31498
+  result is correct!
+! 54, ise, 64, 1, 0, 56, 3024, 1000, 886, 36382, 36382, 36382
+  result is correct!
+! 54, ise, 64, 1, 0, 60, 3240, 1000, 865, 41618, 41618, 41618
+  result is correct!
+! 54, ise, 64, 1, 0, 64, 3456, 1000, 845, 47206, 47206, 47206
+  result is correct!
+! 54, ise, 64, 1, 0, 68, 3672, 1000, 823, 53146, 53146, 53146
+  result is correct!
+! 54, ise, 64, 1, 0, 72, 3888, 1000, 804, 59438, 59438, 59438
+  result is correct!

@@ -197,7 +197,7 @@ def process_single_file(input_filepath, correlation_data_list):
             )
 
             # The output file still uses the filtered min, max, and avg
-            output_parts = header_parts + ['1000', str(stats['min_val']), str(stats['filtered_max']), str(stats['filtered_avg'])]
+            output_parts = header_parts + [str(len(stats['filtered_data'])), str(stats['min_val']), str(stats['filtered_max']), str(stats['filtered_avg'])]
             f_out.write("! " + ", ".join(output_parts) + "\n")
             f_out.write("  result is correct!\n")
 

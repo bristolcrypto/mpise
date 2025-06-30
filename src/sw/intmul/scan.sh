@@ -126,8 +126,6 @@ case ${1} in
 
 plot-fpga)
       # Parse and format all results before plotting begins
-      cd ${REPO_HOME}/data/intmul-fpga-250627 && bash process-all.sh
-      cd ${REPO_HOME}/src/sw/intmul
       # plot ISA-based results
       export TYPE="isa"
       export VERSION="simple"

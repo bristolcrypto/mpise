@@ -1,0 +1,20 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 1
+MPISE_STATELESS   := 1
+----
+ARCH              := rv64
+TYPE              := isa
+RADIX             := 62
+PLATFORM          := cva6-fpga
+VERSION           := hybrid
+<<<<
+bbl loader
+! 62, isa, 64, 1, 1, 8, 496, 1000, 987, 852, 852, 852
+  result is correct!
+! 62, isa, 64, 1, 1, 12, 744, 1000, 2, 1635, 1636, 1635
+  result is correct!
+! 62, isa, 64, 1, 1, 16, 992, 1000, 977, 2680, 2680, 2680
+  result is correct!

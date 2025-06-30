@@ -1,0 +1,48 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 0
+MPISE_STATELESS   := 0
+----
+ARCH              := rv32
+TYPE              := isa
+RADIX             := 26
+PLATFORM          := cva6-fpga
+VERSION           := hybrid
+<<<<
+bbl loader
+! 26, isa, 32, 0, 0, 8, 208, 1000, 122, 824, 824, 824
+  result is correct!
+! 26, isa, 32, 0, 0, 12, 312, 1000, 489, 1621, 1621, 1621
+  result is correct!
+! 26, isa, 32, 0, 0, 16, 416, 1000, 481, 2662, 2664, 2662
+  result is correct!
+! 26, isa, 32, 0, 0, 20, 520, 1000, 466, 3937, 3937, 3937
+  result is correct!
+! 26, isa, 32, 0, 0, 24, 624, 1000, 454, 5470, 5470, 5470
+  result is correct!
+! 26, isa, 32, 0, 0, 28, 728, 1000, 441, 7257, 7259, 7257
+  result is correct!
+! 26, isa, 32, 0, 0, 32, 832, 1000, 425, 9298, 9298, 9298
+  result is correct!
+! 26, isa, 32, 0, 0, 36, 936, 1000, 405, 11593, 11593, 11593
+  result is correct!
+! 26, isa, 32, 0, 0, 40, 1040, 1000, 380, 14142, 14144, 14142
+  result is correct!
+! 26, isa, 32, 0, 0, 44, 1144, 1000, 359, 16945, 16947, 16945
+  result is correct!
+! 26, isa, 32, 0, 0, 48, 1248, 1000, 341, 20002, 20002, 20002
+  result is correct!
+! 26, isa, 32, 0, 0, 52, 1352, 1000, 747, 23313, 23512, 23329
+  result is correct!
+! 26, isa, 32, 0, 0, 56, 1456, 1000, 711, 26878, 27180, 26899
+  result is correct!
+! 26, isa, 32, 0, 0, 60, 1560, 1000, 673, 30697, 30998, 30719
+  result is correct!
+! 26, isa, 32, 0, 0, 64, 1664, 1000, 739, 34770, 36518, 34888
+  result is correct!
+! 26, isa, 32, 0, 0, 68, 1768, 1000, 709, 39097, 41649, 39239
+  result is correct!
+! 26, isa, 32, 0, 0, 72, 1872, 1000, 675, 43678, 45676, 43835
+  result is correct!

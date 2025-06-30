@@ -103,19 +103,37 @@
   intmul-rv32_isa_32_hybrid.log   intmul-rv32_ise_32_hybrid.elf*  intmul-rv64_isa_56_simple.log   intmul-rv64_isa_64_simple.elf*  intmul-rv64_ise_57_hybrid.log
   intmul-rv32_isa_32_simple.elf*  intmul-rv32_ise_32_hybrid.log   intmul-rv64_isa_57_hybrid.elf*  intmul-rv64_isa_64_simple.log   intmul-rv64_ise_57_simple.elf*
 
-Step 5 : Plotting FPGA results
+Step 5.1 : Plotting FPGA results (pre-processed)
   Requires : pdfjam (apt install)
 
-  -- Setup python environment
-  bash$ cd ${REPO_HOME}/data/intmul-fpga-250627
-  bash$ python3 -m venv venv
-  bash$ source venv/bin/activate
-  bash$ cd ${REPO_HOME}/src/sw/intmul
-
   -- Run the following command : 
-  bash$ MPISE_DESTRUCTIVE="x" MPISE_STATELESS="y" ARCH="rv32" RISCV="$RISCV_CVA6"./scan.sh plot-fpga
-  where, x,y can take values 0 or 1.
+  bash$ MPISE_DESTRUCTIVE="x" MPISE_STATELESS="y" ARCH="z" RISCV="$RISCV_CVA6"./scan.sh plot-fpga
+  where,
+  x belongs to (0,1),
+  y belongs to (0,1),
+  z belongs to ("rv32", "rv64")
 
   This should generate four pdf images in scan/ folder for two choices of type (ise, isa) and version (simple, hybrid).
-  To get a combined image of these four images look for a file with name similar to "intmul-rv32_2x2_mpise_00.pdf".
+  To get a combined image of these four images look for a file with a name similar to "intmul-<z>_2x2_mpise_<x><y>.pdf" (e.g. intmul-rv64_2x2_mpise_10.pdf)
+
+Step 5.2 : Processing raw FPGA results and plotting them
+
+  This will take the original FPGA results, process them to remove noise. Then you can follow the steps in 5.1 to plot them.
+  Requires : pdfjam (apt install)
+
+  -- Go to directory ${REPO_HOME}/data/intmul-fpga-<date> , where <date> corresponds to a date of experiment. Check the folder to see valid values.
+  -- Create python environment and activate it :
+  bash$ python3 -m venv .venv
+  bash$ source .venv/bin/activate  
+
+  -- Run the following command : 
+  bash$ MPISE_DESTRUCTIVE="x" MPISE_STATELESS="y" ARCH="z" bash process-all.sh 
+  where,
+  x belongs to (0,1),
+  y belongs to (0,1),
+  z belongs to ("rv32", "rv64")
+
+  This will generate noise-cleaned results in "generated-logs" folder.
+
+  Follow the remaining steps in 5.1 to generate plots.
 ===============================================================================

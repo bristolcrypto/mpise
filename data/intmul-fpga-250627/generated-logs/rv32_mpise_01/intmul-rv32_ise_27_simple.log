@@ -1,0 +1,28 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 0
+MPISE_STATELESS   := 1
+----
+ARCH              := rv32
+TYPE              := ise
+RADIX             := 27
+PLATFORM          := cva6-fpga
+VERSION           := simple
+<<<<
+bbl loader
+! 27, ise, 32, 0, 1, 8, 216, 1000, 752, 1018, 1018, 1018
+  result is correct!
+! 27, ise, 32, 0, 1, 12, 324, 1000, 956, 2034, 2034, 2034
+  result is correct!
+! 27, ise, 32, 0, 1, 16, 432, 1000, 945, 3402, 3402, 3402
+  result is correct!
+! 27, ise, 32, 0, 1, 20, 540, 1000, 914, 5122, 5122, 5122
+  result is correct!
+! 27, ise, 32, 0, 1, 24, 648, 1000, 882, 7194, 7194, 7194
+  result is correct!
+! 27, ise, 32, 0, 1, 28, 756, 1000, 847, 9618, 9618, 9618
+  result is correct!
+! 27, ise, 32, 0, 1, 32, 864, 1000, 798, 12394, 12394, 12394
+  result is correct!

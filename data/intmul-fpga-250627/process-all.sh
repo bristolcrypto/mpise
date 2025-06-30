@@ -8,12 +8,16 @@ if ! [ -n "$MPISE_STATELESS" ]; then
   echo "Error : MPISE_STATELESS is not defined."
   exit
 fi
+if ! [ -n "$ARCH" ]; then
+  echo "Error : ARCH is not defined. Choices : [ \"rv32\", \"rv64\" ] "
+  exit
+fi
     
 echo "--- Processing: DESTRUCTIVE=${MPISE_DESTRUCTIVE}, STATELESS=${MPISE_STATELESS} ---"
 
 # Define paths based on the current loop variables
-SOURCE_FOLDER="original-logs/rv32_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}"
-DESTINATION_FOLDER="generated-logs/rv32_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}_generated"
+SOURCE_FOLDER="original-logs/${ARCH}_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}"
+DESTINATION_FOLDER="generated-logs/${ARCH}_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}"
 
 # Clean up old destination and create a fresh one
 rm -rf "$DESTINATION_FOLDER"

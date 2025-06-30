@@ -1,0 +1,28 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 1
+MPISE_STATELESS   := 1
+----
+ARCH              := rv64
+TYPE              := ise
+RADIX             := 59
+PLATFORM          := cva6-fpga
+VERSION           := simple
+<<<<
+bbl loader
+! 59, ise, 64, 1, 1, 8, 472, 1000, 997, 1007, 1007, 1007
+  result is correct!
+! 59, ise, 64, 1, 1, 12, 708, 1000, 992, 2019, 2019, 2019
+  result is correct!
+! 59, ise, 64, 1, 1, 16, 944, 1000, 986, 3383, 3383, 3383
+  result is correct!
+! 59, ise, 64, 1, 1, 20, 1180, 1000, 987, 5099, 5099, 5099
+  result is correct!
+! 59, ise, 64, 1, 1, 24, 1416, 1000, 977, 7167, 7167, 7167
+  result is correct!
+! 59, ise, 64, 1, 1, 28, 1652, 1000, 966, 9587, 9587, 9587
+  result is correct!
+! 59, ise, 64, 1, 1, 32, 1888, 1000, 958, 12359, 12359, 12359
+  result is correct!
