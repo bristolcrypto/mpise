@@ -110,6 +110,21 @@ case ${1} in
     ;;
 
   plot)
+      # plot ISA-based results
+      export TYPE="isa"
+      export VERSION="simple"
+      make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}.pdf
+      export VERSION="hybrid"
+      make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}.pdf
+      # plot ISE-based results
+      export TYPE="ise"
+      export VERSION="simple"
+      make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}.pdf
+      export VERSION="hybrid"
+      make --quiet --directory="${REPO_HOME}/src/sw/intmul" --file="${REPO_HOME}/src/sw/intmul/scan.mk" ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}.pdf
+    ;;
+
+plot-fpga)
       # Parse and format all results before plotting begins
       cd ${REPO_HOME}/data/intmul-fpga-250627 && bash process-all.sh
       cd ${REPO_HOME}/src/sw/intmul

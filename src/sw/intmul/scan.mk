@@ -71,7 +71,7 @@ endif
 	@echo ">>>>"                                                                                          | tee --append ${@}
 
 ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}.pdf :
-	@cat ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_*_${VERSION}.log | grep '^!' | cut -c 3- | python3 ${REPO_HOME}/src/sw/intmul/scan.py --type="${TYPE}" --xlen="${XLEN}" --output="${@}"
+	@cat ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_*_${VERSION}.log | grep '^!' | cut -c 3- | python3 ${REPO_HOME}/src/sw/intmul/scan.py --type="${TYPE}" --xlen="${XLEN}" --version="${VERSION}" --output="${@}"
 
 ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${VERSION}_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}.pdf :
 	@cat ${REPO_HOME}/data/intmul-fpga-250627/generated-logs/rv32_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}_generated/intmul-${ARCH}_${TYPE}_*_${VERSION}.log | grep '^!' | cut -c 3- | python3 ${REPO_HOME}/src/sw/intmul/scan.py --type="${TYPE}" --xlen="${XLEN}" --version="${VERSION}" --output="${@}"

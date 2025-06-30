@@ -80,4 +80,5 @@ if ( __name__ == '__main__' ) :
   plot( parse() )
 
   plt.savefig( argv.output, transparent = True, bbox_inches = 'tight', pad_inches = 0.1 )
+
 # =============================================================================

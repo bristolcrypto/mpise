@@ -9,7 +9,7 @@
 ifeq "${PLATFORM}" "spike"
 export GCC_PREFIX  = riscv64-unknown-elf
 export GCC_FLAGS  += -march='rv64imafdc_zicsr_zifencei_zicntr' -mabi='lp64d'
-export GCC_FLAGS  += -DTHRESHOLD_DEBUG
+export GCC_FLAGS  +=
 export GCC_PATHS  += 
 export GCC_LIBS   += 
 endif
