@@ -56,21 +56,41 @@ def plot( data ) :
     ax.set_ylim( 0, argv.scale_y_max )
     ax.set_yticks( yticks, labels = ylabels )
   
+  p = None ; crossover = None
+
   for ( i, radix ) in enumerate( sorted( data.keys() ) ) :
     xs     = [ x            for ( _, x, _, _, _ ) in data[ radix ] ]
     ys     = [ y            for ( _, _, _, _, y ) in data[ radix ] ]
-  
+
+    if ( radix == int( argv.xlen ) ) :
+      p = np.polynomial.Polynomial.fit( xs, ys, 10 )
+
+  if ( p == None ) :
+    print( 'did not find full-radix case: failed to make polynomial' ) ; exit( 0 )
+
+  for ( i, radix ) in enumerate( sorted( data.keys() ) ) :
+    xs     = [ x            for ( _, x, _, _, _ ) in data[ radix ] ]
+    ys     = [ y            for ( _, _, _, _, y ) in data[ radix ] ]
+
+    if ( radix != int( argv.xlen ) ) :
+      for ( x, y, p_y ) in zip( xs, ys, p( xs ) ) :
+        if ( ( y < p_y ) and ( ( crossover == None ) or ( x < crossover ) ) ) :
+          crossover = x
+
     es_min = [ abs( y - e ) for ( _, _, e, _, y ) in data[ radix ] ]
     es_max = [ abs( y - e ) for ( _, _, _, e, y ) in data[ radix ] ]
   
     es     = [ es_min, es_max ]
   
-    c = colors[ i ] ; m = '*' if ( radix == 64 ) else 'x'
+    c = colors[ i ] ; m = '*' if ( radix == int( argv.xlen ) ) else 'x'
 
     ax.plot( xs, ys, c = c, linestyle = 'dotted', marker = m, label = 'Radix-$2^{{{0:d}}}$'.format( radix ) )
 
-    if ( argv.error_bars ) :
+    if ( argv.show_error ) :
       plt.errorbar( xs, ys, yerr = es, ecolor = c, elinewidth = 1, capsize = 2, fmt = 'none' )
+
+  if ( argv.show_crossover and ( crossover != None ) ) :
+    plt.axvline( crossover, color = 'black', linestyle = '--' )
   
   ax.set( xlabel = 'Operand length (bits)', ylabel = 'Cycles', title = r'$\mbox{{type}} = \mbox{{{0:s}}}$, $\mbox{{\tt xlen}} = {1:s}$, $\mbox{{\tt version}} = {2:s}$'.format( argv.type.upper(), argv.xlen, argv.version ) )
   ax.legend( loc = 'upper left' ) ; ax.grid( True )
@@ -80,21 +100,22 @@ def plot( data ) :
 if ( __name__ == '__main__' ) :
   parser = argparse.ArgumentParser( add_help = False )
 
-  parser.add_argument( '--type',         action = 'store', choices = [ 'isa', 'ise' ] )
-  parser.add_argument( '--xlen',         action = 'store', choices = [  '32',  '64' ] )
-  parser.add_argument( '--version',      action = 'store', choices = [ 'simple', 'hybrid' ] )
+  parser.add_argument( '--type',           action = 'store', choices = [ 'isa', 'ise' ] )
+  parser.add_argument( '--xlen',           action = 'store', choices = [  '32',  '64' ] )
+  parser.add_argument( '--version',        action = 'store', choices = [ 'simple', 'hybrid' ] )
 
-  parser.add_argument( '--error-bars',   action = 'store_true' )
+  parser.add_argument( '--show-error',     action = 'store_true' )
+  parser.add_argument( '--show-crossover', action = 'store_true' )
 
-  parser.add_argument( '--scale-x-max',  action = 'store', type = int, default = None )
-  parser.add_argument( '--scale-x-step', action = 'store', type = int, default = None )
-  parser.add_argument( '--scale-y-max',  action = 'store', type = int, default = None )
-  parser.add_argument( '--scale-y-step', action = 'store', type = int, default = None )
+  parser.add_argument( '--scale-x-max',    action = 'store', type = int, default = None )
+  parser.add_argument( '--scale-x-step',   action = 'store', type = int, default = None )
+  parser.add_argument( '--scale-y-max',    action = 'store', type = int, default = None )
+  parser.add_argument( '--scale-y-step',   action = 'store', type = int, default = None )
 
-  parser.add_argument( '--output-ht',    action = 'store', type = int, default =   10 )
-  parser.add_argument( '--output-wd',    action = 'store', type = int, default =   12 )
+  parser.add_argument( '--output-ht',      action = 'store', type = int, default =   10 )
+  parser.add_argument( '--output-wd',      action = 'store', type = int, default =   12 )
 
-  parser.add_argument( '--output',       action = 'store', type = str, default = None )
+  parser.add_argument( '--output',         action = 'store', type = str, default = None )
 
   argv = parser.parse_args()
 
