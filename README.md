@@ -72,8 +72,9 @@
   into `${CVA6}`:
 
   ```sh     
-  git clone https://github.com/isa084/cva6_mpise ${REPO_HOME}/build/cva6
+  git clone https://github.com/isa084/cva6_crypto_base ${REPO_HOME}/build/cva6
   cd ${REPO_HOME}/build/cva6
+  git checkout mpise-test
   git submodule update --init --recursive  
   ```
 
