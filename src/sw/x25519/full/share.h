@@ -17,7 +17,7 @@ typedef uint64_t Word;
 #define WBYTES 8
 #define WBITS 64
 #define WPOW2 6
-#define FORMATSTR "%016llX"
+#define FORMATSTR "%016lX"
 #endif
 
 // the constant of Curve25519
