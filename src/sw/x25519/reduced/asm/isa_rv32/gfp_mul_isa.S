@@ -32,20 +32,26 @@
 // Register `bptr` holds the start address of array `b`
 #define bptr a2
 // Registers `tmp0` to `tmp1` hold intermediate results
-#define tmp0 a1
-#define tmp1 a2
+#define tmp0 s0
+#define tmp1 s1
+// Register-pair `sloh:slol` holds the lower column-sum
+#define slol a1
+#define sloh a2
+// Register-pair `shih:shil` holds the upper column-sum
+#define shil a3
+#define shih a4
 // Registers `aw00` to `aw08` hold limbs of operand `a`
-#define aw00 t0
-#define aw01 t1
-#define aw02 t2
-#define aw03 s0
-#define aw04 s1
-#define aw05 a3
-#define aw06 a4
-#define aw07 a5
-#define aw08 a6
+#define aw00 a5
+#define aw01 a6
+#define aw02 a7
+#define aw03 t0
+#define aw04 t1
+#define aw05 t2
+#define aw06 t3
+#define aw07 t4
+#define aw08 t5
 // Registers `bw00` to `bw08` hold limbs of perand `b`
-#define bw00 a7
+#define bw00 t6
 #define bw01 s2
 #define bw02 s3
 #define bw03 s4
@@ -54,15 +60,9 @@
 #define bw06 s7
 #define bw07 s8
 #define bw08 s9
-// Register-pair `sloh:slol` holds the lower column-sum
-#define slol t3
-#define sloh t4
-// Register-pair `shih:shil` holds the upper column-sum
-#define shil s10
-#define shih s11
 // Registers `mask` and `ccon` hold 0x1FFFFFFF and 64*c
-#define mask t5
-#define ccon t6
+#define mask s10
+#define ccon s11
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@
 
 // The macro `SRLI_V1` shifts the double-length operand `ahi:alo`, which is up
 // to $32 + RADIX$ bits long, RADIX bits to the right. The result has a length
-// of 32 bits and is put in register `slo`.
+// of 32 bits and is put in register `rlo`.
 // NOTE: Register `rhi` is not modified.
 
 .macro SRLI_V1 rhi:req, rlo:req, ahi:req, alo:req
@@ -123,7 +123,7 @@
 
 
 // The macro `SRLI_V2` shifts the double-length operand `ahi:alo` RADIX bits to
-// the right. The result is put in the `shi:slo` register-pair.
+// the right. The result is put in the `rhi:rlo` register-pair.
 
 .macro SRLI_V2 rhi:req, rlo:req, ahi:req, alo:req
     srli    \rlo, \alo, 29
