@@ -26,13 +26,13 @@ void test_gfp_arith(int iter)
   int i;
   
 #if DEBUG
-  char resh[2*WBYTES*NWORDS+3];
+  char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
   
   static const char op1h[] =  // 1st operand for testing
     "0x0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
   static const char op2h[] =  // 2nd operand for testing
-    "0x89ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF01234567";
+    "0x76543210FEDCBA9876543210FEDCBA9876543210FEDCBA9876543210FEDCBA98";
   
   hex_to_int(op1f, op1h, NWORDS);
   hex_to_int(op2f, op2h, NWORDS);
@@ -51,7 +51,7 @@ void test_gfp_arith(int iter)
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
   static const char mulh[] =  // expected result gfp_mul
-    "0x4B3E15103E7622EB91D299D1229FB40658671E9206C945211EFBA352EAF2D634";
+    "0x5EDAF2E6A75EA09F98466E25C3350F84D1B1E964DF0B7E6A0B1D64A3FAE1ED44";
   if (strcmp(mulh, resh) != 0) printf("  result r is wrong!!!\n");
   memset(resf, 0, WBYTES*NWORDS);
 #endif
@@ -83,7 +83,7 @@ void test_gfp_arith(int iter)
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
   static const char addh[] =  // expected result gfp_add
-    "0x0ACF13568ACF13568ACF13568ACF13568ACF13568ACF13568ACF13568ACF1369";
+    "0x7777777888888887777777788888888777777778888888877777777888888887";
   if (strcmp(addh, resh) != 0) printf("  result r is wrong!!!\n");
   memset(resf, 0, WBYTES*NWORDS);
 #endif
@@ -99,7 +99,7 @@ void test_gfp_arith(int iter)
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
   static const char subh[] =  // expected result gfp_sub
-    "0x7777777888888887777777788888888777777778888888877777777888888862";
+    "0x0ACF13568ACF13568ACF13568ACF13568ACF13568ACF13568ACF13568ACF1344";
   if (strcmp(subh, resh) != 0) printf("  result r is wrong!!!\n");
   memset(resf, 0, WBYTES*NWORDS);
 #endif
@@ -107,15 +107,15 @@ void test_gfp_arith(int iter)
   // --------------------------------------------------------------------------
   
   printf("- gfp mul32:     ");
-  LOAD_CACHE(gfp_mul32(resf, op1f, (CONSTA + 2)/4), 10);
-  MEASURE_CYCLES(gfp_mul32(resf, op1f, (CONSTA + 2)/4), iter);
+  LOAD_CACHE(gfp_mul32(resf, op1f, (CONSTA - 2)/4), 10);
+  MEASURE_CYCLES(gfp_mul32(resf, op1f, (CONSTA - 2)/4), iter);
   printf("       #cycles = %" PRIu64 "\n", diff_cycles);
   
 #if DEBUG
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
   static const char m32h[] =  // expected result gfp_mul32
-    "0x3CDF012345658EBABCDF012345658EBABCDF012345658EBABCDF01234565DCD9";
+    "0x3BBBBBBBBBB9C0CBBBBBBBBBBBB9C0CBBBBBBBBBBBB9C0CBBBBBBBBBBBBA0EEA";
   if (strcmp(m32h, resh) != 0) printf("  result r is wrong!!!\n");
   memset(resf, 0, WBYTES*NWORDS);
 #endif
