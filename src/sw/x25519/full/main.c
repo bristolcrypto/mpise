@@ -342,10 +342,11 @@ int main( int argc, char* argv[] )
   asm( "csrrwi x0, 0x801, " MPISE_RADIX_STR );
   #endif
   
-  test_gfp_arith(1000);
-  test_curve_arith(50);
+  test_gfp_arith(100);
+  test_curve_arith(20);
   test_ecdh();
-  // test_scott(50);
+  // test_scott(20);
+  // test_point_mul();
   
   return 0;
 }

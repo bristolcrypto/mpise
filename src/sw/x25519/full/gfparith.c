@@ -4,7 +4,7 @@ void gfp_inv(Word *r, const Word *a)
 {
   Word t0[NWORDS], t1[NWORDS], t2[NWORDS], t3[NWORDS];
   int i;
-
+  
   gfp_sqr(t0, a);
   gfp_sqr(t1, t0);
   gfp_sqr(t1, t1);

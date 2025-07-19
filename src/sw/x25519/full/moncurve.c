@@ -71,10 +71,35 @@ void mon_mul_varbase(Word *r, const Word *k, const Word *x)
     mon_ladder_step(&p1, &p2, x);
     s = b;
   }
-  
   mon_cswap_point(&p1, &p2, s);
   
   // projective -> affine
   gfp_inv(p2.y, p1.z);
   gfp_mul(r, p2.y, p1.x);
 }
+
+
+/*
+void test_point_mul(void)
+{
+  Word rf[NWORDS], kf[NWORDS], xf[NWORDS];
+  static const char kh[] =  // scalar k for testing
+    "0xC49A44BA44226A50185AFCC10A4C1462DD5E46824B15163B9D7C52F06BE346A5";
+  static const char xh[] =  // x-coordinate for testing
+    "0x4C1CABD0A603A9103B35B326EC2466727C5FB124A4C19435DB3030586768DBE6";
+  static const char eh[] =  // expected result
+    "0x5285A2775507B454F7711C4903CFEC324F088DF24DEA948E90C6E99D3755DAC3";
+  char rh[2*WBYTES*NWORDS+3];
+  
+  hex_to_int(kf, kh, NWORDS);
+  hex_to_int(xf, xh, NWORDS);
+  
+  mon_mul_varbase(rf, kf, xf);
+  
+  int_to_hex(rh, rf, NWORDS);
+  printf("x = %s\n", xh);
+  printf("k = %s\n", kh);
+  printf("r = %s\n", rh);
+  if (strcmp(rh, eh) != 0) printf("result is wrong!!!\n");
+}
+*/
