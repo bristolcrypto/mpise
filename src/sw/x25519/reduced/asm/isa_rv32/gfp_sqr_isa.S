@@ -206,7 +206,7 @@
 
 .macro ADD_MSW shi:req, slo:req
     add     \slo, \slo, rmsw
-    sltu    tmp0, \slo, tmp0
+    sltu    tmp0, \slo, rmsw
     add     \shi, \shi, tmp0
     and     rmsw, \slo, mask
     sw      rmsw, 32(rptr)
@@ -551,7 +551,7 @@
 // .balign 8
 gfp_sqr_isa:
     PROLOGUE            // push callee-saved registers on stack
-    INITVAR             // initalize local varianbles (`mask`, `ccon`)
+    INITVAR             // initalize local variables (`mask`, `ccon`)
     LDM_OPA             // load the eight words of array `a` from RAM
     MULCOL8             // compute limb-products for result-limb `r[8]`
     MULCOL0             // compute limb-products for result-limb `r[0]`
