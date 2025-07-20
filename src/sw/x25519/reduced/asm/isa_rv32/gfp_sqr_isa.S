@@ -6,14 +6,16 @@
 // ------------
 // The function `gfp_sqr_isa` computes the square $r = a^2 \bmod p$ of an
 // element $a$ of a pseudo-Mersenne prime field. The prime $p$ is the 255-bit
-// pseudo-Mersenne prime $p = 2^{255} - 19$. Operand $a$ is allowed to be
-// larger than $p$. The result $r$ may not be fully reduced, but $r$ is always
-// less than $2p$.
+// pseudo-Mersenne prime $p = 2^{255} - 19$, but the reduction is actually
+// performed modulo $64p$. Hence, the result can be $9*RADIX = 261$ bits long.
+// The least-significant limb of operand $a$ is allowed to be $RADIX + 1$ bits
+// long. Also the least-sigfinicant limb of the result can be $RADIX + 1$ bit
+// long, but all other limbs have a length of $RADIX$ bits.
 //
 // Parameters:
 // -----------
-// `r`: pointer to array for the nine 32-bit limbs of the result $r$.
-// `a`: pointer to array containing the nine 32-bit limbs of operand $a$.
+// `r`: pointer to array for the nine 29-bit limbs of the result $r$.
+// `a`: pointer to array containing the nine 29-bit limbs of operand $a$.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -23,6 +25,10 @@
 
 // Constant c of the pseudo-Mersenne prime: p = 2^k - c
 .equ CONSTC, 19
+// Number-representation radix for prime-field elements
+.equ RADIX, 29
+// Scaling factor for constant c ($NLIMBS*RADIX - 255$)
+.equ SCALEC, 6
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
@@ -109,8 +115,8 @@
 // NOTE: Register `rhi` is not modified.
 
 .macro SRLI_V1 rhi:req, rlo:req, ahi:req, alo:req
-    srli    \rlo, \alo, 29
-    slli    tmp0, \ahi, 3
+    srli    \rlo, \alo, RADIX
+    slli    tmp0, \ahi, (32-RADIX)
     or      \rlo, \rlo, tmp0
 .endm
 
@@ -119,10 +125,10 @@
 // the right. The result is put in the `rhi:rlo` register-pair.
 
 .macro SRLI_V2 rhi:req, rlo:req, ahi:req, alo:req
-    srli    \rlo, \alo, 29
-    slli    tmp0, \ahi, 3
+    srli    \rlo, \alo, RADIX
+    slli    tmp0, \ahi, (32-RADIX)
     or      \rlo, \rlo, tmp0
-    srli    \rhi, \ahi, 29
+    srli    \rhi, \ahi, RADIX
 .endm
 
 
@@ -219,8 +225,8 @@
 // to `r[0]` in RAM.
 
 .macro ADD_LSW shi:req, slo:req
-    srli    \slo, \slo, 29
-    slli    \shi, \shi, 3
+    srli    \slo, \slo, RADIX
+    slli    \shi, \shi, (32-RADIX)
     or      \slo, \slo, \shi
     mul     \slo, \slo, ccon
     add     rlsw, rlsw, \slo
@@ -512,8 +518,8 @@
 
 .macro INITVAR
     li      mask, -1
-    srli    mask, mask, 3
-    li      ccon, 64*CONSTC
+    srli    mask, mask, (32-RADIX)
+    li      ccon, (CONSTC << SCALEC)  // (19 << 6) = 1216
 .endm
 
 
@@ -534,15 +540,15 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////
-///////// SPEED-OPTIMIZED PRIME-FIELD MULTIPLICATION (FULLY UNROLLED) /////////
+//////////// SPEED-OPTIMIZED PRIME-FIELD SQUARING (FULLY UNROLLED) ////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 
 // This implementation of prime-field squaring is based on the product-scanning
-// method and includes a fast reduction modulo $p = 2^{255} - 19$. It is aimed
-// at high speed, which means the loops are fully unrolled. Each limb of the
-// arrays `a` is loaded from RAM exactly once, and each limb of the result-
-// array `r` is stored to RAM exactly once.
+// method and includes a reduction modulo $64p = 2^{261} - 1216$. It is aimed
+// at high speed, which means the loops are fully unrolled. Each limb of array
+// `a` is loaded from RAM exactly once, and each limb of the result-array `r`
+// is stored to RAM exactly once.
 // NOTE: The least-significant limb `r[0]` can be $RADIX + 1$ bits long.
 
 .text

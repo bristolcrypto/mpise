@@ -6,15 +6,17 @@
 // ------------
 // The function `gfp_mul_isa` computes the product $r = a \cdot b \bmod p$ of
 // two elements $a$ and $b$ of a pseudo-Mersenne prime field. The prime $p$ is
-// the 255-bit pseudo-Mersenne prime $p = 2^{255} - 19$. Operands $a$ and $b$
-// are allowed to be larger than $p$. The result $r$ may not be fully reduced,
-// but $r$ is always less than $2p$.
+// the 255-bit pseudo-Mersenne prime $p = 2^{255} - 19$, but the reduction is
+// actually performed modulo $64p$. Hence, the result can be $9*RADIX = 261$
+// bits long. The least-significant limb of operands $a$ and $b$ are allowed to
+// be $RADIX + 1$ bits long. Also the least-sigfinicant limb of the result can
+// be $RADIX + 1$ bit long, but all other limbs have a length of $RADIX$ bits.
 //
 // Parameters:
 // -----------
-// `r`: pointer to array for the nine 32-bit limbs of the result $r$.
-// `a`: pointer to array containing the nine 32-bit limbs of operand $a$.
-// `b`: pointer to array containing the nine 32-bit limbs of operand $b$.
+// `r`: pointer to array for the nine 29-bit limbs of the result $r$.
+// `a`: pointer to array containing the nine 29-bit limbs of operand $a$.
+// `b`: pointer to array containing the nine 29-bit limbs of operand $b$.
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -24,6 +26,10 @@
 
 // Constant c of the pseudo-Mersenne prime: p = 2^k - c
 .equ CONSTC, 19
+// Number-representation radix for prime-field elements
+.equ RADIX, 29
+// Scaling factor for constant c ($NLIMBS*RADIX - 255$)
+.equ SCALEC, 6
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
@@ -116,8 +122,8 @@
 // NOTE: Register `rhi` is not modified.
 
 .macro SRLI_V1 rhi:req, rlo:req, ahi:req, alo:req
-    srli    \rlo, \alo, 29
-    slli    tmp0, \ahi, 3
+    srli    \rlo, \alo, RADIX
+    slli    tmp0, \ahi, (32-RADIX)
     or      \rlo, \rlo, tmp0
 .endm
 
@@ -126,10 +132,10 @@
 // the right. The result is put in the `rhi:rlo` register-pair.
 
 .macro SRLI_V2 rhi:req, rlo:req, ahi:req, alo:req
-    srli    \rlo, \alo, 29
-    slli    tmp0, \ahi, 3
+    srli    \rlo, \alo, RADIX
+    slli    tmp0, \ahi, (32-RADIX)
     or      \rlo, \rlo, tmp0
-    srli    \rhi, \ahi, 29
+    srli    \rhi, \ahi, RADIX
 .endm
 
 
@@ -177,8 +183,8 @@
 
 .macro ADD_LSW shi:req, slo:req
     lw      tmp0, 0(rptr)
-    srli    \slo, \slo, 29
-    slli    \shi, \shi, 3
+    srli    \slo, \slo, RADIX
+    slli    \shi, \shi, (32-RADIX)
     or      \slo, \slo, \shi
     mul     \slo, \slo, ccon
     add     tmp0, tmp0, \slo
@@ -501,8 +507,8 @@
 
 .macro INITVAR
     li      mask, -1
-    srli    mask, mask, 3
-    li      ccon, 64*CONSTC
+    srli    mask, mask, (32-RADIX)
+    li      ccon, (CONSTC << SCALEC)  // (19 << 6) = 1216
 .endm
 
 
@@ -543,12 +549,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// This implementation of prime-field multiplication is based on the operand-
-// scanning method and includes a fast reduction modulo $p = 2^{255} - 19$. It
+// This implementation of prime-field multiplication is based on the product-
+// scanning method and includes a reduction modulo $64p = 2^{261} - 1216$. It
 // is aimed at high speed, which means the loops are fully unrolled. Each limb
-// of the arrays `a` and `b` is loaded from RAM exactly once, and each limb of
-// the result-array `r` is stored to RAM exactly once (except of the two limbs
-// `r[8]` and `[0]`, which are stored twice due to the lack of free registers).
+// of arrays `a` and `b` is loaded from RAM exactly once, and each limb of the
+// result-array `r` is stored to RAM exactly once (except of the limbs `r[8]`
+// and `[0]`, which are stored twice due to the lack of free registers).
 // NOTE: The least-significant limb `r[0]` can be $RADIX + 1$ bits long.
 
 .text
@@ -557,7 +563,7 @@
 // .balign 8
 gfp_mul_isa:
     PROLOGUE            // push callee-saved registers on stack
-    INITVAR             // initalize local varianbles (`mask`, `ccon`)
+    INITVAR             // initalize local variables (`mask`, `ccon`)
     LDM_OPA             // load the eight words of array `a` from RAM
     LDM_OPB             // load the eight words of array `b` from RAM
     MULCOL8             // compute limb-products for result-limb `r[8]`
