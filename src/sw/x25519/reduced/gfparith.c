@@ -54,7 +54,7 @@ void gfp_mul_opt(Limb *r, const Limb *a, const Limb *b)
   sumlo += (uint64_t) a[3]*b[5] + (uint64_t) a[4]*b[4] + (uint64_t) a[5]*b[3];
   sumlo += (uint64_t) a[6]*b[2] + (uint64_t) a[7]*b[1] + (uint64_t) a[8]*b[0];
   t[8] = ((Limb) sumlo) & LIMBMASK;
-  sumlo = (sumlo >>= LBITS)*CCON;
+  sumlo = (sumlo >> LBITS)*CCON;
   
   // limb-products yielding t[0]
   sumlo += (uint64_t) a[0]*b[0];
@@ -158,7 +158,7 @@ void gfp_sqr_opt(Limb *r, const Limb *a)
   sumx2 += (uint64_t) a[3]*a[5];
   sumlo  = 2*sumx2 + (uint64_t) a[4]*a[4];
   t[8] = ((Limb) sumlo) & LIMBMASK;
-  sumlo = (sumlo >>= LBITS)*CCON;
+  sumlo = (sumlo >> LBITS)*CCON;
   
   // limb-products yielding t[0]
   sumlo += (uint64_t) a[0]*a[0];
@@ -316,7 +316,7 @@ void gfp_mul32_opt(Limb *r, const Limb *a, const Limb b)
   
   sum = (uint64_t) a[8]*b;
   r[8] = ((Limb) sum) & LIMBMASK;
-  sum = (sum >>= LBITS)*CCON;
+  sum = (sum >> LBITS)*CCON;
   sum += (uint64_t) a[0]*b;
   r[0] = ((Limb) sum) & LIMBMASK;
   sum >>= LBITS;

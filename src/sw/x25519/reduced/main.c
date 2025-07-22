@@ -22,11 +22,12 @@
 void test_gfp_arith(int iter)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
-  Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   Limb op1r[NLIMBS], op2r[NLIMBS], resr[NLIMBS];  // reduced-radix
+  Word op1f[NWORDS], op2f[NWORDS];                // full-radix
   int i;
   
 #if DEBUG
+  Word resf[NWORDS];
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
   
