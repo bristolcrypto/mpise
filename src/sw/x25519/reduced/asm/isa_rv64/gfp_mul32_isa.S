@@ -111,9 +111,9 @@
 
 .section .text
 
-.global gfp_mul51_isa
+.global gfp_mul32_isa
 
-gfp_mul51_isa:
+gfp_mul32_isa:
   PROLOGUE
   MULTIPLY_B0
   CARRY_PROPAGATION
