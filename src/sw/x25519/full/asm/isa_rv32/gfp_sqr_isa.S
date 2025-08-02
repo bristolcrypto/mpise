@@ -228,8 +228,8 @@
 
 // The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
 // 31-bit lower part and an upper part. The lower part is put in `rlo`, while
-// the upper part is multiplied by the constant $c = 19$ and the single-word
-// product is put in `rhi`.
+// the upper part is multiplied by the constant $c$ and the single-word product
+// is put in `rhi`.
 // NOTE: the bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
 // $c = 19$, `dhi` can be up to 26 bits long.
 

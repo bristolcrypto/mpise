@@ -29,8 +29,8 @@
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
 #define aptr a1
-// Register `bptr` holds the start address of array `b`
-#define bptr a2
+// Register `bw00` holds the single word of operand `b`
+#define bw00 a2
 // Registers `tmp0` to `tmp2` hold intermediate results
 #define tmp0 a1
 #define tmp1 a2
@@ -54,8 +54,6 @@
 #define rw06 t2
 #define rw07 t3
 #define rw08 t4
-// Register `bw00` holds the single word of operand `b`
-#define bw00 t5
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -95,8 +93,8 @@
 
 // The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
 // 31-bit lower part and a 33-bit upper part. The lower part is put in `msw`,
-// while the upper part is multiplied by the constant $c = 19$ and the double-
-// length product is put in `rhi:rlo`.
+// while the upper part is multiplied by the constant $c$ and the double-length
+// product is put in `rhi:rlo`.
 
 .macro MULHIXC rhi:req, rlo:req, msw:req, ccw:req, dhi:req, dlo:req
     srli    tmp0, \dlo, 31
@@ -145,12 +143,9 @@
 // The macro `MULROW1` multiplies the 8-word operand `aw00`-`aw07` by a single
 // word (held in `bw00`) and puts the 9-word product in `p0w`-`p8w`. This macro
 // corresponds to the operation $r = a \cdot b_0$ performed by the very first
-// iteration of the outer loop of the operand-scanning method. he word $b_0$
-// of the multiplier is loaded to `bw00` via base-address `bptr` and offset 0.
+// iteration of the outer loop of the operand-scanning method.
 
 .macro MULROW1
-    // lw      bw00, 0(bptr)
-    mv      bw00, a2
     MADD_V1 rw01, rw00, aw00, bw00
     MADD_V2 rw02, rw01, aw01, bw00, rw01
     MADD_V2 rw03, rw02, aw02, bw00, rw02
@@ -211,15 +206,15 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////
-///////// SPEED-OPTIMIZED PRIME-FIELD MULTIPLICATION (FULLY UNROLLED) /////////
+//////// SPEED-OPTIMIZED MULTIPLICATION BY 32-BIT WORD (FULLY UNROLLED) ///////
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// This implementation of prime-field multiplication is based on the operand-
-// scanning method and includes a fast reduction modulo $p = 2^{255} - 19$. It
-// is aimed at high speed, which means the loops are fully unrolled. Each word
-// of the arrays `a` and `b` is loaded from RAM exactly once, and each word of
-// the result-array `r` is stored to RAM exactly once.
+// This implementation of multiplication of a field-element by a single 32-bit
+// word is based on the operand-scanning method and includes a fast reduction
+// modulo $p = 2^{255} - 19$. It is aimed at high speed, which means the loops
+// are fully unrolled. Each word of the array `a` is loaded from RAM exactly
+// once, and each word of the result-array `r` is stored to RAM exactly once.
 
 .text
 .global gfp_mul32_isa

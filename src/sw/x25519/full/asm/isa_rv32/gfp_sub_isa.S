@@ -37,7 +37,7 @@
 // Registers `sumw` and `cryw` hold sum and carry words
 #define sumw a5
 #define cryw a6
-// Register `rmsw` holds the most-significant result-word
+// Register `rmsw` holds the highest word of the result
 #define rmsw a7
 
 
@@ -50,8 +50,8 @@
 // former to an incoming carry in `cin` (which is non-negative), and subtracts
 // `b[i]` as well as the constant $4c$ from the sum. The double-length result
 // is put in the `shi:slo` register-pair. This result can be negative, whereby
-// the upper word of the result (in `shi`) is always in the range $[-2, 1]$.
-// The lower word of the result is stored in `r[i]` in RAM.
+// the upper word (in `shi`) is always in the range $[-2, 1]$. The lower word
+// of the result is stored in `r[i]` in RAM.
 // NOTE: Register `slo` has to be different from `cin`.
 
 .macro SUBW_V1 shi:req, slo:req, ccw:req, cin:req, i:req
@@ -71,10 +71,10 @@
 
 
 // The macro `SUBW_V2` loads the words `a[i]` and `b[i]` from RAM, adds the
-// former to an incoming carry in `cin` (which is signed and can be negative),
-// and subtracts `b[i]` from the sum. The double-length result is put in the
-// `shi:slo` register-pair. This result can be negative, whereby the upper word
-// of the result (in `shi`) is always in the range $[-2, 1]$. The lower word of
+// former to an incoming carry in `cin` (which is signed and can therefore be
+// negative), and subtracts `b[i]` from the sum. The double-length result is
+// put in the `shi:slo` register-pair. This result can be negative, whereby the
+// upper word (in `shi`) is always in the range $[-2, 1]$. The lower word of
 // the result is stored in `r[i]` in RAM.
 
 .macro SUBW_V2 shi:req, slo:req, cin:req, i:req
@@ -93,9 +93,8 @@
 
 // The macro `SUBW_V3` loads the words `a[i]` and `b[i]` from RAM, adds the
 // former to 0x1FFFFFFFC, and subtracts the latter from the sum. The double-
-// length result put in the `shi:slo` register-pair. This result is always
-// positive, whereby the upper word of the result (in `shi`) is in the range
-// [0, 2].
+// length result is put in the `shi:slo` register-pair. This result is always
+// positive, whereby the upper word (in `shi`) is in the range [0, 2].
 
 .macro SUBW_V3 shi:req, slo:req, i:req
     lw      tmp0, \i(aptr)
@@ -122,8 +121,8 @@
 
 // The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
 // 31-bit lower part and an upper part. The lower part is put in `rlo`, while
-// the upper part is multiplied by the constant $c = 19$ and the single-word
-// product is put in `rhi`.
+// the upper part is multiplied by the constant $c$ and the single-word product
+// is put in `rhi`.
 // NOTE: the bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
 // $c = 19$, `dhi` can be up to 26 bits long.
 
