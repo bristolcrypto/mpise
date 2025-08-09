@@ -76,6 +76,7 @@
 // `c0w` to the product. The double-length result is put in the `rhi:rlo`
 // register-pair.
 // NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+// NOTE: Register `c0w` is (generally) the same as register `rlo`.
 
 .macro MADD_V2 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req
     mul     tmp0, \aiw, \bjw

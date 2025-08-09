@@ -19,7 +19,11 @@ void gfp_inv(Word *r, const Word *a);
 
 #if   defined( MPISE_ISE )
 #define gfp_mul(r, a, b)   gfp_mul_ise((r), (a), (b))
+#if   ( MPISE_XLEN == 32 )
+#define gfp_sqr(r, a)      gfp_sqr_ise((r), (a))
+#elif ( MPISE_XLEN == 64 )
 #define gfp_sqr(r, a)      gfp_mul_ise((r), (a), (a))
+#endif
 #define gfp_add(r, a, b)   gfp_add_ise((r), (a), (b))
 #define gfp_sub(r, a, b)   gfp_sub_ise((r), (a), (b))
 #define gfp_mul32(r, a, b) gfp_mul32_ise((r), (a), (b))
