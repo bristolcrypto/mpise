@@ -29,9 +29,11 @@
 // Register `aptr` holds the start address of array `a`
 #define aptr a1
 // Registers `tmp0` to `tmp2` hold intermediate results
-#define tmp0 a1
-#define tmp1 a2
-#define tmp2 t6
+#define tmp0 a0
+#define tmp1 a1
+#define tmp2 a2
+// Register `rcon` holds the constant c = 19 of prime p
+#define rcon a1
 // Registers `aw00` to `aw07` hold words of operand `a`
 #define aw00 t0
 #define aw01 t1
@@ -199,6 +201,7 @@
 // `c0w` to the product. The double-length result is put in the `rhi:rlo`
 // register-pair.
 // NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+// NOTE: Register `c0w` is (generally) the same as register `rlo`.
 
 .macro MADD_V2 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req
     mul     tmp0, \aiw, \bjw
@@ -213,11 +216,13 @@
 // words `c0w` and `d0w` to the product. The double-length result is put in the
 // `rhi:rlo` register-pair.
 // NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+// NOTE: Register `c0w` is (generally) the same as register `rlo`, and register
+// `d0w` is (generally) the same as register `rhi`.
 
-.macro MADD_V3 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req, d0w:req
-    add     tmp0, \c0w, \d0w
+.macro MADD_V3 rhi:req, rlo:req, aiw:req, bjw:req, d0w:req, c0w:req
+    add     tmp0, \d0w, \c0w
     mulhu   \rhi, \aiw, \bjw
-    sltu    \rlo, tmp0, \d0w
+    sltu    \rlo, tmp0, \c0w
     add     \rhi, \rhi, \rlo
     mul     \rlo, \aiw, \bjw
     add     \rlo, \rlo, tmp0
@@ -363,25 +368,25 @@
 // and an upper part, which is multiplied by $c = 19$ and the obtained product
 // is added to the intermediate result `rw00`-`rw07`. The implementation below
 // merges these steps and performs the modular reduction as follows: (i) `rw15`
-// is multiplied by $2c$ and `rw07` is added to the product (macro `MADD_V3`),
+// is multiplied by $2c$ and `rw07` is added to the product (macro `MADD_V2`),
 // (ii) the obtained product is split into a 31-bit lower part and a (smaller)
 // upper part, which is multiplied by $c = 19$ (macro `MULHIXC`), (iii) the
 // obtained single-word product is taken into account when the remaining words
 // `rw08`-`rw14` are multiplied by $2c$ and added to the words `rw00`-`rw06`.
 
 .macro MODREDP
-    li      tmp1, 2*CCON   // tmp1 = 38
-    MADD_V2 tmp2, rw07, rw15, tmp1, rw07
-    srli    tmp1, tmp1, 1  // tmp1 = 19
-    MULHIXC tmp2, rw07, tmp1, tmp2, rw07
-    slli    tmp1, tmp1, 1  // tmp1 = 38
-    MADD_V3 tmp2, rw00, rw08, tmp1, tmp2, rw00
-    MADD_V3 tmp2, rw01, rw09, tmp1, tmp2, rw01
-    MADD_V3 tmp2, rw02, rw10, tmp1, tmp2, rw02
-    MADD_V3 tmp2, rw03, rw11, tmp1, tmp2, rw03
-    MADD_V3 tmp2, rw04, rw12, tmp1, tmp2, rw04
-    MADD_V3 tmp2, rw05, rw13, tmp1, tmp2, rw05
-    MADD_V3 tmp2, rw06, rw14, tmp1, tmp2, rw06
+    li      rcon, 2*CCON   // rcon = 38
+    MADD_V2 tmp2, rw07, rw15, rcon, rw07
+    srli    rcon, rcon, 1  // rcon = 19
+    MULHIXC tmp2, rw07, rcon, tmp2, rw07
+    slli    rcon, rcon, 1  // rcon = 38
+    MADD_V3 tmp2, rw00, rw08, rcon, tmp2, rw00
+    MADD_V3 tmp2, rw01, rw09, rcon, tmp2, rw01
+    MADD_V3 tmp2, rw02, rw10, rcon, tmp2, rw02
+    MADD_V3 tmp2, rw03, rw11, rcon, tmp2, rw03
+    MADD_V3 tmp2, rw04, rw12, rcon, tmp2, rw04
+    MADD_V3 tmp2, rw05, rw13, rcon, tmp2, rw05
+    MADD_V3 tmp2, rw06, rw14, rcon, tmp2, rw06
     add     rw07, rw07, tmp2 
 .endm
 
@@ -391,10 +396,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all 12 callee-saved registers on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `rptr`
+// on the stack.
 
 .macro PROLOGUE
-    addi    sp, sp, -48
+    addi    sp, sp, -52
     sw      s0, (sp)
     sw      s1, 4(sp)
     sw      s2, 8(sp)
@@ -407,10 +413,12 @@
     sw      s9, 36(sp)
     sw      s10, 40(sp)
     sw      s11, 44(sp)
+    sw      rptr, 48(sp)
 .endm
 
 
 // The macro `EPILOGUE` pops all 12 callee-saved registers from the stack.
+// NOTE: `rptr` is popped separately in macro `STM_RES`.
 
 .macro EPILOGUE
     lw      s0, (sp)
@@ -425,7 +433,7 @@
     lw      s9, 36(sp)
     lw      s10, 40(sp)
     lw      s11, 44(sp)
-    addi    sp, sp, 48
+    addi    sp, sp, 52
 .endm
 
 
@@ -444,10 +452,11 @@
 .endm
 
 
-// The macro `STM_RES` stores the eight result-words, which are in registers
-// `rw00`-`rw07`, to array `r` in RAM.
+// The macro `STM_RES` pops `rptr` from the stack and stores the eight result-
+// words, which are in registers `rw00`-`rw07`, to array `r` in RAM.
 
 .macro STM_RES
+    lw      rptr, 48(sp)
     sw      rw00, 0(rptr)
     sw      rw01, 4(rptr)
     sw      rw02, 8(rptr)
