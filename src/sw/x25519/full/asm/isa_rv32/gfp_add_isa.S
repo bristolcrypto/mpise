@@ -31,9 +31,11 @@
 #define aptr a1
 // Register `bptr` holds the start address of array `b`
 #define bptr a2
-// Registers `tmp0` and `tmp1` hold intermediate results
+// Registers `tmp0` to `tmp1` hold intermediate results
 #define tmp0 a3
 #define tmp1 a4
+// Register `rcon` holds the constant c = 19 of prime p
+#define rcon a4
 // Registers `sumw` and `cryw` hold sum and carry words
 #define sumw a5
 #define cryw a6
@@ -57,9 +59,9 @@
     add     \slo, \slo, \cin
     sltu    \shi, \slo, \cin
     add     \slo, \slo, tmp0
-    sltu    tmp0, \slo, tmp0
+    sltu    tmp1, \slo, tmp0
+    add     \shi, \shi, tmp1
     sw      \slo, \i(rptr)
-    add     \shi, \shi, tmp0
 .endm
 
 
@@ -76,7 +78,7 @@
 
 // The macro `ADDW_V3` adds the word `cin` to `sum` and stores the result in
 // `r[i]` in RAM.
-// NOTE: the bit-length of `sum` and `cin` can be up to 31.
+// NOTE: The bit-length of `sum` and `cin` can be up to 31.
 
 .macro ADDW_V3 sum:req, cin:req, i:req
     add     \sum, \sum, \cin
@@ -86,17 +88,18 @@
 
 // The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
 // 31-bit lower part and an upper part. The lower part is put in `rlo`, while
-// the upper part is multiplied by the constant $c$ and the single-word product
-// is put in `rhi`.
-// NOTE: the bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
+// the upper part is multiplied by the constant $c$ (in register `rcon`) and
+// the single-word product is put in `rhi`.
+// NOTE: The bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
 // $c = 19$, `dhi` can be up to 26 bits long.
 
-.macro MULHIXC rhi:req, rlo:req, ccw:req, dhi:req, dlo:req
+.macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
+    li      rcon, CCON  // rcon = 19
     srli    tmp0, \dlo, 31
     slli    \rhi, \dhi, 1
     add     \rhi, \rhi, tmp0
     slli    \rlo, \dlo, 1
-    mul     \rhi, \rhi, \ccw
+    mul     \rhi, \rhi, rcon
     srli    \rlo, \rlo, 1
  .endm
 
@@ -118,8 +121,7 @@
 // .balign 8
 gfp_add_isa:
     ADDW_V2 cryw, sumw, 28
-    li      tmp1, CCON  // tmp1 = 19
-    MULHIXC cryw, rmsw, tmp1, cryw, sumw
+    MULHIXC cryw, rmsw, cryw, sumw
     ADDW_V1 cryw, sumw, cryw, 0
     ADDW_V1 cryw, sumw, cryw, 4
     ADDW_V1 cryw, sumw, cryw, 8

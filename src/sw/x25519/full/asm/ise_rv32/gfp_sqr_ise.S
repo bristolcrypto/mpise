@@ -434,7 +434,7 @@
     MADD_V3 tmp2, rw04, rw12, rcon, tmp2, rw04
     MADD_V3 tmp2, rw05, rw13, rcon, tmp2, rw05
     MADD_V3 tmp2, rw06, rw14, rcon, tmp2, rw06
-    add     rw07, rw07, tmp2 
+    add     rw07, rw07, tmp2
 .endm
 
 

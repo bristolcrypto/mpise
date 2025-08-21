@@ -136,14 +136,14 @@
 // half of the square of the word `aiw`. The triple-length result is put in the
 // three registers `rex:rhi:rlo`.
 
-.macro DASQ_V1 req:req, rhi:req, rlo:req, aiw:req
+.macro DASQ_V1 rex:req, rhi:req, rlo:req, aiw:req
     mul     \rlo, \aiw, \aiw
     add     tmp0, \rhi, \rhi
-    sltu    \req, tmp0, \rhi
+    sltu    \rex, tmp0, \rhi
     mulhu   \rhi, \aiw, \aiw
     add     \rhi, \rhi, tmp0
     sltu    tmp0, \rhi, tmp0
-    add     \req, \req, tmp0
+    add     \rex, \rex, tmp0
 .endm
 
 
@@ -233,17 +233,20 @@
 
 // The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
 // 31-bit lower part and an upper part. The lower part is put in `rlo`, while
-// the upper part is multiplied by the constant $c$ and the single-word product
-// is put in `rhi`.
-// NOTE: the bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
+// the upper part is multiplied by the constant $c$ (in register `rcon`) and
+// the single-word product is put in `rhi`.
+// NOTE: The bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
 // $c = 19$, `dhi` can be up to 26 bits long.
+// NOTE: Register `rcon` contains $2c$ instead of $c$ and must, therefore, be
+// halved before the multiplication
 
-.macro MULHIXC rhi:req, rlo:req, ccw:req, dhi:req, dlo:req
+.macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
     srli    tmp0, \dlo, 31
     slli    \rhi, \dhi, 1
     add     \rhi, \rhi, tmp0
+    srli    tmp0, rcon, 1
     slli    \rlo, \dlo, 1
-    mul     \rhi, \rhi, \ccw
+    mul     \rhi, \rhi, tmp0
     srli    \rlo, \rlo, 1
  .endm
 
@@ -377,9 +380,7 @@
 .macro MODREDP
     li      rcon, 2*CCON   // rcon = 38
     MADD_V2 tmp2, rw07, rw15, rcon, rw07
-    srli    rcon, rcon, 1  // rcon = 19
-    MULHIXC tmp2, rw07, rcon, tmp2, rw07
-    slli    rcon, rcon, 1  // rcon = 38
+    MULHIXC tmp2, rw07, tmp2, rw07
     MADD_V3 tmp2, rw00, rw08, rcon, tmp2, rw00
     MADD_V3 tmp2, rw01, rw09, rcon, tmp2, rw01
     MADD_V3 tmp2, rw02, rw10, rcon, tmp2, rw02
@@ -387,7 +388,7 @@
     MADD_V3 tmp2, rw04, rw12, rcon, tmp2, rw04
     MADD_V3 tmp2, rw05, rw13, rcon, tmp2, rw05
     MADD_V3 tmp2, rw06, rw14, rcon, tmp2, rw06
-    add     rw07, rw07, tmp2 
+    add     rw07, rw07, tmp2
 .endm
 
 
