@@ -38,15 +38,17 @@
 #define tmp0 a1
 #define tmp1 a2
 #define tmp2 a3
+// Register `rcon` holds the constant c = 19 of prime p
+#define rcon a1
 // Registers `aw00` to `aw07` hold words of operand `a`
-#define aw00 a5
-#define aw01 a6
-#define aw02 a7
-#define aw03 t0
-#define aw04 t1
-#define aw05 t2
-#define aw06 t3
-#define aw07 t4
+#define aw00 a6
+#define aw01 a7
+#define aw02 t0
+#define aw03 t1
+#define aw04 t2
+#define aw05 t3
+#define aw06 t4
+#define aw07 t5
 // Registers `rw00` to `rw08` hold words of the product
 #define rw00 a4
 #define rw01 a5
@@ -82,11 +84,14 @@
 // NOTE: Register `c0w` is (generally) the same as register `rlo`.
 
 .macro MADD_V2 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req
-    mul     tmp0, \aiw, \bjw
-    mulhu   \rhi, \aiw, \bjw
-    add     \rlo, \c0w, tmp0
-    sltu    tmp0, \rlo, tmp0
-    add     \rhi, \rhi, tmp0
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    maddhu  \rhi, \aiw, \bjw, \c0w
+    maddlu  \rlo, \aiw, \bjw, \c0w
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      \rhi, \c0w
+    maddhu  \rhi, \aiw, \bjw
+    maddlu  \rlo, \aiw, \bjw
+#endif
 .endm
 
 
@@ -97,34 +102,43 @@
 
 // The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
 // 31-bit lower part and a 33-bit upper part. The lower part is put in `msw`,
-// while the upper part is multiplied by the constant $c$ and the double-length
-// product is put in `rhi:rlo`.
+// while the upper part is multiplied by the constant $c$ (in register `rcon`)
+// and the double-length product is put in `rhi:rlo`.
+// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+// NOTE: Register `msw` is (generally) the same as register `dlo`.
 
-.macro MULHIXC rhi:req, rlo:req, msw:req, ccw:req, dhi:req, dlo:req
-    srli    tmp0, \dlo, 31
-    sub     tmp0, zero, tmp0
-    and     tmp0, tmp0, \ccw
-    slli    \ccw, \ccw, 1
+.macro MULHIXC rhi:req, rlo:req, msw:req, dhi:req, dlo:req
+    li      rcon, CCON  // rcon = 19
+    srli    \rlo, \dlo, 31
+    sub     \rlo, zero, \rlo
+    and     \rlo, \rlo, rcon
+    slli    rcon, rcon, 1
     slli    \msw, \dlo, 1
-    mulhu   \rhi, \dhi, \ccw
-    mul     \rlo, \dhi, \ccw
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    maddhu  \rhi, \dhi, rcon, \rlo
+    maddlu  \rlo, \dhi, rcon, \rlo
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      \rhi, \rlo
+    maddhu  \rhi, \dhi, rcon
+    maddlu  \rlo, \dhi, rcon
+#endif
     srli    \msw, \msw, 1
-    add     \rlo, \rlo, tmp0
-    sltu    tmp0, \rlo, tmp0
-    add     \rhi, \rhi, tmp0
 .endm
 
 
 // The macro `ADDWORD` adds the double-length word `dhi:dlo` to the 8-word
 // operand `rw00`-`rw07`.
-// NOTE: the bit-length of `dhi` can be up to 31.
+// NOTE: The bit-length of `dhi` can be up to 31.
 
 .macro ADDWORD dhi:req, dlo:req
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    cacc    \dhi, rw00, \dlo, \dhi
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    cacc    \dhi, rw00, \dlo
+#endif
     add     rw00, rw00, \dlo
-    sltu    tmp0, rw00, \dlo
-    add     tmp0, tmp0, \dhi  // no carry !!!
-    add     rw01, rw01, tmp0
-    sltu    tmp0, rw01, tmp0
+    add     rw01, rw01, \dhi
+    sltu    tmp0, rw01, \dhi
     add     rw02, rw02, tmp0
     sltu    tmp0, rw02, tmp0
     add     rw03, rw03, tmp0
@@ -168,8 +182,7 @@
 // length product is added to the eight words `rw00`-`rw07` (macro `ADDWORD`).
 
 .macro MODREDP
-    li      bw00, CCON  // bw00 = 19
-    MULHIXC tmp2, tmp1, rw07, bw00, rw08, rw07
+    MULHIXC tmp2, tmp1, rw07, rw08, rw07
     ADDWORD tmp2, tmp1
 .endm
 

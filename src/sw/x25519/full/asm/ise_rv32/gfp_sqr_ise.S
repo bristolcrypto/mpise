@@ -109,15 +109,13 @@
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
     maddhu  tmp0, \aiw, \bjw, \rlo
     maddlu  \rlo, \aiw, \bjw, \rlo
-    add     \rhi, \rhi, tmp0
-    sltu    \rex, \rhi, tmp0
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
     mv      tmp0, \rlo
     maddhu  tmp0, \aiw, \bjw
     maddlu  \rlo, \aiw, \bjw
+#endif
     add     \rhi, \rhi, tmp0
     sltu    \rex, \rhi, tmp0
-#endif
 .endm
 
 
@@ -131,14 +129,13 @@
     maddhu  tmp0, \aiw, \bjw, \rlo
     maddlu  \rlo, \aiw, \bjw, \rlo
     cacc    \rex, \rhi, tmp0, \rex
-    add     \rhi, \rhi, tmp0
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
     mv      tmp0, \rlo
     maddhu  tmp0, \aiw, \bjw
     maddlu  \rlo, \aiw, \bjw
     cacc    \rex, \rhi, tmp0
-    add     \rhi, \rhi, tmp0
 #endif
+    add     \rhi, \rhi, tmp0
 .endm
 
 
@@ -152,21 +149,16 @@
 // three registers `rex:rhi:rlo`.
 
 .macro DASQ_V1 rex:req, rhi:req, rlo:req, aiw:req
+    mul     \rlo, \aiw, \aiw
+    add     tmp0, \rhi, \rhi
+    sltu    \rex, tmp0, \rhi
+    mulhu   \rhi, \aiw, \aiw
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
-    add     tmp0, \rhi, \rhi
-    sltu    \rex, tmp0, \rhi
-    mulhu   \rhi, \aiw, \aiw
-    mul     \rlo, \aiw, \aiw
     cacc    \rex, \rhi, tmp0, \rex
-    add     \rhi, \rhi, tmp0
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
-    mul     \rlo, \aiw, \aiw
-    add     tmp0, \rhi, \rhi
-    sltu    \rex, tmp0, \rhi
-    mulhu   \rhi, \aiw, \aiw
     cacc    \rex, \rhi, tmp0
-    add     \rhi, \rhi, tmp0
 #endif
+    add     \rhi, \rhi, tmp0
 .endm
 
 
@@ -175,9 +167,9 @@
 // The triple-length result is put in the three registers `rex:rhi:rlo`.
 
 .macro DASQ_V2 rex:req, rhi:req, rlo:req, aiw:req, ciw:req
-#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
     srli    tmp0, \rlo, 31
     slli    \rlo, \rlo, 1
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
     maddhu  tmp2, \aiw, \aiw, \rlo
     maddlu  \rlo, \aiw, \aiw, \rlo
     cacc    tmp0, \rlo, \ciw, tmp0
@@ -187,10 +179,7 @@
     cacc    \rex, \rhi, tmp0, \rex
     add     \rhi, \rhi, tmp0
     cacc    \rex, \rhi, tmp2, \rex
-    add     \rhi, \rhi, tmp2
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
-    srli    tmp0, \rlo, 31
-    slli    \rlo, \rlo, 1
     mv      tmp2, \rlo
     maddhu  tmp2, \aiw, \aiw
     maddlu  \rlo, \aiw, \aiw
@@ -201,8 +190,8 @@
     cacc    \rex, \rhi, tmp0
     add     \rhi, \rhi, tmp0
     cacc    \rex, \rhi, tmp2
-    add     \rhi, \rhi, tmp2
 #endif
+    add     \rhi, \rhi, tmp2
 .endm
 
 
@@ -211,24 +200,21 @@
 // at most 64 bit long, is put in the `rhi`:`rlo` register-pair.
 
 .macro DASQ_V3 rhi:req, rlo:req, aiw:req, ciw:req
-#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
     srli    tmp0, \rlo, 31
     slli    \rlo, \rlo, 1
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
     maddhu  \rhi, \aiw, \aiw, \rlo
     maddlu  \rlo, \aiw, \aiw, \rlo
     add     \rhi, \rhi, tmp0
     cacc    \rhi, \rlo, \ciw, \rhi
-    add     \rlo, \rlo, \ciw
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
-    srli    tmp0, \rlo, 31
-    slli    \rlo, \rlo, 1
     mv      \rhi, \rlo
     maddhu  \rhi, \aiw, \aiw
     maddlu  \rlo, \aiw, \aiw
     add     \rhi, \rhi, tmp0
     cacc    \rhi, \rlo, \ciw
-    add     \rlo, \rlo, \ciw
 #endif
+    add     \rlo, \rlo, \ciw
 .endm
 
 
@@ -267,30 +253,32 @@
     maddlu  tmp0, \aiw, \bjw, \d0w
     maddhu  \rhi, \aiw, \bjw, \d0w
     cacc    \rhi, \c0w, tmp0, \rhi
-    add     \rlo, \c0w, tmp0
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
     mv      tmp0, \d0w
     maddlu  tmp0, \aiw, \bjw
     maddhu  \rhi, \aiw, \bjw
     cacc    \rhi, \c0w, tmp0
-    add     \rlo, \c0w, tmp0
 #endif
+    add     \rlo, \c0w, tmp0
 .endm
 
 
 // The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
 // 31-bit lower part and an upper part. The lower part is put in `rlo`, while
-// the upper part is multiplied by the constant $c$ and the single-word product
-// is put in `rhi`.
-// NOTE: the bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
+// the upper part is multiplied by the constant $c$ (in register `rcon`) and
+// the single-word product is put in `rhi`.
+// NOTE: The bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
 // $c = 19$, `dhi` can be up to 26 bits long.
+// NOTE: Register `rcon` contains $2c$ instead of $c$ and must, therefore, be
+// halved before the multiplication
 
-.macro MULHIXC rhi:req, rlo:req, ccw:req, dhi:req, dlo:req
+.macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
     srli    tmp0, \dlo, 31
     slli    \rhi, \dhi, 1
     add     \rhi, \rhi, tmp0
+    srli    tmp0, rcon, 1
     slli    \rlo, \dlo, 1
-    mul     \rhi, \rhi, \ccw
+    mul     \rhi, \rhi, tmp0
     srli    \rlo, \rlo, 1
  .endm
 
@@ -424,9 +412,7 @@
 .macro MODREDP
     li      rcon, 2*CCON   // rcon = 38
     MADD_V2 tmp2, rw07, rw15, rcon, rw07
-    srli    rcon, rcon, 1  // rcon = 19
-    MULHIXC tmp2, rw07, rcon, tmp2, rw07
-    slli    rcon, rcon, 1  // rcon = 38
+    MULHIXC tmp2, rw07, tmp2, rw07
     MADD_V3 tmp2, rw00, rw08, rcon, tmp2, rw00
     MADD_V3 tmp2, rw01, rw09, rcon, tmp2, rw01
     MADD_V3 tmp2, rw02, rw10, rcon, tmp2, rw02
