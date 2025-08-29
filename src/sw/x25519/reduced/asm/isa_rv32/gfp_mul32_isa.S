@@ -36,7 +36,7 @@
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
 #define aptr a1
-// Registers `almb` and `blmp` hold 2 limbs of operands
+// Registers `almb` and `blmb` hold 2 limbs of operands
 #define blmb a2
 #define almb a3
 // Registers `tmp0` to `tmp1` hold intermediate results
@@ -51,9 +51,9 @@
 // Registers `rmsl` and `rlsl` hold limbs of the result
 #define rmsl t0
 #define rlsl t1
-// Registers `mask` and `ccon` hold 0x1FFFFFFF and 64*c
+// Registers `mask` and `rcon` hold 0x1FFFFFFF and 64*c
 #define mask t2
-#define ccon t3
+#define rcon t3
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,13 +64,13 @@
 // The macro `MULL_V1` loads the limb `a[i]` from RAM, multiplies it by `blmb`,
 // and puts the product in the `shi:slo` register-pair. The lower word of the
 // product is also copied to `rmsl` and the bit-mask in `mask` applied to it.
-// Futhermore, `ccon` is initialized with the constant $64c = 1216$. Then, the
+// Futhermore, `rcon` is initialized with the constant $64c = 1216$. Then, the
 // `shi:slo` register-pair is shifted RADIX bits to the right, multiplied by
-// the constant $64c$ in `ccon`, and the single-length product is put in `slo`.
+// the constant $64c$ in `rcon`, and the single-length product is put in `slo`.
 
 .macro MULL_V1 shi:req, slo:req, i:req
     lw      almb, \i(aptr)
-    li      ccon,  (CONSTC << SCALEC)  // (19 << 6) = 1216
+    li      rcon,  (CONSTC << SCALEC)  // (19 << 6) = 1216
     mul     rmsl, almb, blmb
     mulhu   \shi, almb, blmb
     srli    tmp0, rmsl, RADIX
@@ -80,7 +80,7 @@
 .endm
 
 
-// The macro `MULL_V2` first multiplies `slo` by the constant $64c$ in `ccon`
+// The macro `MULL_V2` first multiplies `slo` by the constant $64c$ in `rcon`
 // and puts the single-length product in `slo`. Then, it loads the limb `a[i]`
 // from RAM, multiplies it by `blmb`, adds `slo` the double-length product, and
 // puts the result in the `shi:slo` register-pair. The lower word of the sum is
@@ -92,7 +92,7 @@
 
 .macro MULL_V2 shi:req, slo:req, i:req
     lw      almb, \i(aptr)
-    mul     \slo, \slo, ccon
+    mul     \slo, \slo, rcon
     mul     tmp0, almb, blmb
     mulhu   \shi, almb, blmb
     add     \slo, \slo, tmp0
@@ -133,7 +133,7 @@
 // is put in `slo`. Then, it adds `slo` to `rmsl`, applies the bit-mask in
 // `mask` to the sum, and stores the result to `r[i1]` in RAM. Thereafter,
 // `slo` is shifted RADIX bits to the right, multiplied by the constant $64c$
-// in `ccon`, and the single-word product is put in `slo`. Finally `rlsl` is
+// in `rcon`, and the single-word product is put in `slo`. Finally `rlsl` is
 // added to `slo` and the sum is stored to `r[i0]` in RAM.
 // NOTE: The result-limb `r[i0]` can be $RADIX + 1$ bits long.
 
@@ -143,7 +143,7 @@
     and     rmsl, \slo, mask
     sw      rmsl, \i1(rptr)
     srli    \slo, \slo, RADIX
-    mul     \slo, \slo, ccon
+    mul     \slo, \slo, rcon
     add     \slo, \slo, rlsl
     sw      \slo, \i0(rptr)
 .endm

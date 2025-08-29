@@ -59,9 +59,9 @@
 // Registers `rlsw` and `rmsw` hold words of the result
 #define rlsw s3
 #define rmsw s4
-// Registers `mask` and `ccon` hold 0x1FFFFFFF and 64*c
+// Registers `mask` and `rcon` hold 0x1FFFFFFF and 64*c
 #define mask s5
-#define ccon s6
+#define rcon s6
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -195,13 +195,13 @@
 
 
 // The macro `MUL_CON` multiplies the double-length operand `ahi:alo` by the
-// constant $64c$ in `ccon` and puts the double-length product in the `rhi:rlo`
+// constant $64c$ in `rcon` and puts the double-length product in the `rhi:rlo`
 // register-pair.
 
 .macro MUL_CON rhi:req, rlo:req, ahi:req, alo:req
-    mul    tmp0, \ahi, ccon
-    mulhu  \rhi, \alo, ccon
-    mul    \rlo, \alo, ccon
+    mul    tmp0, \ahi, rcon
+    mulhu  \rhi, \alo, rcon
+    mul    \rlo, \alo, rcon
     add    \rhi, \rhi, tmp0
 .endm
 
@@ -221,14 +221,14 @@
 
 // The macro `ADD_LSW` shifts the double-length sum `shi:slo` RADIX bits to the
 // right and multiplies the lower word of the result by the constant $64c$ in
-// `ccon`. Then, it adds the word `rlsw` to the product. The result is stored
+// `rcon`. Then, it adds the word `rlsw` to the product. The result is stored
 // to `r[0]` in RAM.
 
 .macro ADD_LSW shi:req, slo:req
     srli    \slo, \slo, RADIX
     slli    \shi, \shi, (32-RADIX)
     or      \slo, \slo, \shi
-    mul     \slo, \slo, ccon
+    mul     \slo, \slo, rcon
     add     rlsw, rlsw, \slo
     sw      rlsw, 0(rptr)
 .endm
@@ -278,7 +278,7 @@
     MACC_V3 dblh, dbll, aw04, aw05
     SLLI_1B shih, shil, dblh, dbll
     and     tmp1, shil, mask
-    MACC_V3 sloh, slol, ccon, tmp1
+    MACC_V3 sloh, slol, rcon, tmp1
     CP_LIMB slol, rlsw
     SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
@@ -304,7 +304,7 @@
     DADD_V1 shih, shil, dblh, dbll
     MACC_V3 shih, shil, aw05, aw05
     and     tmp1, shil, mask
-    MACC_V3 sloh, slol, ccon, tmp1
+    MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 4
     SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
@@ -330,7 +330,7 @@
     MACC_V3 dblh, dbll, aw05, aw06
     DADD_V1 shih, shil, dblh, dbll
     and     tmp1, shil, mask
-    MACC_V3 sloh, slol, ccon, tmp1
+    MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 8
     SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
@@ -356,7 +356,7 @@
     DADD_V1 shih, shil, dblh, dbll
     MACC_V3 shih, shil, aw06, aw06
     and     tmp1, shil, mask
-    MACC_V3 sloh, slol, ccon, tmp1
+    MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 12
     SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
@@ -382,7 +382,7 @@
     MACC_V3 dblh, dbll, aw06, aw07
     DADD_V1 shih, shil, dblh, dbll
     and     tmp1, shil, mask
-    MACC_V3 sloh, slol, ccon, tmp1
+    MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 16
     SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
@@ -408,7 +408,7 @@
     DADD_V1 shih, shil, dblh, dbll
     MACC_V3 shih, shil, aw07, aw07
     and     tmp1, shil, mask
-    MACC_V3 sloh, slol, ccon, tmp1
+    MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 20
     SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
@@ -434,7 +434,7 @@
     MACC_V1 dblh, dbll, aw07, aw08
     DADD_V1 shih, shil, dblh, dbll
     and     tmp1, shil, mask
-    MACC_V3 sloh, slol, ccon, tmp1
+    MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 24
     SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
@@ -459,7 +459,7 @@
     DADD_V1 sloh, slol, dblh, dbll
     MACC_V2 shih, shil, aw08, aw08
     and     tmp1, shil, mask
-    MACC_V3 sloh, slol, ccon, tmp1
+    MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 28
     SRLI_V1 shih, shil, shih, shil
     SRLI_V2 sloh, slol, sloh, slol
@@ -475,7 +475,7 @@
 // product is added to `r[0]` (macro `ADD_LSW`).
 
 .macro FINREDP
-    MACC_V3 sloh, slol, shil, ccon
+    MACC_V3 sloh, slol, shil, rcon
     ADD_MSW sloh, slol
     ADD_LSW sloh, slol
 .endm
@@ -514,12 +514,12 @@
 .endm
 
 
-// The macro `INITVAR` initializes local variables (`mask` and `ccon`).
+// The macro `INITVAR` initializes local variables (`mask` and `rcon`).
 
 .macro INITVAR
     li      mask, -1
     srli    mask, mask, (32-RADIX)
-    li      ccon, (CONSTC << SCALEC)  // (19 << 6) = 1216
+    li      rcon, (CONSTC << SCALEC)  // (19 << 6) = 1216
 .endm
 
 
@@ -557,7 +557,7 @@
 // .balign 8
 gfp_sqr_isa:
     PROLOGUE            // push callee-saved registers on stack
-    INITVAR             // initalize local variables (`mask`, `ccon`)
+    INITVAR             // initalize local variables (`mask`, `rcon`)
     LDM_OPA             // load the eight words of array `a` from RAM
     MULCOL8             // compute limb-products for result-limb `r[8]`
     MULCOL0             // compute limb-products for result-limb `r[0]`

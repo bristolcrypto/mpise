@@ -40,12 +40,12 @@
 // Registers `lsum` and `rlsl` hold limbs of the result
 #define lsum a3
 #define rlsl a4
-// Registers `almb` and `blmp` hold 2 limbs of operands
+// Registers `almb` and `blmb` hold 2 limbs of operands
 #define almb a5
 #define blmb a6
-// Registers `mask` and `ccon` hold 0x1FFFFFFF and 64*c
+// Registers `mask` and `rcon` hold 0x1FFFFFFF and 64*c
 #define mask a7
-#define ccon t0
+#define rcon t0
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,13 +55,13 @@
 
 // The macro `ADDL_V1` loads the limbs `a[i]` and `b[i]` from RAM, adds them
 // together, and puts the sum in `sum`. Then, it applies the bit-mask in `mask`
-// to the sum and puts the result in `rlsl`. Futhermore, `ccon` is initialized
+// to the sum and puts the result in `rlsl`. Futhermore, `rcon` is initialized
 // with the constant $64c = 1216$.
 
 .macro ADDL_V1 sum:req, i:req
     lw      almb, \i(aptr)
     lw      blmb, \i(bptr)
-    li      ccon, (CONSTC << SCALEC)  // (19 << 6) = 1216
+    li      rcon, (CONSTC << SCALEC)  // (19 << 6) = 1216
     add     \sum, almb, blmb
     and     rlsl, \sum, mask
 .endm
@@ -85,7 +85,7 @@
 
 
 // The macro `MODREDP` shifts the previous sum in `sum` RADIX bits to the
-// right, multiplies it by the constant $64c$ in `ccon` and adds the least-
+// right, multiplies it by the constant $64c$ in `rcon` and adds the least-
 // significant result-limb in `rlsl` to the product. Then, it applies the bit- 
 // mask in `mask` to the sum and stores the result to `r[i]` in RAM. The actual
 // address is the sum of the offset in `ofs` and the base address in `rptr`
@@ -94,7 +94,7 @@
 
 .macro MODREDP sum:req, i:req
     srai    \sum, \sum, RADIX
-    mul     \sum, \sum, ccon
+    mul     \sum, \sum, rcon
     add     rlsl, rlsl, \sum
     sw      rlsl, \i(rptr)
 .endm
