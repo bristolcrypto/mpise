@@ -77,7 +77,7 @@ ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf : $${SOURCES}
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.bin : ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
 	${RISCV}/bin/${GCC_PREFIX}-objcopy --output-target='binary' ${<} ${@}
 ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.asm : ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
-	${RISCV}/bin/${GCC_PREFIX}-objdump --disassemble-all ${<} > ${@}
+	${RISCV}/bin/${GCC_PREFIX}-objdump --syms --disassemble-all ${<} > ${@}
 
 # -----------------------------------------------------------------------------
 
