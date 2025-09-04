@@ -130,6 +130,15 @@
 .endm
 
 
+.macro TO_LIMB rex:req, rhi:req, rlo:req, ahi:req, alo:req
+    srli    \rex, \ahi, RADIX
+    and     \rhi, \ahi, mask
+    srli    tmp1, \alo, RADIX
+    and     \rlo, \alo, mask
+    add     \rhi, \rhi, tmp1
+.endm
+
+
 // The macro `SRLI_V1` shifts the double-length operand `ahi:alo`, which is up
 // to $32 + RADIX$ bits long, RADIX bits to the right. The result has a length
 // of 32 bits and is put in register `rlo`.
@@ -154,13 +163,26 @@
 .endm
 
 
+// The macro `SRLI_V2` shifts the triple-length operand `aex:ahi:alo`, which is
+// up to $2*RADIX+7$ bits long, RADIX bits to the right. The result is put in
+// the `rhi:rlo` register-pair.
+
+.macro SRLI_V3 rhi:req, rlo:req, aex:req, ahi:req, alo:req
+    srli    \rlo, \alo, RADIX
+    add     \rlo, \rlo, \ahi
+    srli    \rhi, \rlo, RADIX
+    and     \rlo, \rlo, mask
+    add     \rhi, \rhi, \aex
+.endm
+
+
 // The macro `ST_LIMB` applies the bit-mask in `mask` to word `lmb` and stores
 // the result to `r[i]` in RAM. The actual address is the sum of the offset in
 // `ofs` and the base address in `rptr` (i.e., $ofs = 4i$).
 
 .macro ST_LIMB lmb:req, ofs:req
-    and     tmp0, \lmb, mask
-    sw      tmp0, \ofs(rptr)
+    and     tmp1, \lmb, mask
+    sw      tmp1, \ofs(rptr)
 .endm
 
 
@@ -231,10 +253,11 @@
     MACC_V3 sloh, slol, aw04, bw04
     MACC_V3 sloh, slol, aw05, bw03
     MACC_V3 sloh, slol, aw06, bw02
+    TO_LIMB tmp0, sloh, slol, sloh, slol
     MACC_V3 sloh, slol, aw07, bw01
     MACC_V3 sloh, slol, aw08, bw00
     ST_LIMB slol, 32
-    SRLI_V2 sloh, slol, sloh, slol
+    SRLI_V3 sloh, slol, tmp0, sloh, slol
     MUL_CON sloh, slol, sloh, slol
 .endm
 
@@ -248,6 +271,9 @@
 // $64c$ and the product is accumulated into the "lower" column-sum. The limb
 // in the lower word `slol` of the "lower" column-sum is stored to `r[0]` in
 // RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// NOTE: Both `shih` and `shil` can be at most $RADIX+3$ bits long since `aw00`
+// `bw00` (which can exceed RADIX by 1 bit) are not operands of the eight MACC
+// operations that produce `shih` and `shil`.
 
 .macro MULCOL0
     MACC_V3 sloh, slol, aw00, bw00
@@ -425,13 +451,14 @@
     MACC_V3 sloh, slol, aw04, bw02
     MACC_V3 sloh, slol, aw05, bw01
     MACC_V3 sloh, slol, aw06, bw00
+    TO_LIMB tmp0, sloh, slol, sloh, slol
     MACC_V3 shih, shil, aw07, bw08
     MACC_V3 shih, shil, aw08, bw07
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 24
+    SRLI_V3 sloh, slol, tmp0, sloh, slol
     SRLI_V1 shih, shil, shih, shil
-    SRLI_V1 sloh, slol, sloh, slol
 .endm
 
 
@@ -453,13 +480,14 @@
     MACC_V3 sloh, slol, aw04, bw03
     MACC_V3 sloh, slol, aw05, bw02
     MACC_V3 sloh, slol, aw06, bw01
+    TO_LIMB tmp0, sloh, slol, sloh, slol
     MACC_V3 sloh, slol, aw07, bw00
     MACC_V3 shih, shil, aw08, bw08
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 28
+    SRLI_V3 sloh, slol, tmp0, sloh, slol
     SRLI_V1 shih, shil, shih, shil
-    SRLI_V2 sloh, slol, sloh, slol
 .endm
 
 

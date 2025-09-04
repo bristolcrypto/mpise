@@ -147,56 +147,68 @@
 .endm
 
 
-// The macro `SLLI_1B` shifts the double-length operand `ahi:alo` one bit to
-// the left (i.e., doubles the operand). The result is put in the `rhi:rlo` 
-// register-pair.
+.macro SRLI_V3 rhi:req, rlo:req, aex:req, ahi:req, alo:req
+    srli    \rlo, \alo, RADIX
+    add     \rlo, \rlo, \ahi
+    srli    \rhi, \rlo, RADIX
+    and     \rlo, \rlo, mask
+    add     \rhi, \rhi, \aex
+.endm
 
-.macro SLLI_1B rhi:req, rlo:req, ahi:req, alo:req
+
+// The macro `DADD_V1` shifts `ahi` and `alo` 1 bit to the left (i.e., doubles
+// them) and adds the shifted operands to `rhi` and `rlo`, respectively.
+// NOTE: This macro does not include any carry propagation from `rlo` to `rhi`.
+
+.macro DADD_V1 rhi:req, rlo:req, ahi:req, alo:req
     slli    \rhi, \ahi, 1
     slli    \rlo, \alo, 1
 .endm
 
 
-// The macro `DADD_V1` shifts the double-length operand `ahi:alo` one bit to
-// the left (i.e., doubles the operand) and adds the shifted operand to the
-// double-length accumulator in `rhi:rlo`, whereby the initial value of the
-// accumulator is only 32 bits long (i.e., `rhi` is 0).
+// The macro `DADD_V2` shifts `ahi` and `alo` 1 bit to the left (i.e., doubles
+// them) and adds the shifted operands to `rhi` and `rlo`, respectively.
+// NOTE: This macro does not include any carry propagation from `rlo` to `rhi`.
 
-.macro DADD_V1 rhi:req, rlo:req, ahi:req, alo:req
-    slli    tmp0, \alo, 1
-    add     \rlo, \rlo, tmp0
-    slli    tmp0, \ahi, 1
-    add     \rhi, \rhi, tmp0
+.macro DADD_V2 rhi:req, rlo:req, ahi:req, alo:req
+    slli    \alo, \alo, 1
+    add     \rlo, \rlo, \alo
+    slli    \ahi, \ahi, 1
+    add     \rhi, \rhi, \ahi
 .endm
 
 
-// The macro `DADD_V2` shifts the double-length operand `ahi:alo` one bit to
-// the left (i.e., doubles the operand) and adds the shifted operand to the
-// double-length accumulator in `rhi:rlo`.
+// NOTE: `alo` can be up to 31 bits long, `ahi` up to 32 bits.
 
-.macro DADD_V2 rhi:req, rlo:req, ahi:req, alo:req
-    slli    tmp0, \alo, 1
-    add     \rlo, \rlo, tmp0
-    slli    tmp0, \ahi, 1
-    add     \rhi, \rhi, tmp0
+.macro DADD_V3 rex:req, rhi:req, rlo:req, ahi:req, alo:req
+    srli    \rex, \alo, RADIX
+    add     \ahi, \ahi, \rex
+    and     \alo, \alo, mask
+    srli    \rex, \ahi, RADIX
+    and     \ahi, \ahi, mask
+    slli    \alo, \alo, 1
+    add     \rlo, \rlo, \alo
+    slli    \ahi, \ahi, 1
+    add     \rhi, \rhi, \ahi
+    slli    \rex, \rex, 1
 .endm
 
 
 // The macro `ST_LIMB` applies the bit-mask in `mask` to word `lmb` and stores
-// the result to `r[i]` in RAM. The actual address is the sum of the offset in
-// `ofs` and the base address in `rptr` (i.e., $ofs = 4i$).
+// the result to `r[i]` in RAM if $1 \leq i < 8$. The actual address is the sum
+// of the offset in `ofs` and the base address in `rptr` (i.e., $ofs = 4i$).
+// When $i = 0$ or $I = 8$, the limb is stored in a register (either `rlsw` or
+// `rmsw`) instead of RAM.
 
 .macro ST_LIMB lmb:req, ofs:req
-    and     tmp0, \lmb, mask
-    sw      tmp0, \ofs(rptr)
-.endm
-
-
-// The macro `CP_LIMB` applies the bit-mask in `mask` to word `lmb` and writes
-// the result to register `dst`.
-
-.macro CP_LIMB lmb:req, dst:req
-    and     \dst, \lmb, mask
+    .if (\ofs == 0) 
+    and     rlsw, \lmb, mask
+    .elseif (\ofs == 32)
+    and     rmsw, \lmb, mask
+    .else   // 4 <= ofs < 28
+    and     tmp1, \lmb, mask
+    sw      tmp1, \ofs(rptr)
+    .endif
 .endm
 
 
@@ -255,6 +267,8 @@
 // in RAM and the column-sum is shifted RADIX bits to the right. Finally, the
 // shifted column-sum is multiplied by the constant $64c$ and the product is
 // put in the `sloh:slol` register-pair.
+// NOTE: `dbll` can get up to $RADIX+2$ bits long, but `dblh` can have a length
+// of $RADIX+3$ bits since `aw00` can exceed RADIX bits.
 
 .macro MULCOL8
     MACC_V1 dblh, dbll, aw00, aw08
@@ -262,9 +276,9 @@
     MACC_V3 dblh, dbll, aw02, aw06
     MACC_V3 dblh, dbll, aw03, aw05
     MACC_V1 sloh, slol, aw04, aw04
-    DADD_V2 sloh, slol, dblh, dbll
-    CP_LIMB slol, rmsw
-    SRLI_V2 sloh, slol, sloh, slol
+    DADD_V3 tmp0, sloh, slol, dblh, dbll
+    ST_LIMB slol, 32
+    SRLI_V3 sloh, slol, tmp0, sloh, slol
     MUL_CON sloh, slol, sloh, slol
 .endm
 
@@ -278,6 +292,9 @@
 // $64c$ and the product is accumulated into the "lower" column-sum. The limb
 // in the lower word `slol` of the "lower" column-sum is stored to `r[0]` in
 // RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// NOTE: Both `dbll` and `dblh` can be at most $RADIX+2$ bits long since `aw00`
+// `aw00` (which can exceed RADIX by 1 bit) is not operand of the four MACC
+// operations that produce `dbll` and `dblh`.
 
 .macro MULCOL0
     MACC_V3 sloh, slol, aw00, aw00
@@ -285,10 +302,10 @@
     MACC_V3 dblh, dbll, aw02, aw07
     MACC_V3 dblh, dbll, aw03, aw06
     MACC_V3 dblh, dbll, aw04, aw05
-    SLLI_1B shih, shil, dblh, dbll
+    DADD_V1 shih, shil, dblh, dbll
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
-    CP_LIMB slol, rlsw
+    ST_LIMB slol, 0
     SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
 .endm
@@ -306,11 +323,11 @@
 
 .macro MULCOL1
     MACC_V1 dblh, dbll, aw00, aw01
-    DADD_V1 sloh, slol, dblh, dbll
+    DADD_V2 sloh, slol, dblh, dbll
     MACC_V1 dblh, dbll, aw02, aw08
     MACC_V3 dblh, dbll, aw03, aw07
     MACC_V3 dblh, dbll, aw04, aw06
-    DADD_V1 shih, shil, dblh, dbll
+    DADD_V2 shih, shil, dblh, dbll
     MACC_V3 shih, shil, aw05, aw05
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
@@ -332,12 +349,12 @@
 
 .macro MULCOL2
     MACC_V1 dblh, dbll, aw00, aw02
-    DADD_V1 sloh, slol, dblh, dbll
+    DADD_V2 sloh, slol, dblh, dbll
     MACC_V3 sloh, slol, aw01, aw01
     MACC_V1 dblh, dbll, aw03, aw08
     MACC_V3 dblh, dbll, aw04, aw07
     MACC_V3 dblh, dbll, aw05, aw06
-    DADD_V1 shih, shil, dblh, dbll
+    DADD_V2 shih, shil, dblh, dbll
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 8
@@ -359,10 +376,10 @@
 .macro MULCOL3
     MACC_V1 dblh, dbll, aw00, aw03
     MACC_V3 dblh, dbll, aw01, aw02
-    DADD_V1 sloh, slol, dblh, dbll
+    DADD_V2 sloh, slol, dblh, dbll
     MACC_V1 dblh, dbll, aw04, aw08
     MACC_V3 dblh, dbll, aw05, aw07
-    DADD_V1 shih, shil, dblh, dbll
+    DADD_V2 shih, shil, dblh, dbll
     MACC_V3 shih, shil, aw06, aw06
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
@@ -385,11 +402,11 @@
 .macro MULCOL4
     MACC_V1 dblh, dbll, aw00, aw04
     MACC_V3 dblh, dbll, aw01, aw03
-    DADD_V1 sloh, slol, dblh, dbll
+    DADD_V2 sloh, slol, dblh, dbll
     MACC_V3 sloh, slol, aw02, aw02
     MACC_V1 dblh, dbll, aw05, aw08
     MACC_V3 dblh, dbll, aw06, aw07
-    DADD_V1 shih, shil, dblh, dbll
+    DADD_V2 shih, shil, dblh, dbll
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 16
@@ -412,9 +429,9 @@
     MACC_V1 dblh, dbll, aw00, aw05
     MACC_V3 dblh, dbll, aw01, aw04
     MACC_V3 dblh, dbll, aw02, aw03
-    DADD_V1 sloh, slol, dblh, dbll
+    DADD_V2 sloh, slol, dblh, dbll
     MACC_V1 dblh, dbll, aw06, aw08
-    DADD_V1 shih, shil, dblh, dbll
+    DADD_V2 shih, shil, dblh, dbll
     MACC_V3 shih, shil, aw07, aw07
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
@@ -438,15 +455,15 @@
     MACC_V1 dblh, dbll, aw00, aw06
     MACC_V3 dblh, dbll, aw01, aw05
     MACC_V3 dblh, dbll, aw02, aw04
-    DADD_V1 sloh, slol, dblh, dbll
+    DADD_V3 tmp0, sloh, slol, dblh, dbll
     MACC_V3 sloh, slol, aw03, aw03
     MACC_V1 dblh, dbll, aw07, aw08
-    DADD_V1 shih, shil, dblh, dbll
+    DADD_V2 shih, shil, dblh, dbll
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 24
     SRLI_V1 shih, shil, shih, shil
-    SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V3 sloh, slol, tmp0, sloh, slol
 .endm
 
 
@@ -465,13 +482,13 @@
     MACC_V3 dblh, dbll, aw01, aw06
     MACC_V3 dblh, dbll, aw02, aw05
     MACC_V3 dblh, dbll, aw03, aw04
-    DADD_V1 sloh, slol, dblh, dbll
-    MACC_V2 shih, shil, aw08, aw08
+    DADD_V3 tmp0, sloh, slol, dblh, dbll
+    MACC_V3 shih, shil, aw08, aw08
     and     tmp1, shil, mask
     MACC_V3 sloh, slol, rcon, tmp1
     ST_LIMB slol, 28
     SRLI_V1 shih, shil, shih, shil
-    SRLI_V2 sloh, slol, sloh, slol
+    SRLI_V3 sloh, slol, tmp0, sloh, slol
 .endm
 
 
@@ -498,7 +515,7 @@
 // The macro `PROLOGUE` pushes 7 callee-saved registers on the stack.
 
 .macro PROLOGUE
-    addi    sp, sp, -28
+    addi    sp, sp, -32
     sw      s0, (sp)
     sw      s1, 4(sp)
     sw      s2, 8(sp)
@@ -506,6 +523,7 @@
     sw      s4, 16(sp)
     sw      s5, 20(sp)
     sw      s6, 24(sp)
+    sw      ra, 28(sp)
 .endm
 
 
@@ -519,7 +537,8 @@
     lw      s4, 16(sp)
     lw      s5, 20(sp)
     lw      s6, 24(sp)
-    addi    sp, sp, 28
+    lw      ra, 28(sp)
+    addi    sp, sp, 32
 .endm
 
 
