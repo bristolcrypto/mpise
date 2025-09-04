@@ -74,12 +74,15 @@
 .macro MULL_V1 shi:req, slo:req, i:req
     lw      almb, \i(aptr)
     li      rcon,  (CONSTC << SCALEC)  // (19 << 6) = 1216
-    mul     rmsl, almb, blmb
-    mulhu   \shi, almb, blmb
-    srli    tmp0, rmsl, RADIX
-    slli    tmp1, \shi, (32-RADIX)
-    or      \slo, tmp0, tmp1
-    and     rmsl, rmsl, mask
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    madd51lu rmsl, almb, blmb, zero
+    madd51hu \slo, almb, blmb, zero
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      rmsl, zero
+    mv      \slo, zero
+    madd51lu rmsl, almb, blmb
+    madd51hu \slo, almb, blmb
+#endif
 .endm
 
 
@@ -96,14 +99,16 @@
 .macro MULL_V2 shi:req, slo:req, i:req
     lw      almb, \i(aptr)
     mul     \slo, \slo, rcon
-    mul     tmp0, almb, blmb
-    mulhu   \shi, almb, blmb
-    add     \slo, \slo, tmp0
-    sltu    tmp0, \slo, tmp0
-    add     \shi, \shi, tmp0
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    madd51lu \slo, almb, blmb, \slo
+    madd51hu \shi, almb, blmb, zero
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      \shi, zero
+    madd51lu \slo, almb, blmb
+    madd51hu \shi, almb, blmb
+#endif
     and     rlsl, \slo, mask
     srli    \slo, \slo, RADIX
-    slli    \shi, \shi, (32-RADIX)
 .endm
 
 
@@ -119,16 +124,18 @@
 
 .macro MULL_V3 slo:req, shi:req, i:req
     lw      almb, \i(aptr)
-    or      \slo, \slo, \shi
-    mul     tmp0, almb, blmb
-    mulhu   \shi, almb, blmb
-    add     \slo, \slo, tmp0
-    sltu    tmp0, \slo, tmp0
-    add     \shi, \shi, tmp0
+    add     \slo, \slo, \shi
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    madd51lu \slo, almb, blmb, \slo
+    madd51hu \shi, almb, blmb, zero
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      \shi, zero
+    madd51lu \slo, almb, blmb
+    madd51hu \shi, almb, blmb
+#endif
     and     tmp0, \slo, mask
     sw      tmp0, \i(rptr)
     srli    \slo, \slo, RADIX
-    slli    \shi, \shi, (32-RADIX)
 .endm
 
 
@@ -141,7 +148,7 @@
 // NOTE: The result-limb `r[i0]` can be $RADIX + 1$ bits long.
 
 .macro MODREDP shi:req, slo:req, i1:req, i0:req
-    or      \slo, \slo, \shi
+    add     \slo, \slo, \shi
     add     \slo, \slo, rmsl
     and     rmsl, \slo, mask
     sw      rmsl, \i1(rptr)
