@@ -6,10 +6,14 @@ endif
 
 ifdef RADIX_REDUCED
 export BASE = ${CURDIR}/reduced
-
   ifeq "${XLEN}" "64"
     ifneq "${RADIX}" "51"
       $(error "you set RADIX='${RADIX}', but can only support RADIX='51'")
+    endif
+  endif
+  ifeq "${XLEN}" "32"
+    ifneq "${RADIX}" "29"
+      $(error "you set RADIX='${RADIX}', but can only support RADIX='29'")
     endif
   endif
 endif
