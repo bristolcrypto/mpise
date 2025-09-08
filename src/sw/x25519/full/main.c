@@ -31,7 +31,7 @@ unsigned long long instr_debug[MAX_TRIALS];
   end_cycles = rdtsc();                           \
   end_instr  = rdinstr();                         \
   diff_cycles = (end_cycles-start_cycles)/(iter); \
-  diff_instr  = end_instr - start_instr;          \
+  diff_instr  = (end_instr - start_instr)/(iter); \
 } while (0);
 
 #if X25519_DEBUG
@@ -419,6 +419,7 @@ void test_scott(int iter, int num_warmup_iters)
      }
      printf(" %lld", instr_debug[t]);
   }
+  printf("\n----------------------------------------------\n");
 #endif
   
 #if DEBUG
