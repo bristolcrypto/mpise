@@ -14,3 +14,12 @@ uint64_t rdtsc() {
 
   return tsc;
 }
+
+uint64_t rdinstr() {
+  uint64_t instr = 0;
+
+  // The correct way to read the 'instret' CSR into a C variable.
+  __asm__ __volatile__("csrr %0, instret" : "=r" (instr));
+
+  return instr;
+}
