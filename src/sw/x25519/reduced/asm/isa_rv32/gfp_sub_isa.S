@@ -45,7 +45,7 @@
 #define blmb a6
 // Registers `mask` and `rcon` hold 0x1FFFFFFF and 64*c
 #define mask a7
-#define rcon s11
+#define rcon t0
 
 
 ///////////////////////////////////////////////////////////////////////////////
