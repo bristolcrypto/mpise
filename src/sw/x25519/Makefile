@@ -27,4 +27,6 @@ export  HEADERS  += $(wildcard ${BASE}/asm/ise_${ARCH}/*.h)
 
 export  SOURCES  += $(wildcard ${BASE}/*.c) 
 export  SOURCES  += $(wildcard ${BASE}/asm/isa_${ARCH}/*.S)
-export  SOURCES  += $(wildcard ${BASE}/asm/ise_${ARCH}/*.S) 
+export  SOURCES  += $(wildcard ${BASE}/asm/ise_${ARCH}/*.S)
+
+export GCC_FLAGS += -DX25519_DEBUG 

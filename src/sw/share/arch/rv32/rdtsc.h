@@ -11,5 +11,6 @@
 #include "share.h"
 
 extern uint64_t rdtsc();
+extern uint64_t rdinstr();
 
 #endif
