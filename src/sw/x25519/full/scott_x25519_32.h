@@ -2,7 +2,7 @@
 
 // Script generated code - Command line : python pseudo.py 32/64 X25519
 #ifndef __SCOTT_X25519_32_H__
-#define __SCOTT_X25519_64_H__
+#define __SCOTT_X25519_32_H__
 #include <stdint.h>
 #include <stdio.h>
 
