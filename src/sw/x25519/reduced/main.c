@@ -4,13 +4,18 @@
 #include "rdtsc.h"
 #include "gfparith.h"
 #include "moncurve.h"
+#include "instrumentation.h"
 
-
-// macros for measuring CPU cycles
 #if X25519_DEBUG
+// ------------ Instrumentation code ------------
+// Define two arrays to track clock cycles and
+// retired instructions for each iteration of a
+// test function. These arrays are defined once,
+// and reused multiple times throughout this file.
+// ----------------------------------------------
 #define MAX_TRIALS 2000
-unsigned long long rdtsc_debug[MAX_TRIALS];
-unsigned long long instr_debug[MAX_TRIALS];
+uint64_t rdtsc_debug[MAX_TRIALS];
+uint64_t instr_debug[MAX_TRIALS];
 #endif
 
 #define LOAD_CACHE(X, iter) do {                  \
@@ -27,22 +32,25 @@ unsigned long long instr_debug[MAX_TRIALS];
   diff_instr  = (end_instr - start_instr)/(iter); \
 } while (0);
 
+// Single NOP subroutine
+void test_nop(int iter, int num_warmup_iters)
+{
+  uint64_t start_cycles, end_cycles, diff_cycles;
+  uint64_t start_instr, end_instr, diff_instr;
+  int i;
+  printf("\n=============================================================\n");
+  printf("test_nop - nop_routine");
+  printf("\n=============================================================\n");
+  LOAD_CACHE(nop_routine(), num_warmup_iters);
 #if X25519_DEBUG
-#define MEASURE_CYCLES_DEBUG(X, iter) do {        \
-  for (i = 0; i < (iter); i++) {                  \
-    start_cycles = rdtsc();                       \
-    start_instr  = rdinstr();                     \
-    (X);                                          \
-    end_cycles = rdtsc();                         \
-    end_instr  = rdinstr();                       \
-    diff_cycles = (end_cycles-start_cycles);      \
-    diff_instr  = end_instr - start_instr;        \
-    rdtsc_debug[i] = diff_cycles;                 \
-    instr_debug[i] = diff_instr;                  \
-  }                                               \
-} while (0);
-
+  MEASURE_CYCLES_DEBUG(nop_routine(), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
+  MEASURE_CYCLES(nop_routine(), iter);
+  printf("         #cycles = %" PRIu64 "\n", diff_cycles);
+  printf("         #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+}
 
 void test_gfp_arith(int iter, int num_warmup_iters)
 {
@@ -67,17 +75,18 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   hex_to_int(op2f, op2h, NWORDS);
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
   
-  printf("=============================================================\n");
-  printf("timing measurement:\n");
-  printf("=============================================================\n");
-  printf("gfp arith:\n");
-  
-  printf("- gfp mul:     ");
+  printf("\n=============================================================\n");
+  printf("test_gfp_arith - gfp mul");
+  printf("\n=============================================================\n");
   LOAD_CACHE(gfp_mul(resr, op1r, op2r), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(gfp_mul(resr, op1r, op2r), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
   MEASURE_CYCLES(gfp_mul(resr, op1r, op2r), iter);
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
-  
+#endif
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
@@ -91,11 +100,18 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   
   // --------------------------------------------------------------------------
   
-  printf("- gfp sqr:     ");
+  printf("\n=============================================================\n");
+  printf("test_gfp_arith - gfp sqr");
+  printf("\n=============================================================\n");
   LOAD_CACHE(gfp_sqr(resr, op1r), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(gfp_sqr(resr, op1r), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
   MEASURE_CYCLES(gfp_sqr(resr, op1r), iter);
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
-  
+  printf("         #instr  = %" PRIu64 "\n", diff_instr);
+#endif
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
@@ -109,12 +125,18 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   
   // --------------------------------------------------------------------------
   
-  printf("- gfp add:     ");
+  printf("\n=============================================================\n");
+  printf("test_gfp_arith - gfp add");
+  printf("\n=============================================================\n");
   LOAD_CACHE(gfp_add(resr, op1r, op2r), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(gfp_add(resr, op1r, op2r), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
   MEASURE_CYCLES(gfp_add(resr, op1r, op2r), iter);
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
-  
+#endif
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
@@ -128,12 +150,18 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   
   // --------------------------------------------------------------------------
   
-  printf("- gfp sub:     ");
+  printf("\n=============================================================\n");
+  printf("test_gfp_arith - gfp sub");
+  printf("\n=============================================================\n");
   LOAD_CACHE(gfp_sub(resr, op1r, op2r), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(gfp_sub(resr, op1r, op2r), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
   MEASURE_CYCLES(gfp_sub(resr, op1r, op2r), iter);
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
-  
+#endif
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
@@ -147,11 +175,18 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   
   // --------------------------------------------------------------------------
   
-  printf("- gfp mul32:     ");
+  printf("\n=============================================================\n");
+  printf("test_gfp_arith - gfp mul32");
+  printf("\n=============================================================\n");
   LOAD_CACHE(gfp_mul32(resr, op1r, (CONSTA - 2)/4), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(gfp_mul32(resr, op1r, (CONSTA - 2)/4), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
   MEASURE_CYCLES(gfp_mul32(resr, op1r, (CONSTA - 2)/4), iter);
   printf("       #cycles = %" PRIu64 "\n", diff_cycles);
   printf("       #instr  = %" PRIu64 "\n", diff_instr);
+#endif
   
 #if DEBUG
   gfp_canon(resr, resr);
@@ -170,8 +205,9 @@ void test_curve_arith(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
-  Word rf[NWORDS], kf[NWORDS], xf[NWORDS];
-  Word opf[NWORDS];  // full-radix
+  // Word rf[NWORDS], kf[NWORDS]; // Unused
+  Word xf[NWORDS];
+  Word opf[NWORDS]; // full-radix
   ProPoint p, q;
   int i;
   
@@ -190,8 +226,6 @@ void test_curve_arith(int iter, int num_warmup_iters)
   static const char xdih[] =  // x-coordinate of basepoint
     "0x77AC9C65240CA1CC8B8CD5B50FC19DC6384F25E3EFBE47869EF14AD2E49B69C1";
   
-  printf("-------------------------------------------------------------\n");
-  printf("montgomery curve arithmetic:\n");
   
   hex_to_int(opf, xpih, NWORDS);
   mpi_full2red(p.x, NLIMBS, opf, NWORDS);
@@ -204,12 +238,18 @@ void test_curve_arith(int iter, int num_warmup_iters)
   hex_to_int(opf,  xdih, NWORDS);
   mpi_full2red(xf, NLIMBS, opf, NWORDS);
   
-  printf("- mon ladder step:     ");
+  printf("\n=============================================================\n");
+  printf("test_curve_arith - mon_ladder_step");
+  printf("\n=============================================================\n");
   LOAD_CACHE(mon_ladder_step(&p, &q, xf), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(mon_ladder_step(&p, &q, xf), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
   MEASURE_CYCLES(mon_ladder_step(&p, &q, xf), iter);
   printf(" #cycles = %" PRIu64 "\n", diff_cycles);
   printf(" #instr  = %" PRIu64 "\n", diff_instr);
-  
+#endif
 #if DEBUG
   hex_to_int(opf, xpih, NWORDS);
   mpi_full2red(p.x, NLIMBS, opf, NWORDS);
@@ -271,35 +311,18 @@ void test_mon_varbase_mul(int iter, int num_warmup_iters)
   hex_to_int(kf, kh, NWORDS);
   hex_to_int(xf, xh, NWORDS);
   
-  printf("- mon varbase mul:     ");
+  printf("\n=============================================================\n");
+  printf("test_mon_varbase_mul - mon_varbase_mul");
+  printf("\n=============================================================\n");
   LOAD_CACHE(mon_mul_varbase(rf, kf, xf), num_warmup_iters);
 #if X25519_DEBUG
-  MEASURE_CYCLES_DEBUG(mon_mul_varbase(rf, kf, xf), iter);
+  MEASURE_CYCLES_DEBUG(mon_mul_varbase(rf, kf, xf), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
 #else
   MEASURE_CYCLES(mon_mul_varbase(rf, kf, xf), iter);
-#endif
   printf(" #cycles = %" PRIu64 "\n", diff_cycles);
   printf(" #instr  = %" PRIu64 "\n", diff_instr);
-#if X25519_DEBUG
-  printf("\n--------------------Cycles --------------------\n");
-  for (int t = 0 ; t < iter; t++)
-  {
-     if (t % 100 == 0) {
-         printf("\n! @ ");
-     }
-     printf(" %lld", rdtsc_debug[t]);
-  }
-  printf("\n---------------- Instructions ----------------\n");
-  for (int t = 0 ; t < iter; t++)
-  {
-     if (t % 100 == 0) {
-         printf("\n! @ ");
-     }
-     printf(" %lld", instr_debug[t]);
-  }
 #endif
-  printf("\n----------------------------------------------\n");
-  
 #if DEBUG
   int_to_hex(resh, rf, NWORDS);
   printf("  R  = %s\n", resh);
@@ -307,10 +330,7 @@ void test_mon_varbase_mul(int iter, int num_warmup_iters)
     "0x5285A2775507B454F7711C4903CFEC324F088DF24DEA948E90C6E99D3755DAC3";
   if (strcmp(rh, resh) != 0) printf("  result R is wrong!!!\n");
 #endif
-  
-  printf("=============================================================\n");
 }
-
 
 void test_ecdh(void)
 {
@@ -392,71 +412,6 @@ void test_ecdh(void)
   else            printf("\x1b[31m not equal \x1b[0m\n");
 }
 
-
-/*
-// prototype of mike scott's x25519 implementation
-extern int X25519_SHARED_SECRET(char *SK, char *PK, char *SS);
-
-void test_scott(int iter, int num_warmup_iters)
-{
-  uint64_t start_cycles, end_cycles, diff_cycles;
-  uint64_t start_instr, end_instr, diff_instr;
-  Word rf[NWORDS], kf[NWORDS], xf[NWORDS];  // full-radix
-  int i;
-  
-#if DEBUG
-  char resh[2*WBYTES*NWORDS+3];
-#endif
-  
-  static const char kh[] =  // scalar k for testing
-    "0xC49A44BA44226A50185AFCC10A4C1462DD5E46824B15163B9D7C52F06BE346A5";
-  static const char xh[] =  // x-coordinate for testing
-    "0x4C1CABD0A603A9103B35B326EC2466727C5FB124A4C19435DB3030586768DBE6";
-  
-  hex_to_int(kf, kh, NWORDS);
-  hex_to_int(xf, xh, NWORDS);
-  
-  printf("- mike scott's x25519:     \n");
-  LOAD_CACHE(X25519_SHARED_SECRET((char *) kf, (char *) xf, (char *) rf), num_warmup_iters);
-#if X25519_DEBUG
-  MEASURE_CYCLES_DEBUG(X25519_SHARED_SECRET((char *) kf, (char *) xf, (char *) rf), iter);
-#else
-  MEASURE_CYCLES(X25519_SHARED_SECRET((char *) kf, (char *) xf, (char *) rf), iter);
-#endif
-  printf(" #cycles = %" PRIu64 "\n", diff_cycles);
-  printf(" #instr  = %" PRIu64 "\n", diff_instr);
-
-#if X25519_DEBUG
-  printf("\n------------------- Cycles ------------ ------\n");
-  for (int t = 0 ; t < iter; t++)
-  {
-     if (t % 100 == 0) {
-         printf("\n! @ ");
-     }
-     printf(" %lld", rdtsc_debug[t]);
-  }
-  printf("\n---------------- Instructions ----------------\n");
-  for (int t = 0 ; t < iter; t++)
-  {
-     if (t % 100 == 0) {
-         printf("\n! @ ");
-     }
-     printf(" %lld", instr_debug[t]);
-  }
-  printf("\n----------------------------------------------\n");
-#endif
-  
-#if DEBUG
-  int_to_hex(resh, rf, NWORDS);
-  printf("  R  = %s\n", resh);
-  static const char rh[] =  // expected result for R
-    "0x5285A2775507B454F7711C4903CFEC324F088DF24DEA948E90C6E99D3755DAC3";
-  if (strcmp(rh, resh) != 0) printf("  result R is wrong!!!\n");
-#endif
-}
-*/
-
-
 int main( int argc, char* argv[] )
 {
   int num_iters, num_warmup_iters;
@@ -474,11 +429,11 @@ int main( int argc, char* argv[] )
   asm( "csrrwi x0, 0x801, " MPISE_RADIX_STR );
   #endif
   
+  test_nop        (100, 10);                         // Warmup : 10,  Run : 100
   test_gfp_arith  (100, 10);                         // Warmup : 10,  Run : 100
   test_curve_arith(200, 10);                         // Warmup : 10,  Run : 200
   test_ecdh();
   test_mon_varbase_mul(num_iters, num_warmup_iters); // Warmup : 100, Run : 1000
-  // test_scott(20, 10);
   // test_point_mul();
   
   return 0;
