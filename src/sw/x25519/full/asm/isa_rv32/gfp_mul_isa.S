@@ -23,7 +23,7 @@
 
 
 // Constant c of the pseudo-Mersenne prime: p = 2^k - c
-.equ CCON, 19
+.equ CONSTC, 19
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
@@ -31,40 +31,39 @@
 #define aptr a1
 // Register `bptr` holds the start address of array `b`
 #define bptr a2
-// Registers `tmp0` to `tmp2` hold intermediate results
-#define tmp0 a0
-#define tmp1 a1
-#define tmp2 a2
-// Register `bw00` holds one word of second operand `b`
-#define bw00 a1
-// Register `rcon` holds the constant c = 19 of prime p
-#define rcon a1
+// Registers `tmp0` and `tmp1` hold temporary variables
+#define tmp0 s0
+#define tmp1 s1
+// Register `rcon` holds the constant c of the PM-prime
+#define rcon s2
 // Registers `aw00` to `aw07` hold words of operand `a`
-#define aw00 t0
-#define aw01 t1
-#define aw02 t2
-#define aw03 s0
-#define aw04 s1
-#define aw05 a3
-#define aw06 a4
-#define aw07 a5
+#define aw00 s2
+#define aw01 s3
+#define aw02 s4
+#define aw03 s5
+#define aw04 s6
+#define aw05 s7
+#define aw06 s8
+#define aw07 s9
+// Register `bw0j` holds one single word of operand `b`
+#define bw0j s1
 // Registers `rw00` to `rw15` hold words of the product
-#define rw00 a6
-#define rw01 a7
-#define rw02 s2
-#define rw03 s3
-#define rw04 s4
-#define rw05 s5
-#define rw06 s6
-#define rw07 s7
-#define rw08 s8
-#define rw09 s9
-#define rw10 s10
-#define rw11 s11
-#define rw12 t3
-#define rw13 t4
-#define rw14 t5
-#define rw15 t6
+#define rw00 s10
+#define rw01 s11
+#define rw02 a3
+#define rw03 a4
+#define rw04 a5
+#define rw05 a6
+#define rw06 a7
+#define rw07 t0
+#define rw08 t1
+#define rw09 t2
+#define rw10 t3
+#define rw11 t4
+#define rw12 t5
+#define rw13 t6
+#define rw14 a1
+#define rw15 a2
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -129,7 +128,7 @@
 // NOTE: The bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
 // $c = 19$, `dhi` can be up to 26 bits long.
 // NOTE: Register `rcon` contains $2c$ instead of $c$ and must, therefore, be
-// halved before the multiplication
+// halved before the multiplication.
 
 .macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
     srli    tmp0, \dlo, 31
@@ -139,7 +138,7 @@
     slli    \rlo, \dlo, 1
     mul     \rhi, \rhi, tmp0
     srli    \rlo, \rlo, 1
- .endm
+.endm
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -148,45 +147,45 @@
 
 
 // The macro `MROW_V1` multiplies the 8-word operand `aw00`-`aw07` by a single
-// word (held in `bjw`) and puts the 9-word product in `p0w`-`p8w`. This macro
+// word (held in `bw0j`) and puts the 9-word product in `p0w`-`p8w`. This macro
 // corresponds to the operation $r = a \cdot b_0$ performed by the very first
 // iteration of the outer loop of the operand-scanning method. The word $b_0$
-// of the multiplier is loaded to `bw00` via base-address `bptr` and offset
+// of the multiplier is loaded to `bw0j` via base-address `bptr` and offset
 // `j`.
 
 .macro MROW_V1 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
                p1w:req, p0w:req, j:req
-    lw      bw00, \j(bptr)
-    MADD_V1 \p1w, \p0w, aw00, bw00
-    MADD_V2 \p2w, \p1w, aw01, bw00, \p1w
-    MADD_V2 \p3w, \p2w, aw02, bw00, \p2w
-    MADD_V2 \p4w, \p3w, aw03, bw00, \p3w
-    MADD_V2 \p5w, \p4w, aw04, bw00, \p4w
-    MADD_V2 \p6w, \p5w, aw05, bw00, \p5w
-    MADD_V2 \p7w, \p6w, aw06, bw00, \p6w
-    MADD_V2 \p8w, \p7w, aw07, bw00, \p7w
+    lw      bw0j, \j(bptr)
+    MADD_V1 \p1w, \p0w, aw00, bw0j
+    MADD_V2 \p2w, \p1w, aw01, bw0j, \p1w
+    MADD_V2 \p3w, \p2w, aw02, bw0j, \p2w
+    MADD_V2 \p4w, \p3w, aw03, bw0j, \p3w
+    MADD_V2 \p5w, \p4w, aw04, bw0j, \p4w
+    MADD_V2 \p6w, \p5w, aw05, bw0j, \p5w
+    MADD_V2 \p7w, \p6w, aw06, bw0j, \p6w
+    MADD_V2 \p8w, \p7w, aw07, bw0j, \p7w
 .endm
 
 
 // The macro `MROW_V2` multiplies the 8-word operand `aw00`-`aw07` by a single
-// word (held in `tmp2`) and adds the 9-word product to operand `p0w`-`p8w`.
+// word (held in `bw0j`) and adds the 9-word product to operand `p0w`-`p8w`.
 // This macro corresponds to the operation $r = r + a \cdot b_j \cdot 2^{32j}$
 // for $1 \leq j < 8$ performed by the seven last iterations of the outer loop
 // of the operand-scanning method. The word $b_j$ of the multiplier is loaded
-// to `bw00` via base address `bptr` and offset `j`. The word `p8w` is used for
+// to `bw0j` via base address `bptr` and offset `j`. The word `p8w` is used for
 // temporary results.
 
 .macro MROW_V2 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
                p1w:req, p0w:req, j:req
-    lw      bw00, \j(bptr)
-    MADD_V2 \p8w, \p0w, aw00, bw00, \p0w
-    MADD_V3 \p8w, \p1w, aw01, bw00, \p8w, \p1w
-    MADD_V3 \p8w, \p2w, aw02, bw00, \p8w, \p2w
-    MADD_V3 \p8w, \p3w, aw03, bw00, \p8w, \p3w
-    MADD_V3 \p8w, \p4w, aw04, bw00, \p8w, \p4w
-    MADD_V3 \p8w, \p5w, aw05, bw00, \p8w, \p5w
-    MADD_V3 \p8w, \p6w, aw06, bw00, \p8w, \p6w
-    MADD_V3 \p8w, \p7w, aw07, bw00, \p8w, \p7w
+    lw      bw0j, \j(bptr)
+    MADD_V2 \p8w, \p0w, aw00, bw0j, \p0w
+    MADD_V3 \p8w, \p1w, aw01, bw0j, \p8w, \p1w
+    MADD_V3 \p8w, \p2w, aw02, bw0j, \p8w, \p2w
+    MADD_V3 \p8w, \p3w, aw03, bw0j, \p8w, \p3w
+    MADD_V3 \p8w, \p4w, aw04, bw0j, \p8w, \p4w
+    MADD_V3 \p8w, \p5w, aw05, bw0j, \p8w, \p5w
+    MADD_V3 \p8w, \p6w, aw06, bw0j, \p8w, \p6w
+    MADD_V3 \p8w, \p7w, aw07, bw0j, \p8w, \p7w
 .endm
 
 
@@ -227,17 +226,17 @@
 // `rw08`-`rw14` are multiplied by $2c$ and added to the words `rw00`-`rw06`.
 
 .macro MODREDP
-    li      rcon, 2*CCON   // rcon = 38
-    MADD_V2 tmp2, rw07, rw15, rcon, rw07
-    MULHIXC tmp2, rw07, tmp2, rw07
-    MADD_V3 tmp2, rw00, rw08, rcon, tmp2, rw00
-    MADD_V3 tmp2, rw01, rw09, rcon, tmp2, rw01
-    MADD_V3 tmp2, rw02, rw10, rcon, tmp2, rw02
-    MADD_V3 tmp2, rw03, rw11, rcon, tmp2, rw03
-    MADD_V3 tmp2, rw04, rw12, rcon, tmp2, rw04
-    MADD_V3 tmp2, rw05, rw13, rcon, tmp2, rw05
-    MADD_V3 tmp2, rw06, rw14, rcon, tmp2, rw06
-    add     rw07, rw07, tmp2
+    li      rcon, 2*CONSTC  // rcon = 38
+    MADD_V2 tmp1, rw07, rw15, rcon, rw07
+    MULHIXC tmp1, rw07, tmp1, rw07
+    MADD_V3 tmp1, rw00, rw08, rcon, tmp1, rw00
+    MADD_V3 tmp1, rw01, rw09, rcon, tmp1, rw01
+    MADD_V3 tmp1, rw02, rw10, rcon, tmp1, rw02
+    MADD_V3 tmp1, rw03, rw11, rcon, tmp1, rw03
+    MADD_V3 tmp1, rw04, rw12, rcon, tmp1, rw04
+    MADD_V3 tmp1, rw05, rw13, rcon, tmp1, rw05
+    MADD_V3 tmp1, rw06, rw14, rcon, tmp1, rw06
+    add     rw07, rw07, tmp1
 .endm
 
 
@@ -246,11 +245,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `rptr`
-// on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers on the stack.
 
 .macro PROLOGUE
-    addi    sp, sp, -52
+    addi    sp, sp, -48
     sw      s0, (sp)
     sw      s1, 4(sp)
     sw      s2, 8(sp)
@@ -263,12 +261,10 @@
     sw      s9, 36(sp)
     sw      s10, 40(sp)
     sw      s11, 44(sp)
-    sw      rptr, 48(sp)
 .endm
 
 
 // The macro `EPILOGUE` pops all 12 callee-saved registers from the stack.
-// NOTE: `rptr` is popped separately in macro `STM_RES`.
 
 .macro EPILOGUE
     lw      s0, (sp)
@@ -283,7 +279,7 @@
     lw      s9, 36(sp)
     lw      s10, 40(sp)
     lw      s11, 44(sp)
-    addi    sp, sp, 52
+    addi    sp, sp, 48
 .endm
 
 
@@ -302,11 +298,10 @@
 .endm
 
 
-// The macro `STM_RES` pops `rptr` from the stack and stores the eight result-
-// words, which are in registers `rw00`-`rw07`, to array `r` in RAM.
+// The macro `STM_RES` stores the eight result-words, which are in registers
+// `rw00`-`rw07`, to array `r` in RAM.
 
 .macro STM_RES
-    lw      rptr, 48(sp)
     sw      rw00, 0(rptr)
     sw      rw01, 4(rptr)
     sw      rw02, 8(rptr)

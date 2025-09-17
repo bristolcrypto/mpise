@@ -23,7 +23,7 @@
 
 
 // Constant c of the pseudo-Mersenne prime: p = 2^k - c
-.equ CCON, 19
+.equ CONSTC, 19
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
@@ -31,10 +31,10 @@
 #define aptr a1
 // Register `bptr` holds the start address of array `b`
 #define bptr a2
-// Registers `tmp0` to `tmp1` hold intermediate results
+// Registers `tmp0` and `tmp1` hold temporary variables
 #define tmp0 a3
 #define tmp1 a4
-// Register `rcon` holds the constant c = 19 of prime p
+// Register `rcon` holds the constant c of the PM-prime
 #define rcon a4
 // Registers `sumw` and `cryw` hold sum and carry words
 #define sumw a5
@@ -48,12 +48,26 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `ADDW_V1` loads the words `a[i]` and `b[i]` from RAM, adds them
+// The macro `ADDW_V1` loads the words `a[i]` and `b[i]` from RAM, adds them,
+// and puts the sum in the `shi:slo` register-pair.
+// NOTE: This macro also initializes register `rcon` with the constant $c$ to
+// prevent a pipeline stall.
+
+.macro ADDW_V1 shi:req, slo:req, i:req
+    lw      \slo, \i(aptr)
+    lw      tmp0, \i(bptr)
+    li      rcon, CONSTC  // rcon = 19
+    add     \slo, \slo, tmp0
+    sltu    \shi, \slo, tmp0
+.endm
+
+
+// The macro `ADDW_V2` loads the words `a[i]` and `b[i]` from RAM, adds them
 // together with an incoming carry in `cin`, and puts the sum in the `shi:slo`
 // register-pair. The lower word of the sum is stored in `r[i]` in RAM.
 // NOTE: Register `slo` has to be different from `cin`.
 
-.macro ADDW_V1 shi:req, slo:req, cin:req, i:req
+.macro ADDW_V2 shi:req, slo:req, cin:req, i:req
     lw      \slo, \i(aptr)
     lw      tmp0, \i(bptr)
     add     \slo, \slo, \cin
@@ -62,17 +76,6 @@
     sltu    tmp1, \slo, tmp0
     add     \shi, \shi, tmp1
     sw      \slo, \i(rptr)
-.endm
-
-
-// The macro `ADDW_V2` loads the words `a[i]` and `b[i]` from RAM, adds them,
-// and puts the sum in the `shi:slo` register-pair.
-
-.macro ADDW_V2 shi:req, slo:req, i:req
-    lw      \slo, \i(aptr)
-    lw      tmp0, \i(bptr)
-    add     \slo, \slo, tmp0
-    sltu    \shi, \slo, tmp0
 .endm
 
 
@@ -94,14 +97,13 @@
 // $c = 19$, `dhi` can be up to 26 bits long.
 
 .macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
-    li      rcon, CCON  // rcon = 19
     srli    tmp0, \dlo, 31
     slli    \rhi, \dhi, 1
     add     \rhi, \rhi, tmp0
     slli    \rlo, \dlo, 1
     mul     \rhi, \rhi, rcon
     srli    \rlo, \rlo, 1
- .endm
+.endm
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,15 +122,15 @@
 .type gfp_add_isa,%function
 // .balign 8
 gfp_add_isa:
-    ADDW_V2 cryw, sumw, 28
+    ADDW_V1 cryw, sumw, 28
     MULHIXC cryw, rmsw, cryw, sumw
-    ADDW_V1 cryw, sumw, cryw, 0
-    ADDW_V1 cryw, sumw, cryw, 4
-    ADDW_V1 cryw, sumw, cryw, 8
-    ADDW_V1 cryw, sumw, cryw, 12
-    ADDW_V1 cryw, sumw, cryw, 16
-    ADDW_V1 cryw, sumw, cryw, 20
-    ADDW_V1 cryw, sumw, cryw, 24
+    ADDW_V2 cryw, sumw, cryw, 0
+    ADDW_V2 cryw, sumw, cryw, 4
+    ADDW_V2 cryw, sumw, cryw, 8
+    ADDW_V2 cryw, sumw, cryw, 12
+    ADDW_V2 cryw, sumw, cryw, 16
+    ADDW_V2 cryw, sumw, cryw, 20
+    ADDW_V2 cryw, sumw, cryw, 24
     ADDW_V3 rmsw, cryw, 28
     ret
 

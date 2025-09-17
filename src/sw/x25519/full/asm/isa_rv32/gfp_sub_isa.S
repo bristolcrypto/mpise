@@ -23,7 +23,7 @@
 
 
 // Constant c of the pseudo-Mersenne prime: p = 2^k - c
-.equ CCON, 19
+.equ CONSTC, 19
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
@@ -31,10 +31,10 @@
 #define aptr a1
 // Register `bptr` holds the start address of array `b`
 #define bptr a2
-// Registers `tmp0` and `tmp1` hold intermediate results
+// Registers `tmp0` and `tmp1` hold temporary variables
 #define tmp0 a3
 #define tmp1 a4
-// Register `rcon` holds the constant c = 19 of prime p
+// Register `rcon` holds the constant c of the PM-prime
 #define rcon a4
 // Registers `sumw` and `cryw` hold sum and carry words
 #define sumw a5
@@ -49,13 +49,31 @@
 
 
 // The macro `SUBW_V1` loads the words `a[i]` and `b[i]` from RAM, adds the
+// former to 0x1FFFFFFFC, and subtracts the latter from the sum. The double-
+// length result is put in the `shi:slo` register-pair. This result is always
+// positive, whereby the upper word (in `shi`) is in the range $[0, 2]$.
+
+.macro SUBW_V1 shi:req, slo:req, i:req
+    lw      tmp0, \i(aptr)
+    lw      tmp1, \i(bptr)
+    addi    \slo, tmp0, -4
+    sltu    tmp0, \slo, tmp0
+    addi    \shi, tmp0, 1
+    sltu    tmp0, \slo, tmp1
+    sub     \slo, \slo, tmp1
+    sub     \shi, \shi, tmp0
+.endm
+
+
+// The macro `SUBW_V2` loads the words `a[i]` and `b[i]` from RAM, adds the
 // former to an incoming carry in `cin` (which is signed and can therefore be
 // negative), and subtracts `b[i]` from the sum. The double-length result is
 // put in the `shi:slo` register-pair. This result can be negative, whereby the
 // upper word (in `shi`) is always in the range $[-2, 1]$. The lower word of
 // the result is stored in `r[i]` in RAM.
+// NOTE: Register `slo` has to be different from `cin`.
 
-.macro SUBW_V1 shi:req, slo:req, cin:req, i:req
+.macro SUBW_V2 shi:req, slo:req, cin:req, i:req
     lw      \slo, \i(aptr)
     lw      tmp0, \i(bptr)
     srai    tmp1, \cin, 31
@@ -66,23 +84,6 @@
     sub     \slo, \slo, tmp0
     sub     \shi, tmp1, \shi
     sw      \slo, \i(rptr)
-.endm
-
-
-// The macro `SUBW_V2` loads the words `a[i]` and `b[i]` from RAM, adds the
-// former to 0x1FFFFFFFC, and subtracts the latter from the sum. The double-
-// length result is put in the `shi:slo` register-pair. This result is always
-// positive, whereby the upper word (in `shi`) is in the range [0, 2].
-
-.macro SUBW_V2 shi:req, slo:req, i:req
-    lw      tmp0, \i(aptr)
-    lw      tmp1, \i(bptr)
-    addi    \slo, tmp0, -4
-    sltu    tmp0, \slo, tmp0
-    addi    \shi, tmp0, 1
-    sltu    tmp0, \slo, tmp1
-    sub     \slo, \slo, tmp1
-    sub     \shi, \shi, tmp0
 .endm
 
 
@@ -102,11 +103,11 @@
 // the upper part, after subtraction of 4, is multiplied by the constant $c$
 // (in register `rcon`) and the single-word product (which can be negative) is
 // put in `rhi`.
-// NOTE: the bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
+// NOTE: The bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
 // $c = 19$, `dhi` can be up to 26 bits long.
 
 .macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
-    li      rcon, CCON  // tmp1 = 19
+    li      rcon, CONSTC  // rcon = 19
     srli    tmp0, \dlo, 31
     slli    \rhi, \dhi, 1
     add     \rhi, \rhi, tmp0
@@ -114,7 +115,7 @@
     slli    \rlo, \dlo, 1
     mul     \rhi, \rhi, rcon
     srli    \rlo, \rlo, 1
- .endm
+.endm
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,15 +134,15 @@
 .type gfp_sub_isa,%function
 // .balign 8
 gfp_sub_isa:
-    SUBW_V2 cryw, sumw, 28
+    SUBW_V1 cryw, sumw, 28
     MULHIXC cryw, rmsw, cryw, sumw
-    SUBW_V1 cryw, sumw, cryw, 0
-    SUBW_V1 cryw, sumw, cryw, 4
-    SUBW_V1 cryw, sumw, cryw, 8
-    SUBW_V1 cryw, sumw, cryw, 12
-    SUBW_V1 cryw, sumw, cryw, 16
-    SUBW_V1 cryw, sumw, cryw, 20
-    SUBW_V1 cryw, sumw, cryw, 24
+    SUBW_V2 cryw, sumw, cryw, 0
+    SUBW_V2 cryw, sumw, cryw, 4
+    SUBW_V2 cryw, sumw, cryw, 8
+    SUBW_V2 cryw, sumw, cryw, 12
+    SUBW_V2 cryw, sumw, cryw, 16
+    SUBW_V2 cryw, sumw, cryw, 20
+    SUBW_V2 cryw, sumw, cryw, 24
     SUBW_V3 rmsw, cryw, 28
     ret
 

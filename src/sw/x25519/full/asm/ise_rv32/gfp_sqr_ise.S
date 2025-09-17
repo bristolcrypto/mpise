@@ -25,44 +25,45 @@
 
 
 // Constant c of the pseudo-Mersenne prime: p = 2^k - c
-.equ CCON, 19
+.equ CONSTC, 19
 
 // Register `rptr` holds the start address of array `r`
 #define rptr a0
 // Register `aptr` holds the start address of array `a`
 #define aptr a1
-// Registers `tmp0` to `tmp2` hold intermediate results
-#define tmp0 a0
-#define tmp1 a1
-#define tmp2 a2
-// Register `rcon` holds the constant c = 19 of prime p
-#define rcon a1
+// Registers `tmp0` and `tmp1` hold temporary variables
+#define tmp0 s0
+#define tmp1 s1
+// Register `rcon` holds the constant c of the PM-prime
+#define rcon s2
 // Registers `aw00` to `aw07` hold words of operand `a`
-#define aw00 t0
-#define aw01 t1
-#define aw02 t2
-#define aw03 s0
-#define aw04 s1
-#define aw05 a3
-#define aw06 a4
-#define aw07 a5
-// Registers `rw00` to `rw15` hold words of the square
-#define rw00 a6
-#define rw01 a7
-#define rw02 s2
-#define rw03 s3
-#define rw04 s4
-#define rw05 s5
-#define rw06 s6
-#define rw07 s7
-#define rw08 s8
-#define rw09 s9
-#define rw10 s10
-#define rw11 s11
-#define rw12 t3
-#define rw13 t4
-#define rw14 t5
-#define rw15 t6
+#define aw00 s2
+#define aw01 s3
+#define aw02 s4
+#define aw03 s5
+#define aw04 s6
+#define aw05 s7
+#define aw06 s8
+#define aw07 s9
+// Register `cryw` holds a carry for doubling operation
+#define cryw s2
+// Registers `rw00` to `rw15` hold words of the product
+#define rw00 s10
+#define rw01 s11
+#define rw02 a3
+#define rw03 a4
+#define rw04 a5
+#define rw05 a6
+#define rw06 a7
+#define rw07 t0
+#define rw08 t1
+#define rw09 t2
+#define rw10 t3
+#define rw11 t4
+#define rw12 t5
+#define rw13 t6
+#define rw14 a1
+#define rw15 a2
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,18 +146,19 @@
 
 
 // The macro DASQ_V1 doubles the word `rhi` and adds the result to the upper
-// half of the square of the word `aiw`. The triple-length result is put in the
-// three registers `rex:rhi:rlo`.
+// half of the square of the word `aiw`. The two lower words of the triple-
+// length result is put in the `rhi:rlo` register-pair and the higher word in
+// the outgoing carry `cow`.
 
-.macro DASQ_V1 rex:req, rhi:req, rlo:req, aiw:req
+.macro DASQ_V1 cow:req, rhi:req, rlo:req, aiw:req
     mul     \rlo, \aiw, \aiw
-    add     tmp0, \rhi, \rhi
-    sltu    \rex, tmp0, \rhi
-    mulhu   \rhi, \aiw, \aiw
+    mulhu   tmp0, \aiw, \aiw
+    srli    \cow, \rhi, 31
+    slli    \rhi, \rhi, 1
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
-    cacc    \rex, \rhi, tmp0, \rex
+    cacc    \cow, \rhi, tmp0, \cow
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
-    cacc    \rex, \rhi, tmp0
+    cacc    \cow, \rhi, tmp0
 #endif
     add     \rhi, \rhi, tmp0
 .endm
@@ -164,40 +166,42 @@
 
 // The macro DASQ_V2 doubles the double-length word `rhi:rlo` and adds the
 // result along with the incoming carry `ciw` to the square of the word `aiw`.
-// The triple-length result is put in the three registers `rex:rhi:rlo`.
+// The two lower words of the triple-length result is put in the `rhi:rlo`
+// register-pair and the higher word in the outgoing carry `cow`.
+// NOTE: Register `cow` is (generally) the same as register `ciw`.
 
-.macro DASQ_V2 rex:req, rhi:req, rlo:req, aiw:req, ciw:req
+.macro DASQ_V2 cow:req, rhi:req, rlo:req, aiw:req, ciw:req
     srli    tmp0, \rlo, 31
     slli    \rlo, \rlo, 1
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
-    maddhu  tmp2, \aiw, \aiw, \rlo
+    maddhu  tmp1, \aiw, \aiw, \rlo
     maddlu  \rlo, \aiw, \aiw, \rlo
     cacc    tmp0, \rlo, \ciw, tmp0
     add     \rlo, \rlo, \ciw
-    srli    \rex, \rhi, 31
+    srli    \cow, \rhi, 31
     slli    \rhi, \rhi, 1
-    cacc    \rex, \rhi, tmp0, \rex
+    cacc    \cow, \rhi, tmp0, \cow
     add     \rhi, \rhi, tmp0
-    cacc    \rex, \rhi, tmp2, \rex
+    cacc    \cow, \rhi, tmp1, \cow
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
-    mv      tmp2, \rlo
-    maddhu  tmp2, \aiw, \aiw
+    mv      tmp1, \rlo
+    maddhu  tmp1, \aiw, \aiw
     maddlu  \rlo, \aiw, \aiw
     cacc    tmp0, \rlo, \ciw
     add     \rlo, \rlo, \ciw
-    srli    \rex, \rhi, 31
+    srli    \cow, \rhi, 31
     slli    \rhi, \rhi, 1
-    cacc    \rex, \rhi, tmp0
+    cacc    \cow, \rhi, tmp0
     add     \rhi, \rhi, tmp0
-    cacc    \rex, \rhi, tmp2
+    cacc    \cow, \rhi, tmp1
 #endif
-    add     \rhi, \rhi, tmp2
+    add     \rhi, \rhi, tmp1
 .endm
 
 
 // The macro DASQ_V3 doubles the word `rlo` and adds the result along with the
-// incoming carry `ciw` to the square of the word `aiw`. The result, which is
-// at most 64 bit long, is put in the `rhi`:`rlo` register-pair.
+// incoming carry `ciw` to the square of the word `aiw`. The double-length
+// result is put in the `rhi:rlo` register-pair.
 
 .macro DASQ_V3 rhi:req, rlo:req, aiw:req, ciw:req
     srli    tmp0, \rlo, 31
@@ -270,7 +274,7 @@
 // NOTE: The bit-length of `dhi` can be up to $32 - \log_2(c) - 1$, e.g., for
 // $c = 19$, `dhi` can be up to 26 bits long.
 // NOTE: Register `rcon` contains $2c$ instead of $c$ and must, therefore, be
-// halved before the multiplication
+// halved before the multiplication.
 
 .macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
     srli    tmp0, \dlo, 31
@@ -280,7 +284,7 @@
     slli    \rlo, \dlo, 1
     mul     \rhi, \rhi, tmp0
     srli    \rlo, \rlo, 1
- .endm
+.endm
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -383,14 +387,14 @@
 // result are put in `rw00`-`rw15`.
 
 .macro DBADDSQ
-    DASQ_V1 tmp1, rw01, rw00, aw00
-    DASQ_V2 tmp1, rw03, rw02, aw01, tmp1
-    DASQ_V2 tmp1, rw05, rw04, aw02, tmp1
-    DASQ_V2 tmp1, rw07, rw06, aw03, tmp1
-    DASQ_V2 tmp1, rw09, rw08, aw04, tmp1
-    DASQ_V2 tmp1, rw11, rw10, aw05, tmp1
-    DASQ_V2 tmp1, rw13, rw12, aw06, tmp1
-    DASQ_V3 rw15, rw14, aw07, tmp1
+    DASQ_V1 cryw, rw01, rw00, aw00
+    DASQ_V2 cryw, rw03, rw02, aw01, cryw
+    DASQ_V2 cryw, rw05, rw04, aw02, cryw
+    DASQ_V2 cryw, rw07, rw06, aw03, cryw
+    DASQ_V2 cryw, rw09, rw08, aw04, cryw
+    DASQ_V2 cryw, rw11, rw10, aw05, cryw
+    DASQ_V2 cryw, rw13, rw12, aw06, cryw
+    DASQ_V3 rw15, rw14, aw07, cryw
 .endm
 
 
@@ -410,17 +414,17 @@
 // `rw08`-`rw14` are multiplied by $2c$ and added to the words `rw00`-`rw06`.
 
 .macro MODREDP
-    li      rcon, 2*CCON   // rcon = 38
-    MADD_V2 tmp2, rw07, rw15, rcon, rw07
-    MULHIXC tmp2, rw07, tmp2, rw07
-    MADD_V3 tmp2, rw00, rw08, rcon, tmp2, rw00
-    MADD_V3 tmp2, rw01, rw09, rcon, tmp2, rw01
-    MADD_V3 tmp2, rw02, rw10, rcon, tmp2, rw02
-    MADD_V3 tmp2, rw03, rw11, rcon, tmp2, rw03
-    MADD_V3 tmp2, rw04, rw12, rcon, tmp2, rw04
-    MADD_V3 tmp2, rw05, rw13, rcon, tmp2, rw05
-    MADD_V3 tmp2, rw06, rw14, rcon, tmp2, rw06
-    add     rw07, rw07, tmp2
+    li      rcon, 2*CONSTC  // rcon = 38
+    MADD_V2 tmp1, rw07, rw15, rcon, rw07
+    MULHIXC tmp1, rw07, tmp1, rw07
+    MADD_V3 tmp1, rw00, rw08, rcon, tmp1, rw00
+    MADD_V3 tmp1, rw01, rw09, rcon, tmp1, rw01
+    MADD_V3 tmp1, rw02, rw10, rcon, tmp1, rw02
+    MADD_V3 tmp1, rw03, rw11, rcon, tmp1, rw03
+    MADD_V3 tmp1, rw04, rw12, rcon, tmp1, rw04
+    MADD_V3 tmp1, rw05, rw13, rcon, tmp1, rw05
+    MADD_V3 tmp1, rw06, rw14, rcon, tmp1, rw06
+    add     rw07, rw07, tmp1
 .endm
 
 
@@ -429,11 +433,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `rptr`
-// on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers on the stack.
 
 .macro PROLOGUE
-    addi    sp, sp, -52
+    addi    sp, sp, -48
     sw      s0, (sp)
     sw      s1, 4(sp)
     sw      s2, 8(sp)
@@ -446,12 +449,10 @@
     sw      s9, 36(sp)
     sw      s10, 40(sp)
     sw      s11, 44(sp)
-    sw      rptr, 48(sp)
 .endm
 
 
 // The macro `EPILOGUE` pops all 12 callee-saved registers from the stack.
-// NOTE: `rptr` is popped separately in macro `STM_RES`.
 
 .macro EPILOGUE
     lw      s0, (sp)
@@ -466,7 +467,7 @@
     lw      s9, 36(sp)
     lw      s10, 40(sp)
     lw      s11, 44(sp)
-    addi    sp, sp, 52
+    addi    sp, sp, 48
 .endm
 
 
@@ -485,11 +486,10 @@
 .endm
 
 
-// The macro `STM_RES` pops `rptr` from the stack and stores the eight result-
-// words, which are in registers `rw00`-`rw07`, to array `r` in RAM.
+// The macro `STM_RES` stores the eight result-words, which are in registers
+// `rw00`-`rw07`, to array `r` in RAM.
 
 .macro STM_RES
-    lw      rptr, 48(sp)
     sw      rw00, 0(rptr)
     sw      rw01, 4(rptr)
     sw      rw02, 8(rptr)
