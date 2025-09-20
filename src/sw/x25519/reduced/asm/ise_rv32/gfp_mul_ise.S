@@ -40,12 +40,12 @@
 #define aptr a1
 // Register `bptr` holds the start address of array `b`
 #define bptr a2
-// Registers `tmp0` to `tmp1` hold intermediate results
+// Register `tmp0` holds temporary/intermediate results
 #define tmp0 s0
-#define tmp1 s1
-// Register-pair `sloh:slol` holds the lower column-sum
+// Registers `slox` to `slol` hold the lower column-sum
 #define slol a1
 #define sloh a2
+#define slox s1
 // Register-pair `shih:shil` holds the upper column-sum
 #define shil a3
 #define shih a4
@@ -59,7 +59,7 @@
 #define aw06 t3
 #define aw07 t4
 #define aw08 t5
-// Registers `bw00` to `bw08` hold limbs of perand `b`
+// Registers `bw00` to `bw08` hold limbs of operand `b`
 #define bw00 t6
 #define bw01 s2
 #define bw02 s3
@@ -79,10 +79,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `MACC_V1` multiplies the word `aiw` by `bjw` and puts the product
-// in the double-length accumulator `rhi:rlo` (i.e., this macro performs a
-// multiply-accumulate operation with an initial accumulator that is 0, i.e.,
-// a normal multiplication).
+// The macro `MACC_V1` multiplies the limb `aiw` by `bjw` and puts the lower
+// RADIX bits of the product in `rlo` and all higher product-bits in `rhi`.
+// Consequently, this macro performs a multiply-accumulate operation with an
+// initial accumulator that is 0, i.e., a normal multiplication.
 // NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
 .macro MACC_V1 rhi:req, rlo:req, aiw:req, bjw:req
@@ -98,25 +98,32 @@
 .endm
 
 
-// The macro `MACC_V2` multiplies the word `aiw` by `bjw` and adds the product
-// to the double-length accumulator `rhi:rlo`, whereby the initial value of the
-// accumulator is only 32 bits long (i.e., `rhi` is 0).
+// The macro `MACC_V2` multiplies the limb `aiw` by `bjw` and adds the lower
+// RADIX bits of the product to `rlo` and all higher product-bits to `rhi`.
+// Thereafter, the result converted to canonical limb-representation, which
+// means the result is split up into three limbs where each limb is at most
+// RADIX bits long to prevent an overflow of `rlo` or `rhi` in subsequent
+// multiply-accumulate operations. The excess bits of `rhi` are put in `rex`.
 // NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
-.macro MACC_V2 rhi:req, rlo:req, aiw:req, bjw:req
+.macro MACC_V2 rex:req, rhi:req, rlo:req, aiw:req, bjw:req
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
     madd51lu \rlo, \aiw, \bjw, \rlo
-    madd51hu \rhi, \aiw, \bjw, zero
+    madd51hu \rhi, \aiw, \bjw, \rhi
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
-    mv      \rhi, zero
     madd51lu \rlo, \aiw, \bjw
     madd51hu \rhi, \aiw, \bjw
 #endif
+    srli    \rex, \rlo, RADIX
+    add     \rhi, \rhi, \rex
+    srli    \rex, \rhi, RADIX
+    and     \rlo, \rlo, mask
+    and     \rhi, \rhi, mask
 .endm
 
 
-// The macro `MACC_V3` multiplies the word `aiw` by `bjw` and adds the product
-// to the double-length accumulator `rhi:rlo`.
+// The macro `MACC_V3` multiplies the limb `aiw` by `bjw` and adds the lower
+// RADIX bits of the product to `rlo` and all higher product-bits to `rhi`.
 // NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
 .macro MACC_V3 rhi:req, rlo:req, aiw:req, bjw:req
@@ -130,19 +137,9 @@
 .endm
 
 
-.macro TO_LIMB rex:req, rhi:req, rlo:req, ahi:req, alo:req
-    srli    \rex, \ahi, RADIX
-    and     \rhi, \ahi, mask
-    srli    tmp1, \alo, RADIX
-    and     \rlo, \alo, mask
-    add     \rhi, \rhi, tmp1
-.endm
-
-
-// The macro `SRLI_V1` shifts the double-length operand `ahi:alo`, which is up
-// to $32 + RADIX$ bits long, RADIX bits to the right. The result has a length
-// of 32 bits and is put in register `rlo`.
-// NOTE: Register `rhi` is not modified.
+// The macro `SRLI_V1` shifts the limb-pair `ahi` and `alo` (whose bitlengths
+// may exceed RADIX bits) one limb to the right and puts the result in `rhi`
+// and `rlo`. Both `rhi` and `rlo` cosist of at most RADIX bits.
 
 .macro SRLI_V1 rhi:req, rlo:req, ahi:req, alo:req
     srli    \rlo, \alo, RADIX
@@ -152,22 +149,11 @@
 .endm
 
 
-// The macro `SRLI_V2` shifts the double-length operand `ahi:alo` RADIX bits to
-// the right. The result is put in the `rhi:rlo` register-pair.
+// The macro `SRLI_V2` shifts the limb-triple `aex`, `ahi` and `alo` (whose
+// bitlengths may exceed RADIX bits) one limb to the right and puts the result
+// in `rhi` and `rlo`. Both `rhi` and `rlo` cosist of at most RADIX bits.
 
-.macro SRLI_V2 rhi:req, rlo:req, ahi:req, alo:req
-    srli    \rlo, \alo, RADIX
-    add     \rlo, \rlo, \ahi
-    srli    \rhi, \rlo, RADIX
-    and     \rlo, \rlo, mask
-.endm
-
-
-// The macro `SRLI_V2` shifts the triple-length operand `aex:ahi:alo`, which is
-// up to $2*RADIX+7$ bits long, RADIX bits to the right. The result is put in
-// the `rhi:rlo` register-pair.
-
-.macro SRLI_V3 rhi:req, rlo:req, aex:req, ahi:req, alo:req
+.macro SRLI_V2 rhi:req, rlo:req, aex:req, ahi:req, alo:req
     srli    \rlo, \alo, RADIX
     add     \rlo, \rlo, \ahi
     srli    \rhi, \rlo, RADIX
@@ -176,19 +162,18 @@
 .endm
 
 
-// The macro `ST_LIMB` applies the bit-mask in `mask` to word `lmb` and stores
+// The macro `ST_LIMB` applies the bit-mask in `mask` to limb `lmb` and stores
 // the result to `r[i]` in RAM. The actual address is the sum of the offset in
 // `ofs` and the base address in `rptr` (i.e., $ofs = 4i$).
 
 .macro ST_LIMB lmb:req, ofs:req
-    and     tmp1, \lmb, mask
-    sw      tmp1, \ofs(rptr)
+    and     tmp0, \lmb, mask
+    sw      tmp0, \ofs(rptr)
 .endm
 
 
-// The macro `MUL_CON` multiplies the double-length operand `ahi:alo` by the
-// constant $64c$ in `rcon` and puts the double-length product in the `rhi:rlo`
-// register-pair.
+// The macro `MUL_CON` multiplies the limb-pair `ahi` and `alo` by the constant
+// $64c$ in `rcon` and puts the double-length product in `rhi` and `rlo`.
 
 .macro MUL_CON rhi:req, rlo:req, ahi:req, alo:req
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
@@ -204,10 +189,10 @@
 .endm
 
 
-// The macro `ADD_MSW` loads the word `r[8]` of the (intermediate) result from
-// RAM and adds it to the double-length sum `shi:slo`. Then, it applies the
-// bit-mask in `mask` to lower word of the sum and stores the result to `r[8]`
-// in RAM.
+// The macro `ADD_MSW` loads the limb `r[8]` of the (intermediate) result from
+// RAM and adds it to the limb-pair `shi` and `slo`. Then, it applies the bit-
+// mask in `mask` to lower limb of the sum and stores the result to `r[8]` in
+// RAM.
 
 .macro ADD_MSW shi:req, slo:req
     lw      tmp0, 32(rptr)
@@ -217,9 +202,9 @@
 .endm
 
 
-// The macro `ADD_LSW` shifts the double-length sum `shi:slo` RADIX bits to the
+// The macro `ADD_LSW` shifts the limb-pair `shi` and `slo` RADIX bits to the
 // right and multiplies the lower word of the result by the constant $64c$ in
-// `rcon`. Then, it loads the word `r[0]` of the (intermediate) result from RAM
+// `rcon`. Then, it loads the limb `r[0]` of the (intermediate) result from RAM
 // and adds it to the product. The result is stored to `r[0]` in RAM.
 
 .macro ADD_LSW shi:req, slo:req
@@ -239,11 +224,13 @@
 
 // The macro `MULCOL8` computes the nine limb-products that form the result-
 // limb `r[8]`, which are limb-products $a_i \cdot b_j$ with $i + j = 9$. These
-// limb-products are accumulated into the "lower" column-sum in the `sloh:slol`
-// register-pair. Then, the limb in the lower word `slol` is stored to `r[8]`
-// in RAM and the column-sum is shifted RADIX bits to the right. Finally, the
-// shifted column-sum is multiplied by the constant $64c$ and the product is
-// put in the `sloh:slol` register-pair.
+// limb-products are accumulated into the "lower" column-sum in the limb-pair
+// `sloh` and `slol`. Then, the limb in `slol` is stored to `r[8]` in RAM and
+// the column-sum is shifted one limb (i.e., RADIX bits) to the right. Finally,
+// the shifted column-sum is multiplied by the constant $64c$ and the product
+// is put in the limb-pair `sloh` and `slol`.
+// NOTE: Each limb of the The "lower" column-sum can get up to $RADIX + 4$ bits
+// long; thus, a conversion to canonical limb-representation is required.
 
 .macro MULCOL8
     MACC_V1 sloh, slol, aw00, bw08
@@ -252,12 +239,11 @@
     MACC_V3 sloh, slol, aw03, bw05
     MACC_V3 sloh, slol, aw04, bw04
     MACC_V3 sloh, slol, aw05, bw03
-    MACC_V3 sloh, slol, aw06, bw02
-    TO_LIMB tmp0, sloh, slol, sloh, slol
+    MACC_V2 slox, sloh, slol, aw06, bw02
     MACC_V3 sloh, slol, aw07, bw01
     MACC_V3 sloh, slol, aw08, bw00
     ST_LIMB slol, 32
-    SRLI_V3 sloh, slol, tmp0, sloh, slol
+    SRLI_V2 sloh, slol, slox, sloh, slol
     MUL_CON sloh, slol, sloh, slol
 .endm
 
@@ -265,15 +251,15 @@
 // The macro `MULCOL0` computes the nine limb-products that form the result-
 // limb `r[0]`, which are limb-products $a_i \cdot b_j$ with $i + j = 0$ and
 // $i + j = 9$, respectively. The former limb-products are accumulated into
-// the "lower" column-sum in the `sloh:slol` register-pair and the latter into
-// the "higher" column-sum in `shih:shil` register-pair. Then, the limb in the
-// lower word `shil` of the "higher" clumn-sum is multiplied by the constant
-// $64c$ and the product is accumulated into the "lower" column-sum. The limb
-// in the lower word `slol` of the "lower" column-sum is stored to `r[0]` in
-// RAM. Finally, both column-sums are shifted RADIX bits to the right.
-// NOTE: Both `shih` and `shil` can be at most $RADIX+3$ bits long since `aw00`
-// `bw00` (which can exceed RADIX by 1 bit) are not operands of the eight MACC
-// operations that produce `shih` and `shil`.
+// the "lower" column-sum in the limb-pair `sloh` and `slol`, and the latter
+// into the "higher" column-sum in the limb-pair `shih` and `shil`. Then, the
+// limb `shil` of the "higher" clumn-sum is multiplied by the constant $64c$
+// and the product is accumulated into the "lower" column-sum. The limb `slol`
+// of the "lower" column-sum is stored to `r[0]` in RAM. Finally, both column-
+// sums are shifted one limb (i.e., RADIX bits) to the right.
+// NOTE: Each limb of "higher" column-sum can get up to $RADIX + 3$ bits long
+// since `aw00` and `bw00` (which can exceed RADIX by 1 bit) are not operands
+// of the multiply-accumulate operations that yield the "higher" column-sum.
 
 .macro MULCOL0
     MACC_V3 sloh, slol, aw00, bw00
@@ -285,23 +271,23 @@
     MACC_V3 shih, shil, aw06, bw03
     MACC_V3 shih, shil, aw07, bw02
     MACC_V3 shih, shil, aw08, bw01
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 0
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
 // The macro `MULCOL1` computes the nine limb-products that form the result-
 // limb `r[1]`, which are limb-products $a_i \cdot b_j$ with $i + j = 1$ and
 // $i + j = 10$, respectively. The former limb-products are accumulated into
-// the "lower" column-sum in the `sloh:slol` register-pair and the latter into
-// the "higher" column-sum in `shih:shil` register-pair. Then, the limb in the
-// lower word `shil` of the "higher" clumn-sum is multiplied by the constant
-// $64c$ and the product is accumulated into the "lower" column-sum. The limb
-// in the lower word `slol` of the "lower" column-sum is stored to `r[1]` in
-// RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// the "lower" column-sum in the limb-pair `sloh` and `slol`, and the latter
+// into the "higher" column-sum in the limb-pair `shih` and `shil`. Then, the
+// limb `shil` of the "higher" clumn-sum is multiplied by the constant $64c$
+// and the product is accumulated into the "lower" column-sum. The limb `slol`
+// of the "lower" column-sum is stored to `r[1]` in RAM. Finally, both column-
+// sums are shifted one limb (i.e., RADIX bits) to the right.
 
 .macro MULCOL1
     MACC_V3 sloh, slol, aw00, bw01
@@ -313,23 +299,23 @@
     MACC_V3 shih, shil, aw06, bw04
     MACC_V3 shih, shil, aw07, bw03
     MACC_V3 shih, shil, aw08, bw02
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 4
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
 // The macro `MULCOL2` computes the nine limb-products that form the result-
 // limb `r[2]`, which are limb-products $a_i \cdot b_j$ with $i + j = 2$ and
 // $i + j = 11$, respectively. The former limb-products are accumulated into
-// the "lower" column-sum in the `sloh:slol` register-pair and the latter into
-// the "higher" column-sum in `shih:shil` register-pair. Then, the limb in the
-// lower word `shil` of the "higher" clumn-sum is multiplied by the constant
-// $64c$ and the product is accumulated into the "lower" column-sum. The limb
-// in the lower word `slol` of the "lower" column-sum is stored to `r[2]` in
-// RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// the "lower" column-sum in the limb-pair `sloh` and `slol`, and the latter
+// into the "higher" column-sum in the limb-pair `shih` and `shil`. Then, the
+// limb `shil` of the "higher" clumn-sum is multiplied by the constant $64c$
+// and the product is accumulated into the "lower" column-sum. The limb `slol`
+// of the "lower" column-sum is stored to `r[2]` in RAM. Finally, both column-
+// sums are shifted one limb (i.e., RADIX bits) to the right.
 
 .macro MULCOL2
     MACC_V3 sloh, slol, aw00, bw02
@@ -341,23 +327,23 @@
     MACC_V3 shih, shil, aw06, bw05
     MACC_V3 shih, shil, aw07, bw04
     MACC_V3 shih, shil, aw08, bw03
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 8
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
 // The macro `MULCOL3` computes the nine limb-products that form the result-
-// limb `r[3]`, which are limb-products $a_i \cdot b_j$ with $i + j = 3$ and
+// limb `r[2]`, which are limb-products $a_i \cdot b_j$ with $i + j = 3$ and
 // $i + j = 12$, respectively. The former limb-products are accumulated into
-// the "lower" column-sum in the `sloh:slol` register-pair and the latter into
-// the "higher" column-sum in `shih:shil` register-pair. Then, the limb in the
-// lower word `shil` of the "higher" clumn-sum is multiplied by the constant
-// $64c$ and the product is accumulated into the "lower" column-sum. The limb
-// in the lower word `slol` of the "lower" column-sum is stored to `r[3]` in
-// RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// the "lower" column-sum in the limb-pair `sloh` and `slol`, and the latter
+// into the "higher" column-sum in the limb-pair `shih` and `shil`. Then, the
+// limb `shil` of the "higher" clumn-sum is multiplied by the constant $64c$
+// and the product is accumulated into the "lower" column-sum. The limb `slol`
+// of the "lower" column-sum is stored to `r[3]` in RAM. Finally, both column-
+// sums are shifted one limb (i.e., RADIX bits) to the right.
 
 .macro MULCOL3
     MACC_V3 sloh, slol, aw00, bw03
@@ -369,23 +355,23 @@
     MACC_V3 shih, shil, aw06, bw06
     MACC_V3 shih, shil, aw07, bw05
     MACC_V3 shih, shil, aw08, bw04
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 12
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
 // The macro `MULCOL4` computes the nine limb-products that form the result-
 // limb `r[4]`, which are limb-products $a_i \cdot b_j$ with $i + j = 4$ and
 // $i + j = 13$, respectively. The former limb-products are accumulated into
-// the "lower" column-sum in the `sloh:slol` register-pair and the latter into
-// the "higher" column-sum in `shih:shil` register-pair. Then, the limb in the
-// lower word `shil` of the "higher" clumn-sum is multiplied by the constant
-// $64c$ and the product is accumulated into the "lower" column-sum. The limb
-// in the lower word `slol` of the "lower" column-sum is stored to `r[4]` in
-// RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// the "lower" column-sum in the limb-pair `sloh` and `slol`, and the latter
+// into the "higher" column-sum in the limb-pair `shih` and `shil`. Then, the
+// limb `shil` of the "higher" clumn-sum is multiplied by the constant $64c$
+// and the product is accumulated into the "lower" column-sum. The limb `slol`
+// of the "lower" column-sum is stored to `r[4]` in RAM. Finally, both column-
+// sums are shifted one limb (i.e., RADIX bits) to the right.
 
 .macro MULCOL4
     MACC_V3 sloh, slol, aw00, bw04
@@ -397,23 +383,23 @@
     MACC_V3 shih, shil, aw06, bw07
     MACC_V3 shih, shil, aw07, bw06
     MACC_V3 shih, shil, aw08, bw05
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 16
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
 // The macro `MULCOL5` computes the nine limb-products that form the result-
 // limb `r[5]`, which are limb-products $a_i \cdot b_j$ with $i + j = 5$ and
 // $i + j = 14$, respectively. The former limb-products are accumulated into
-// the "lower" column-sum in the `sloh:slol` register-pair and the latter into
-// the "higher" column-sum in `shih:shil` register-pair. Then, the limb in the
-// lower word `shil` of the "higher" clumn-sum is multiplied by the constant
-// $64c$ and the product is accumulated into the "lower" column-sum. The limb
-// in the lower word `slol` of the "lower" column-sum is stored to `r[5]` in
-// RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// the "lower" column-sum in the limb-pair `sloh` and `slol`, and the latter
+// into the "higher" column-sum in the limb-pair `shih` and `shil`. Then, the
+// limb `shil` of the "higher" clumn-sum is multiplied by the constant $64c$
+// and the product is accumulated into the "lower" column-sum. The limb `slol`
+// of the "lower" column-sum is stored to `r[5]` in RAM. Finally, both column-
+// sums are shifted one limb (i.e., RADIX bits) to the right.
 
 .macro MULCOL5
     MACC_V3 sloh, slol, aw00, bw05
@@ -425,23 +411,25 @@
     MACC_V3 shih, shil, aw06, bw08
     MACC_V3 shih, shil, aw07, bw07
     MACC_V3 shih, shil, aw08, bw06
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 20
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
 // The macro `MULCOL6` computes the nine limb-products that form the result-
 // limb `r[6]`, which are limb-products $a_i \cdot b_j$ with $i + j = 6$ and
 // $i + j = 15$, respectively. The former limb-products are accumulated into
-// the "lower" column-sum in the `sloh:slol` register-pair and the latter into
-// the "higher" column-sum in `shih:shil` register-pair. Then, the limb in the
-// lower word `shil` of the "higher" clumn-sum is multiplied by the constant
-// $64c$ and the product is accumulated into the "lower" column-sum. The limb
-// in the lower word `slol` of the "lower" column-sum is stored to `r[6]` in
-// RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// the "lower" column-sum in the limb-pair `sloh` and `slol`, and the latter
+// into the "higher" column-sum in the limb-pair `shih` and `shil`. Then, the
+// limb `shil` of the "higher" clumn-sum is multiplied by the constant $64c$
+// and the product is accumulated into the "lower" column-sum. The limb `slol`
+// of the "lower" column-sum is stored to `r[6]` in RAM. Finally, both column-
+// sums are shifted one limb (i.e., RADIX bits) to the right.
+// NOTE: The lower limb of the "lower" column-sum can get up to $RADIX + 4$
+// bits long; thus, a conversion to canonical limb-representation is required.
 
 .macro MULCOL6
     MACC_V3 sloh, slol, aw00, bw06
@@ -450,14 +438,13 @@
     MACC_V3 sloh, slol, aw03, bw03
     MACC_V3 sloh, slol, aw04, bw02
     MACC_V3 sloh, slol, aw05, bw01
-    MACC_V3 sloh, slol, aw06, bw00
-    TO_LIMB tmp0, sloh, slol, sloh, slol
+    MACC_V2 slox, sloh, slol, aw06, bw00
     MACC_V3 shih, shil, aw07, bw08
     MACC_V3 shih, shil, aw08, bw07
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 24
-    SRLI_V3 sloh, slol, tmp0, sloh, slol
+    SRLI_V2 sloh, slol, slox, sloh, slol
     SRLI_V1 shih, shil, shih, shil
 .endm
 
@@ -465,12 +452,14 @@
 // The macro `MULCOL7` computes the nine limb-products that form the result-
 // limb `r[7]`, which are limb-products $a_i \cdot b_j$ with $i + j = 7$ and
 // $i + j = 16$, respectively. The former limb-products are accumulated into
-// the "lower" column-sum in the `sloh:slol` register-pair and the latter into
-// the "higher" column-sum in `shih:shil` register-pair. Then, the limb in the
-// lower word `shil` of the "higher" clumn-sum is multiplied by the constant
-// $64c$ and the product is accumulated into the "lower" column-sum. The limb
-// in the lower word `slol` of the "lower" column-sum is stored to `r[7]` in
-// RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// the "lower" column-sum in the limb-pair `sloh` and `slol`, and the latter
+// into the "higher" column-sum in the limb-pair `shih` and `shil`. Then, the
+// limb `shil` of the "higher" clumn-sum is multiplied by the constant $64c$
+// and the product is accumulated into the "lower" column-sum. The limb `slol`
+// of the "lower" column-sum is stored to `r[7]` in RAM. Finally, the "lower"
+// column-sum is shifted one limb (i.e., RADIX bits) to the right.
+// NOTE: Each limb of the The "lower" column-sum can get up to $RADIX + 4$ bits
+// long; thus, a conversion to canonical limb-representation is required.
 
 .macro MULCOL7
     MACC_V3 sloh, slol, aw00, bw07
@@ -479,27 +468,28 @@
     MACC_V3 sloh, slol, aw03, bw04
     MACC_V3 sloh, slol, aw04, bw03
     MACC_V3 sloh, slol, aw05, bw02
-    MACC_V3 sloh, slol, aw06, bw01
-    TO_LIMB tmp0, sloh, slol, sloh, slol
+    MACC_V2 slox, sloh, slol, aw06, bw01
     MACC_V3 sloh, slol, aw07, bw00
     MACC_V3 shih, shil, aw08, bw08
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 28
-    SRLI_V3 sloh, slol, tmp0, sloh, slol
-    SRLI_V1 shih, shil, shih, shil
+    SRLI_V2 sloh, slol, slox, sloh, slol
+    // SRLI_V1 shih, shil, shih, shil
 .endm
 
 
 // The macro `FINREDP` performs the final step of the reduction modulo $p$ by
 // multiplying the lower word `shil` of the "higher" column-sum by the constant
 // $64c$ and accumulating the double-length product into the "lower" column-sum
-// in the `sloh:slol` register-pair (macro `MACC_V3`). The lower limb of this
+// in the limb-pair `sloh` and `slol` (macro `MACC_V3`). The lower limb of this
 // sum is added to `r[8]` (macro `ADD_MSW`). Finally, the sum is shifted RADIX
 // bits to the reight, multiplied by the constant $64c$, and the single-length
 // product is added to `r[0]` (macro `ADD_LSW`).
 
 .macro FINREDP
+    srli    shil, shil, RADIX
+    add     shil, shil, shih
     MACC_V3 sloh, slol, shil, rcon
     ADD_MSW sloh, slol
     ADD_LSW sloh, slol
