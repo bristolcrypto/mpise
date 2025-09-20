@@ -37,7 +37,7 @@
 #define aptr a1
 // Register `bptr` holds the start address of array `b`
 #define bptr a2
-// Registers `tmp0` to `tmp1` hold intermediate results
+// Registers `tmp0` and `tmp1` hold temporary variables
 #define tmp0 s0
 #define tmp1 s1
 // Register-pair `sloh:slol` holds the lower column-sum
@@ -56,7 +56,7 @@
 #define aw06 t3
 #define aw07 t4
 #define aw08 t5
-// Registers `bw00` to `bw08` hold limbs of perand `b`
+// Registers `bw00` to `bw08` hold limbs of operand `b`
 #define bw00 t6
 #define bw01 s2
 #define bw02 s3
@@ -105,14 +105,15 @@
 // The macro `MACC_V3` multiplies the word `aiw` by `bjw` and adds the product
 // to the double-length accumulator `rhi:rlo`.
 // NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+// Register `bjw` can be the same as `tmp0`.
 
 .macro MACC_V3 rhi:req, rlo:req, aiw:req, bjw:req
-    mul     tmp0, \aiw, \bjw
-    mulhu   tmp1, \aiw, \bjw
-    add     \rlo, \rlo, tmp0
-    sltu    tmp0, \rlo, tmp0
-    add     tmp1, tmp1, tmp0
-    add     \rhi, \rhi, tmp1
+    mul     tmp1, \aiw, \bjw
+    mulhu   tmp0, \aiw, \bjw
+    add     \rlo, \rlo, tmp1
+    sltu    tmp1, \rlo, tmp1
+    add     tmp0, tmp0, tmp1
+    add     \rhi, \rhi, tmp0
 .endm
 
 
@@ -204,6 +205,8 @@
 // in RAM and the column-sum is shifted RADIX bits to the right. Finally, the
 // shifted column-sum is multiplied by the constant $64c$ and the product is
 // put in the `sloh:slol` register-pair.
+// NOTE: The "lower" column-sum can get up to $2*RADIX + 4$ bits long, which
+// has to be taken into account in the "shift-right" operation.
 
 .macro MULCOL8
     MACC_V1 sloh, slol, aw00, bw08
@@ -230,6 +233,9 @@
 // $64c$ and the product is accumulated into the "lower" column-sum. The limb
 // in the lower word `slol` of the "lower" column-sum is stored to `r[0]` in
 // RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// NOTE: The "higher" column-sum can get up to $2*RADIX + 3$ bits long since
+// `aw00` and `bw00` (which can exceed RADIX by 1 bit) are not operands of the
+// multiply-accumulate operations that yield the "higher" column-sum.
 
 .macro MULCOL0
     MACC_V3 sloh, slol, aw00, bw00
@@ -241,11 +247,11 @@
     MACC_V3 shih, shil, aw06, bw03
     MACC_V3 shih, shil, aw07, bw02
     MACC_V3 shih, shil, aw08, bw01
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 0
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
@@ -269,11 +275,11 @@
     MACC_V3 shih, shil, aw06, bw04
     MACC_V3 shih, shil, aw07, bw03
     MACC_V3 shih, shil, aw08, bw02
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 4
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
@@ -297,11 +303,11 @@
     MACC_V3 shih, shil, aw06, bw05
     MACC_V3 shih, shil, aw07, bw04
     MACC_V3 shih, shil, aw08, bw03
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 8
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
@@ -325,11 +331,11 @@
     MACC_V3 shih, shil, aw06, bw06
     MACC_V3 shih, shil, aw07, bw05
     MACC_V3 shih, shil, aw08, bw04
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 12
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
@@ -353,11 +359,11 @@
     MACC_V3 shih, shil, aw06, bw07
     MACC_V3 shih, shil, aw07, bw06
     MACC_V3 shih, shil, aw08, bw05
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 16
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
@@ -381,11 +387,11 @@
     MACC_V2 shih, shil, aw06, bw08
     MACC_V3 shih, shil, aw07, bw07
     MACC_V3 shih, shil, aw08, bw06
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 20
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
@@ -398,6 +404,7 @@
 // $64c$ and the product is accumulated into the "lower" column-sum. The limb
 // in the lower word `slol` of the "lower" column-sum is stored to `r[6]` in
 // RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// NOTE: The "lower" column-sum can get up to $2*RADIX + 3$ bits long.
 
 .macro MULCOL6
     MACC_V2 sloh, slol, aw00, bw06
@@ -409,11 +416,11 @@
     MACC_V3 sloh, slol, aw06, bw00
     MACC_V2 shih, shil, aw07, bw08
     MACC_V3 shih, shil, aw08, bw07
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 24
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V1 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 
@@ -426,6 +433,8 @@
 // $64c$ and the product is accumulated into the "lower" column-sum. The limb
 // in the lower word `slol` of the "lower" column-sum is stored to `r[7]` in
 // RAM. Finally, both column-sums are shifted RADIX bits to the right.
+// NOTE: The "lower" column-sum can get up to $2*RADIX + 4$ bits long, which
+// has to be taken into account in the "shift-right" operation.
 
 .macro MULCOL7
     MACC_V2 sloh, slol, aw00, bw07
@@ -437,11 +446,11 @@
     MACC_V3 sloh, slol, aw06, bw01
     MACC_V3 sloh, slol, aw07, bw00
     MACC_V2 shih, shil, aw08, bw08
-    and     tmp1, shil, mask
-    MACC_V3 sloh, slol, rcon, tmp1
+    and     tmp0, shil, mask
+    MACC_V3 sloh, slol, rcon, tmp0
     ST_LIMB slol, 28
-    SRLI_V1 shih, shil, shih, shil
     SRLI_V2 sloh, slol, sloh, slol
+    SRLI_V1 shih, shil, shih, shil
 .endm
 
 

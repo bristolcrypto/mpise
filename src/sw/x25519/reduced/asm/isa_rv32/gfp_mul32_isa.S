@@ -39,7 +39,7 @@
 // Registers `almb` and `blmb` hold 2 limbs of operands
 #define blmb a2
 #define almb a3
-// Registers `tmp0` to `tmp1` hold intermediate results
+// Registers `tmp0` and `tmp1` hold temporary variables
 #define tmp0 a4
 #define tmp1 a5
 // Register-pair `sumh:suml` holds a product of 2 limbs
@@ -130,22 +130,23 @@
 
 
 // The macro `MODREDP` first combines `slo` and `shi` to a single word, which
-// is put in `slo`. Then, it adds `slo` to `rmsl`, applies the bit-mask in
-// `mask` to the sum, and stores the result to `r[i1]` in RAM. Thereafter,
-// `slo` is shifted RADIX bits to the right, multiplied by the constant $64c$
-// in `rcon`, and the single-word product is put in `slo`. Finally `rlsl` is
-// added to `slo` and the sum is stored to `r[i0]` in RAM.
-// NOTE: The result-limb `r[i0]` can be $RADIX + 1$ bits long.
+// is put in `slo`. Then, it adds `slo` to `rmsl` (result of macro `MULL_V1`),
+// applies the bit-mask in `mask` to the sum, and stores the result to `r[8]`
+// in RAM. Thereafter, `slo` is shifted RADIX bits to the right, multiplied by
+// the constant $64c$ in `rcon`, and the single-word product is put in `slo`.
+// Finally, `rlsl` (result of macro MULL_V2`) is added to `slo` and the sum is
+// stored to `r[0]` in RAM.
+// NOTE: The result-limb `r[0]` can be $RADIX + 1$ bits long.
 
-.macro MODREDP shi:req, slo:req, i1:req, i0:req
+.macro MODREDP shi:req, slo:req
     or      \slo, \slo, \shi
     add     \slo, \slo, rmsl
     and     rmsl, \slo, mask
-    sw      rmsl, \i1(rptr)
+    sw      rmsl, 32(rptr)
     srli    \slo, \slo, RADIX
     mul     \slo, \slo, rcon
     add     \slo, \slo, rlsl
-    sw      \slo, \i0(rptr)
+    sw      \slo, 0(rptr)
 .endm
 
 
@@ -184,7 +185,7 @@ gfp_mul32_isa:
     MULL_V3 sumh, suml, 20
     MULL_V3 sumh, suml, 24
     MULL_V3 sumh, suml, 28
-    MODREDP sumh, suml, 32, 0
+    MODREDP sumh, suml
     ret
 
 
