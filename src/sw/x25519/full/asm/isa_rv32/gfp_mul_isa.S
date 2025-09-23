@@ -35,7 +35,7 @@
 #define tmp0 s0
 #define tmp1 s1
 // Register `rcon` holds the constant c of the PM-prime
-#define rcon s2
+#define rcon a0
 // Registers `aw00` to `aw07` hold words of operand `a`
 #define aw00 s2
 #define aw01 s3
@@ -46,7 +46,7 @@
 #define aw06 s8
 #define aw07 s9
 // Register `bw0j` holds one single word of operand `b`
-#define bw0j s1
+#define bw0j a0
 // Registers `rw00` to `rw15` hold words of the product
 #define rw00 s10
 #define rw01 s11
@@ -74,7 +74,7 @@
 // The macro `MADD_V1` multiplies the word `aiw` by `bjw` and puts the product
 // in the `rhi:rlo` register-pair (i.e., this macro performs a multiply-add
 // operation where 0 is added to the product, i.e., a normal multiplication).
-// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+// NOTE: Register `rlo` has to be different from `aiw` and `bjw`.
 
 .macro MADD_V1 rhi:req, rlo:req, aiw:req, bjw:req
     mul     \rlo, \aiw, \bjw
@@ -85,7 +85,6 @@
 // The macro `MADD_V2` multiplies the word `aiw` by `bjw` and adds the word
 // `c0w` to the product. The double-length result is put in the `rhi:rlo`
 // register-pair.
-// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 // NOTE: Register `c0w` is (generally) the same as register `rlo`.
 
 .macro MADD_V2 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req
@@ -100,19 +99,18 @@
 // The macro `MADD_V3` multiplies the word `aiw` by `bjw` and adds the two
 // words `c0w` and `d0w` to the product. The double-length result is put in the
 // `rhi:rlo` register-pair.
-// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 // NOTE: Register `c0w` is (generally) the same as register `rlo`, and register
 // `d0w` is (generally) the same as register `rhi`.
 
 .macro MADD_V3 rhi:req, rlo:req, aiw:req, bjw:req, d0w:req, c0w:req
-    add     tmp0, \d0w, \c0w
-    mulhu   \rhi, \aiw, \bjw
-    sltu    \rlo, tmp0, \c0w
-    add     \rhi, \rhi, \rlo
-    mul     \rlo, \aiw, \bjw
-    add     \rlo, \rlo, tmp0
+    mul     tmp0, \aiw, \bjw
+    mulhu   tmp1, \aiw, \bjw
+    add     \rlo, tmp0, \c0w
     sltu    tmp0, \rlo, tmp0
-    add     \rhi, \rhi, tmp0
+    add     tmp1, tmp1, tmp0
+    add     \rlo, \rlo, \d0w
+    sltu    tmp0, \rlo, \d0w
+    add     \rhi, tmp1, tmp0
 .endm
 
 
@@ -172,8 +170,8 @@
 // This macro corresponds to the operation $r = r + a \cdot b_j \cdot 2^{32j}$
 // for $1 \leq j < 8$ performed by the seven last iterations of the outer loop
 // of the operand-scanning method. The word $b_j$ of the multiplier is loaded
-// to `bw0j` via base address `bptr` and offset `j`. The word `p8w` is used for
-// temporary results.
+// to `bw0j` via base address `bptr` and offset `j`.
+// NOTE: The word `p8w` is used for temporary results.
 
 .macro MROW_V2 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
                p1w:req, p0w:req, j:req
@@ -224,19 +222,21 @@
 // upper part, which is multiplied by $c = 19$ (macro `MULHIXC`), (iii) the
 // obtained single-word product is taken into account when the remaining words
 // `rw08`-`rw14` are multiplied by $2c$ and added to the words `rw00`-`rw06`.
+// NOTE: The word `rw15` is used for temporary results.
 
 .macro MODREDP
     li      rcon, 2*CONSTC  // rcon = 38
-    MADD_V2 tmp1, rw07, rw15, rcon, rw07
-    MULHIXC tmp1, rw07, tmp1, rw07
-    MADD_V3 tmp1, rw00, rw08, rcon, tmp1, rw00
-    MADD_V3 tmp1, rw01, rw09, rcon, tmp1, rw01
-    MADD_V3 tmp1, rw02, rw10, rcon, tmp1, rw02
-    MADD_V3 tmp1, rw03, rw11, rcon, tmp1, rw03
-    MADD_V3 tmp1, rw04, rw12, rcon, tmp1, rw04
-    MADD_V3 tmp1, rw05, rw13, rcon, tmp1, rw05
-    MADD_V3 tmp1, rw06, rw14, rcon, tmp1, rw06
-    add     rw07, rw07, tmp1
+    MADD_V2 rw15, rw07, rw15, rcon, rw07
+    MULHIXC rw15, rw07, rw15, rw07
+    MADD_V3 rw15, rw00, rw08, rcon, rw15, rw00
+    MADD_V3 rw15, rw01, rw09, rcon, rw15, rw01
+    MADD_V3 rw15, rw02, rw10, rcon, rw15, rw02
+    MADD_V3 rw15, rw03, rw11, rcon, rw15, rw03
+    MADD_V3 rw15, rw04, rw12, rcon, rw15, rw04
+    MADD_V3 rw15, rw05, rw13, rcon, rw15, rw05
+    MADD_V3 rw15, rw06, rw14, rcon, rw15, rw06
+    lw      rptr, 48(sp)
+    add     rw07, rw07, rw15
 .endm
 
 
@@ -245,10 +245,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all 12 callee-saved registers on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `rptr`
+// on the stack.
+// NOTE: The stack pointer should be 16-byte aligned!
 
 .macro PROLOGUE
-    addi    sp, sp, -48
+    addi    sp, sp, -64
     sw      s0, (sp)
     sw      s1, 4(sp)
     sw      s2, 8(sp)
@@ -261,10 +263,12 @@
     sw      s9, 36(sp)
     sw      s10, 40(sp)
     sw      s11, 44(sp)
+    sw      rptr, 48(sp)
 .endm
 
 
 // The macro `EPILOGUE` pops all 12 callee-saved registers from the stack.
+// NOTE: `rptr` is popped separately in maco `MODREDP`.
 
 .macro EPILOGUE
     lw      s0, (sp)
@@ -279,7 +283,7 @@
     lw      s9, 36(sp)
     lw      s10, 40(sp)
     lw      s11, 44(sp)
-    addi    sp, sp, 48
+    addi    sp, sp, 64
 .endm
 
 

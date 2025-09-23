@@ -67,7 +67,7 @@
 // The macro `MADD_V1` multiplies the word `aiw` by `bjw` and puts the product
 // in the `rhi:rlo` register-pair (i.e., this macro performs a multiply-add
 // operation where 0 is added to the product, i.e., a normal multiplication).
-// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+// NOTE: Register `rlo` has to be different from `aiw` and `bjw`.
 
 .macro MADD_V1 rhi:req, rlo:req, aiw:req, bjw:req
     mul     \rlo, \aiw, \bjw
@@ -78,7 +78,6 @@
 // The macro `MADD_V2` multiplies the word `aiw` by `bjw` and adds the word
 // `c0w` to the product. The double-length result is put in the `rhi:rlo`
 // register-pair.
-// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 // NOTE: Register `c0w` is (generally) the same as register `rlo`.
 
 .macro MADD_V2 rhi:req, rlo:req, aiw:req, bjw:req, c0w:req
@@ -99,7 +98,7 @@
 // 31-bit lower part and a 33-bit upper part. The lower part is put in `msw`,
 // while the upper part is multiplied by the constant $c$ (in register `rcon`)
 // and the double-length product is put in `rhi:rlo`.
-// NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
+// NOTE: Register `rlo` has to be different from `dhi`.
 // NOTE: Register `msw` is (generally) the same as register `dlo`.
 
 .macro MULHIXC rhi:req, rlo:req, msw:req, dhi:req, dlo:req
