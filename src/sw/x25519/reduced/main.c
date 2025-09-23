@@ -112,6 +112,20 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+  // --------------------------------------------------------------------------
+  
+  printf("\n=============================================================\n");
+  printf("test_gfp_arith - gfp inv");
+  printf("\n=============================================================\n");
+  LOAD_CACHE(gfp_inv(resr, op1r), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(gfp_inv(resr, op1r), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
+  MEASURE_CYCLES(gfp_inv(resr, op1r), iter);
+  printf("         #cycles = %" PRIu64 "\n", diff_cycles);
+  printf("         #instr  = %" PRIu64 "\n", diff_instr);
+#endif
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
@@ -345,9 +359,9 @@ void test_ecdh(void)
   static const char RFC7748_B[] =  // RFC7748 test vector
     "0xEBE088FF278B2F1CFDB6182629B13B6FE60E80838B7FE1794B8A4A627E08AB5D";
   
-  printf("=============================================================\n");
-  printf("ecdh correctness test:\n");
-  printf("=============================================================\n");
+  printf("\n=============================================================\n");
+  printf("ecdh correctness test");
+  printf("\n=============================================================\n");
   
   printf("x25519: (alice <---> bob: rfc7748 test vectors)\n");
   

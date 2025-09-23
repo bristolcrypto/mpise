@@ -164,8 +164,8 @@ def main():
     # =================== MODIFIED SECTION START ===================
     # --- Console Reporting Phase ---
     # Adjusted column widths and alignment for better readability.
-    header =    "Program (Metric)                                       | Int. Latency |          Min |    Orig. Max |    Filt. Max | % Drop  | Orig. Avg (RMSE)         | Filt. Avg (RMSE)         | % Drop Avg (RMSE)   | Outliers"
-    separator = "-------------------------------------------------------- | ------------ | ------------ | ------------ | ------------ | ------- | ------------------------ | ------------------------ | ------------------- | --------"
+    header =    "Program (Metric)                                         | Int. Latency |          Min |    Orig. Max |    Filt. Max | % Drop  | Orig. Avg (RMSE)           | Filt. Avg (RMSE)           | % Drop Avg (RMSE)   | Outliers"
+    separator = "-------------------------------------------------------- | ------------ | ------------ | ------------ | ------------ | ------- | -------------------------- | -------------------------- | ------------------- | --------"
     print(header)
     print(separator)
 
