@@ -377,8 +377,8 @@
 
 .macro MODREDP
     li      rcon, 2*CONSTC  // rcon = 38
-    MADD_V2 rw15, rw07, rw15, rcon, rw07
-    MULHIXC rw15, rw07, rw15, rw07
+    MADD_V2 tmp1, rw07, rw15, rcon, rw07
+    MULHIXC rw15, rw07, tmp1, rw07
     MADD_V3 rw15, rw00, rw08, rcon, rw15, rw00
     MADD_V3 rw15, rw01, rw09, rcon, rw15, rw01
     MADD_V3 rw15, rw02, rw10, rcon, rw15, rw02
