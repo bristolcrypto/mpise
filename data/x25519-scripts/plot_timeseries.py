@@ -104,9 +104,12 @@ def main():
     cols = math.ceil(math.sqrt(num_functions))
     rows = math.ceil(num_functions / cols)
 
-    fig, axs = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4), squeeze=False)
+    fig, axs = plt.subplots(rows, cols, figsize=(cols * 6, rows * 5), squeeze=False)
     fig.suptitle('Performance Analysis of Cryptographic Functions on CVA6', fontsize=18)
     axs = axs.flatten()
+
+    # Dictionary to hold the annotation box for each subplot
+    annotations = {}
 
     for i, (test_name, func_name) in enumerate(functions_to_plot):
         cycles, instructions = parse_performance_data(log_content, test_name, func_name)
@@ -127,6 +130,13 @@ def main():
             ax.legend()
             # Use scientific notation for y-axis if numbers are large
             ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+	    # Hover functionality : Create an annotation object for the current subplot and hide it
+            annot = ax.annotate("", xy=(0, 0), xytext=(-20, 20), textcoords="offset points",
+                                bbox=dict(boxstyle="round", fc="w", ec="k", lw=1),
+                                arrowprops=dict(arrowstyle="->"))
+            annot.set_visible(False)
+            annotations[ax] = annot # Store the annotation for this axis
         else:
             # If no data was found for some reason, show an empty plot
             ax.set_title(f'{func_name}\n(No data found)')
@@ -135,6 +145,46 @@ def main():
     # Turn off any unused subplots in the grid
     for i in range(num_functions, len(axs)):
         axs[i].axis('off')
+
+    # --- Event Handling for Hover ---
+    def update_annot(ax, line, ind):
+        """Updates the annotation's position and text."""
+        x, y = line.get_data()
+        annot = annotations[ax]
+        annot.xy = (x[ind["ind"][0]], y[ind["ind"][0]])
+        # Format the text with comma separators for thousands
+        text = f"{line.get_label()}: {y[ind['ind'][0]]:,}"
+        annot.set_text(text)
+        annot.get_bbox_patch().set_alpha(0.7)
+
+    def hover(event):
+        """Checks if the mouse is over a data point and updates the annotation."""
+        if event.inaxes is None:
+            return
+        
+        ax = event.inaxes
+        annot = annotations.get(ax)
+        if not annot:
+            return
+
+        is_visible = annot.get_visible()
+        
+        # Check all lines in the current subplot
+        for line in ax.get_lines():
+            cont, ind = line.contains(event)
+            if cont:
+                update_annot(ax, line, ind)
+                annot.set_visible(True)
+                fig.canvas.draw_idle()
+                return # Exit after finding the first point
+
+        # If the mouse is not over any point but the annotation is visible, hide it
+        if is_visible:
+            annot.set_visible(False)
+            fig.canvas.draw_idle()
+
+    # Connect the hover function to the figure's event system
+    fig.canvas.mpl_connect("motion_notify_event", hover)
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.96])
     plt.show()
