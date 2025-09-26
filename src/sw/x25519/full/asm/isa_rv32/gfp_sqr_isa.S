@@ -238,8 +238,8 @@
 // halved before the multiplication.
 
 .macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
-    srli    tmp0, \dlo, 31
     slli    \rhi, \dhi, 1
+    srli    tmp0, \dlo, 31
     add     \rhi, \rhi, tmp0
     srli    tmp0, rcon, 1
     slli    \rlo, \dlo, 1
