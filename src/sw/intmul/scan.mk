@@ -14,6 +14,16 @@ ifeq "${VERSION}" "hybrid"
 export CONF="-DVERSION_HYBRID"
 endif
 
+ifeq "${PLATFORM}" "cva6-verilator"
+export CONF="-DPLATFORM_CVA6_VERILATOR"
+endif
+ifeq "${PLATFORM}" "cva6-fpga"
+export CONF="-DPLATFORM_CVA6_FPGA"
+endif
+ifeq "${PLATFORM}" "spike"
+export CONF="-DPLATFORM_SPIKE"
+endif
+
 # -----------------------------------------------------------------------------
 
 ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf :
