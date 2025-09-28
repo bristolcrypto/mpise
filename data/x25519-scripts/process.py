@@ -199,8 +199,8 @@ def main():
         printd("\nStatistical report complete. Generating plot...", level='info')
         plot_title = f"Performance Analysis (Original vs. Filtered) from {basename}"
         # The plotting function will dynamically create a grid for all discovered data categories
-        create_comparison_histogram_grid(all_stats_results, plot_title)
-        printd("Plot window closed. Program finished.", level='info')
+        # create_comparison_histogram_grid(all_stats_results, plot_title)
+        # printd("Plot window closed. Program finished.", level='info')
     else:
         printd("No stats were calculated, skipping plot generation.", level='warning')
 

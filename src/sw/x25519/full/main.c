@@ -101,7 +101,70 @@ void test_gfp_mul(int iter, int num_warmup_iters)
 #endif
   // --------------------------------------------------------------------------
 }
+void test_gfp_sqr(int iter, int num_warmup_iters)
+{
+  uint64_t start_cycles, end_cycles, diff_cycles;
+  uint64_t start_instr, end_instr, diff_instr;
+  Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
+  int i;
+#if DEBUG
+  char resh[2*WBYTES*NWORDS+3];  // result as hex-string
+#endif
+  
+  static const char op1h[] =  // 1st operand for testing
+    "0x0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
+  static const char op2h[] =  // 2nd operand for testing
+    "0x76543210FEDCBA9876543210FEDCBA9876543210FEDCBA9876543210FEDCBA98";
+  
+  hex_to_int(op1f, op1h, NWORDS);
+  hex_to_int(op2f, op2h, NWORDS);
+  
+  // --------------------------------------------------------------------------
+  
+  printf("\n=============================================================\n");
+  printf("test_gfp_arith - gfp sqr");
+  printf("\n=============================================================\n");
+  LOAD_CACHE(gfp_sqr(resf, op1f), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(gfp_sqr(resf, op1f), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
+  MEASURE_CYCLES(gfp_sqr(resf, op1f), iter);
+  printf("         #cycles = %" PRIu64 "\n", diff_cycles);
+  printf("         #instr  = %" PRIu64 "\n", diff_instr);
+#endif
+  // --------------------------------------------------------------------------
 
+}
+void test_gfp_inv(int iter, int num_warmup_iters)
+{
+  uint64_t start_cycles, end_cycles, diff_cycles;
+  uint64_t start_instr, end_instr, diff_instr;
+  Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
+  int i;
+  // --------------------------------------------------------------------------
+  
+  printf("\n=============================================================\n");
+  printf("test_gfp_arith - gfp inv");
+  printf("\n=============================================================\n");
+  LOAD_CACHE(gfp_inv(resf, op1f), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(gfp_inv(resf, op1f), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
+  MEASURE_CYCLES(gfp_inv(resf, op1f), iter);
+  printf("         #cycles = %" PRIu64 "\n", diff_cycles);
+  printf("         #instr  = %" PRIu64 "\n", diff_instr);
+#endif
+#if DEBUG
+  int_to_hex(resh, resf, NWORDS);
+  printf("  r  = %s\n", resh);
+  static const char sqrh[] =  // expected result gfp_sqr
+    "0x72CC9B9B881D163356F62CB64EB19AF43B1FBDD115461FB51F494EEBDBDAA465";
+  if (strcmp(sqrh, resh) != 0) printf("  result r is wrong!!!\n");
+  memset(resf, 0, WBYTES*NWORDS);
+#endif
+}  
 void test_gfp_arith(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
@@ -504,14 +567,22 @@ int main( int argc, char* argv[] )
   #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
   asm( "csrrwi x0, 0x801, " MPISE_RADIX_STR );
   #endif
-  
-  test_nop        (100, 10);                         // Warmup : 10,  Run : 100
-  test_gfp_arith  (100, 10);                         // Warmup : 10,  Run : 100
-  test_curve_arith(200, 10);                         // Warmup : 10,  Run : 200
+
+  #if defined( PLATFORM_SPIKE ) || defined( PLATFORM_CVA6_FPGA ) 
+  test_nop             (100, 10);                     // Warmup : 10,  Run : 100
+  test_gfp_arith       (100, 10);                     // Warmup : 10,  Run : 100
+  test_curve_arith     (200, 10);                     // Warmup : 10,  Run : 200
   test_ecdh();
-  // test_gfp_mul    (2, 10);                         // Warmup : 2,  Run : 10
-  // test_nop        (2, 10);                         // Warmup : 2,  Run : 10  
-  //test_mon_varbase_mul(num_iters, num_warmup_iters); // Warmup : 100, Run : 1000
+  test_mon_varbase_mul (num_iters, num_warmup_iters); // Warmup : 100, Run : 1000
+  #endif
+  #if defined( PLATFORM_CVA6_VERILATOR )  
+  test_nop             (2, 2);                         // Warmup : 2,  Run : 2
+  test_gfp_mul         (2, 2);                         // Warmup : 2,  Run : 2
+  test_gfp_sqr         (2, 2);                         // Warmup : 2,  Run : 2
+  test_gfp_inv         (2, 2);                         // Warmup : 2,  Run : 2
+  test_mon_varbase_mul (2, 2);                         // Warmup : 2,  Run : 2
+  #endif
+
   //test_scott(num_iters, num_warmup_iters);           // Warmup : 100, Run : 1000
   // test_point_mul();
   

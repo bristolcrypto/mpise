@@ -6,7 +6,11 @@
 #endif
 
 #ifndef TRIALS
+#if PLATFORM_CVA6_VERILATOR
+#define TRIALS 10
+#else
 #define TRIALS 1000
+#endif
 #endif
 
 #if !defined( VERSION_SIMPLE ) && !defined( VERSION_HYBRID )

@@ -22,13 +22,8 @@ endif
 
 ifeq "${PLATFORM}" "cva6-fpga"
 export GCC_PREFIX  = riscv-none-elf
-export GCC_FLAGS  += -march='rv64imafdc_zicsr_zifencei_zicntr' -mabi='lp64d' -static -mcmodel='medany' -fvisibility='hidden' -nostdlib -nostartfiles -g -T ${CVA6}/config/gen_from_riscv_config/linker/link.ld
-export GCC_PATHS  += -I ${CVA6}/verif/sim/dv/user_extension -I ${CVA6}/verif/tests/custom/env -I ${CVA6}/verif/tests/custom/common
-export GCC_LIBS   += -lgcc
-
-export GCC_FLAGS  += -DMPISE_STDC_RAND
-export SOURCES    += ${CVA6}/verif/tests/custom/common/syscalls.c
-export SOURCES    += ${CVA6}/verif/tests/custom/common/crt.S
+export GCC_FLAGS  += -march='rv64imafdc_zicsr_zifencei'        -mabi='lp64d'
+export GCC_FLAGS  += -DMPISE_STDC_RAND -DTHRESHOLD_DEBUG
 endif
 
 # -----------------------------------------------------------------------------

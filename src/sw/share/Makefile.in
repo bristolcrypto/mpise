@@ -28,6 +28,16 @@ export XLEN=64
 export GCC_FLAGS += -DMPISE_XLEN="${XLEN}"
 endif
 
+ifeq "${PLATFORM}" "spike"
+export GCC_FLAGS += -DPLATFORM_SPIKE
+endif
+ifeq "${PLATFORM}" "cva6-verilator"
+export GCC_FLAGS += -DPLATFORM_CVA6_VERILATOR
+endif
+ifeq "${PLATFORM}" "cva6-fpga"
+export GCC_FLAGS += -DPLATFORM_CVA6_FPGA
+endif
+
 ifeq "${TYPE}" "isa"
 export TYPE_ISA      = 1
 export GCC_FLAGS += -DMPISE_ISA
