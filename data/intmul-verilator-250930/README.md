@@ -29,7 +29,7 @@ This step will process the folders in "original-logs", and create "generated-log
 4. Plot with scan.sh :
 The process-all.sh script can also be invoked internally by src/sw/intmul/scan.sh for plotting purposes :
 ```
-MPISE_DESTRUCTIVE="x" MPISE_STATELESS="y" ARCH="rv32" DATA="intmul-fpga-250627" bash scan.sh clean
-MPISE_DESTRUCTIVE="x" MPISE_STATELESS="y" ARCH="rv32" DATA="intmul-fpga-250627" bash scan.sh plot
+MPISE_DESTRUCTIVE="x" MPISE_STATELESS="y" ARCH="rv32" DATA="intmul-verilator-250930" bash scan.sh clean
+MPISE_DESTRUCTIVE="x" MPISE_STATELESS="y" ARCH="rv32" DATA="intmul-verilator-250930" bash scan.sh plot
 ```
 where (x,y) each can take values 0 or 1.
