@@ -1,5 +1,8 @@
 #!/bin/bash 
 
+#export ARCHIVE="${REPO_HOME}/data/intmul-fpga-250627"
+ export ARCHIVE="${REPO_HOME}/data/intmul-verilator-250930"
+
 plot() {
   # plot ISA-based results
   export TYPE="isa"
@@ -28,12 +31,12 @@ export MPISE_STATELESS="0"
 
 export ARCH="rv32"
 export XLEN="32"
-cp ${REPO_HOME}/data/intmul-fpga-250627/generated-logs/${ARCH}_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/*.log ./scan
+cp ${ARCHIVE}/generated-logs/${ARCH}_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/*.log ./scan
 plot
 
 export ARCH="rv64"
 export XLEN="64"
-cp ${REPO_HOME}/data/intmul-fpga-250627/generated-logs/${ARCH}_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/*.log ./scan
+cp ${ARCHIVE}/generated-logs/${ARCH}_mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/*.log ./scan
 plot
 
 if [ ! -z "${1}" ] ; then
