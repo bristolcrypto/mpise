@@ -4,53 +4,19 @@
 #include "rdtsc.h"
 #include "gfparith.h"
 #include "moncurve.h"
-#include "instrumentation.h"
+//#include "instrumentation.h"
+#include "test_gfp.h"
 
-#if X25519_DEBUG
 // ------------ Instrumentation code ------------
 // Define two arrays to track clock cycles and
 // retired instructions for each iteration of a
 // test function. These arrays are defined once,
 // and reused multiple times throughout this file.
 // ----------------------------------------------
-#define MAX_TRIALS 2000
+#if X25519_DEBUG
 uint64_t rdtsc_debug[MAX_TRIALS];
 uint64_t instr_debug[MAX_TRIALS];
 #endif
-
-#define LOAD_CACHE(X, iter) do {                  \
-  for (i = 0; i < (iter); i++) (X);               \
-} while (0);
-
-#define MEASURE_CYCLES(X, iter) do {              \
-  start_cycles = rdtsc();                         \
-  start_instr = rdinstr();                        \
-  for (i = 0; i < (iter); i++) (X);               \
-  end_cycles = rdtsc();                           \
-  end_instr  = rdinstr();                         \
-  diff_cycles = (end_cycles-start_cycles)/(iter); \
-  diff_instr  = (end_instr - start_instr)/(iter); \
-} while (0);
-
-// Single NOP subroutine
-void test_nop(int iter, int num_warmup_iters)
-{
-  uint64_t start_cycles, end_cycles, diff_cycles;
-  uint64_t start_instr, end_instr, diff_instr;
-  int i;
-  printf("\n=============================================================\n");
-  printf("test_nop - nop_routine");
-  printf("\n=============================================================\n");
-  LOAD_CACHE(nop_routine(), num_warmup_iters);
-#if X25519_DEBUG
-  MEASURE_CYCLES_DEBUG(nop_routine(), iter, rdtsc_debug, instr_debug);
-  print_performance_counters(rdtsc_debug, instr_debug, iter);
-#else
-  MEASURE_CYCLES(nop_routine(), iter);
-  printf("         #cycles = %" PRIu64 "\n", diff_cycles);
-  printf("         #instr  = %" PRIu64 "\n", diff_instr);
-#endif
-}
 
 void test_gfp_arith(int iter, int num_warmup_iters)
 {
@@ -442,12 +408,26 @@ int main( int argc, char* argv[] )
   #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
   asm( "csrrwi x0, 0x801, " MPISE_RADIX_STR );
   #endif
-  
-  test_nop        (100, 10);                         // Warmup : 10,  Run : 100
-  test_gfp_arith  (100, 10);                         // Warmup : 10,  Run : 100
-  test_curve_arith(200, 10);                         // Warmup : 10,  Run : 200
+
+  #if defined( PLATFORM_SPIKE ) || defined( PLATFORM_CVA6_FPGA ) 
+  test_nop             (100, 10);                     // Warmup : 10,  Run : 100
+  test_gfp_arith       (100, 10);                     // Warmup : 10,  Run : 100
+  test_curve_arith     (200, 10);                     // Warmup : 10,  Run : 200
   test_ecdh();
-  test_mon_varbase_mul(num_iters, num_warmup_iters); // Warmup : 100, Run : 1000
+  test_mon_varbase_mul (num_iters, num_warmup_iters); // Warmup : 100, Run : 1000
+  #endif
+  #if defined( PLATFORM_CVA6_VERILATOR )
+  test_nop             (10, 2);                         // Run : 10, Warmup : 2
+  test_gfp_add         (10, 2);                         // Run : 10, Warmup : 2
+  test_gfp_sub         (10, 2);                         // Run : 10, Warmup : 2
+  test_gfp_mul         (10, 2);                         // Run : 10, Warmup : 2
+  test_gfp_mul32       (10, 2);                         // Run : 10, Warmup : 2
+  test_gfp_sqr         (10, 2);                         // Run : 10, Warmup : 2
+  test_gfp_inv         ( 5, 2);                         // Run :  5, Warmup : 2
+  test_curve_arith     (10, 2);                         // Run : 10, Warmup : 2
+  test_mon_varbase_mul ( 2, 2);                         // Run :  2, Warmup : 2
+  #endif
+
   // test_point_mul();
   
   return 0;

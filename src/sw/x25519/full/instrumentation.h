@@ -1,9 +1,29 @@
 #ifndef __INSTRUMENTATION_H__
 #define __INSTRUMENTATION_H__
 #include <stdlib.h>
+
+#if X25519_DEBUG
+#define MAX_TRIALS 2000
+#endif
+
 void nop_routine() {
   asm volatile("nop");
 }
+
+#define LOAD_CACHE(X, iter) do {                  \
+  for (i = 0; i < (iter); i++) (X);               \
+} while (0);
+
+#define MEASURE_CYCLES(X, iter) do {              \
+  start_cycles = rdtsc();                         \
+  start_instr = rdinstr();                        \
+  for (i = 0; i < (iter); i++) (X);               \
+  end_cycles = rdtsc();                           \
+  end_instr  = rdinstr();                         \
+  diff_cycles = (end_cycles-start_cycles)/(iter); \
+  diff_instr  = (end_instr - start_instr)/(iter); \
+} while (0);
+
 #if X25519_DEBUG
 #define MEASURE_CYCLES_DEBUG(X, iter, cc, ir) do {\
   for (i = 0; i < (iter); i++) {                  \
@@ -41,4 +61,5 @@ void print_performance_counters(uint64_t *cycles, uint64_t *instrs, int iter) {
   printf("\n----------------------------------------------\n");
 }
 #endif // X25519_DEBUG 
+
 #endif // __INSTRUMENTATION_H__
