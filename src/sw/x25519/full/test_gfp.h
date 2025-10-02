@@ -1,5 +1,5 @@
-#ifndef __TEST_GFP_H__
-#define __TEST_GFP_H__
+#ifndef __X25519_TEST_GFP_H__
+#define __X25519_TEST_GFP_H__
 
 #include "instrumentation.h"
 #include "share.h"
