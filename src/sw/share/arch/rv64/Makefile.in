@@ -30,17 +30,17 @@ endif
 
 ifeq "${PLATFORM}" "spike"
 run   : build
-	@${RISCV}/bin/spike    --isa='rv64imafdc_zicsr_zifencei_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
+	@${RISCV}/bin/spike    --isa='rv64imafdc_zicsr_zifencei_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
 
 debug : build
-	@${RISCV}/bin/spike -d --isa='rv64imafdc_zicsr_zifencei_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}.elf
+	@${RISCV}/bin/spike -d --isa='rv64imafdc_zicsr_zifencei_zicntr' ${RISCV}/riscv64-unknown-elf/bin/pk ${REPO_HOME}/build/${ALG}/${ALG}-${ARCH}_${TYPE}_${RADIX}.elf
 endif
 ifeq "${PLATFORM}" "cva6-verilator"
 run   : build
 	@echo "Configure RISCV variable compatible with CVA6 repository before verilator simulation"
 	@echo "RISCV is $(RISCV)"
 	cd ${CVA6} && \
-	bash ${CVA6}/verif/sim/mpise-sim.sh ${ALG}-${ARCH}_${TYPE}
+	bash ${CVA6}/verif/sim/mpise-sim.sh ${ALG}-${ARCH}_${TYPE}_${RADIX}
 
 debug : build
 	@$(error "can't simulate for PLATFORM=${PLATFORM}")
