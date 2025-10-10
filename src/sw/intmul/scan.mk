@@ -8,29 +8,29 @@ export XLEN=64
 endif
 
 ifeq "${VERSION}" "simple"
-export CONF="-DVERSION_SIMPLE"
+export CONF="-DVERSION_SIMPLE "
 endif
 ifeq "${VERSION}" "hybrid"
-export CONF="-DVERSION_HYBRID"
+export CONF="-DVERSION_HYBRID "
 endif
 
 ifeq "${PLATFORM}" "cva6-verilator"
-export CONF="-DPLATFORM_CVA6_VERILATOR"
+export CONF+="-DPLATFORM_CVA6_VERILATOR "
 endif
 ifeq "${PLATFORM}" "cva6-fpga"
-export CONF="-DPLATFORM_CVA6_FPGA"
+export CONF+="-DPLATFORM_CVA6_FPGA "
 endif
 ifeq "${PLATFORM}" "spike"
-export CONF="-DPLATFORM_SPIKE"
+export CONF+="-DPLATFORM_SPIKE "
 endif
 
 # -----------------------------------------------------------------------------
 
 ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf :
 	make --directory="${REPO_HOME}" ALG="intmul" ARCH="${ARCH}" TYPE="${TYPE}" RADIX="${RADIX}" PLATFORM="${PLATFORM}" sw-clean sw-build
-	mv ${REPO_HOME}/build/intmul/intmul-${ARCH}_${TYPE}.elf ${@}
-	mv ${REPO_HOME}/build/intmul/intmul-${ARCH}_${TYPE}.bin ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.bin
-	mv ${REPO_HOME}/build/intmul/intmul-${ARCH}_${TYPE}.asm ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.asm
+	mv ${REPO_HOME}/build/intmul/intmul-${ARCH}_${TYPE}_${RADIX}.elf ${@}
+	mv ${REPO_HOME}/build/intmul/intmul-${ARCH}_${TYPE}_${RADIX}.bin ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.bin
+	mv ${REPO_HOME}/build/intmul/intmul-${ARCH}_${TYPE}_${RADIX}.asm ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.asm
 
 ${REPO_HOME}/src/sw/intmul/scan/${ARCH}/mpise_${MPISE_DESTRUCTIVE}${MPISE_STATELESS}/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf : ${REPO_HOME}/src/sw/intmul/scan/intmul-${ARCH}_${TYPE}_${RADIX}_${VERSION}.elf
 	@echo "Moving ELF, ASM, BIN files to scan/${ARCH}/"
