@@ -7,6 +7,15 @@ The folder data/intmul-verilator-<date> contains :
 2. The scripts to parse, process and analyze the data. The data is prepared for further downstream processing (e.g. to generate plots using src/sw/intmul/scan.sh).
 
 ## Usage :
+0. Preprocessing steps:
+```
+bash stage1.sh # prepares the directories from raw logfiles in collected-results.zip
+# Needs collected-results.zip file (from the server)
+
+bash stage2.sh # Prepares original-logs folder
+# Needs output of stage1 (in source-logs folder)
+
+```
 1. Setup python environment 
 ```
 python3 -m venv .venv
@@ -20,9 +29,9 @@ python single.py <path-to-logfile.log>
 This will produce analytics and graphs corresponding to a particular logfile.
 
 3. Batch processing (all logfiles):
-Process the raw logfiles for downstream scripts (e.g. plotting in src/sw/intmul/scan.sh)
+Process the raw logfiles in original-logs for downstream scripts (e.g. plotting in src/sw/intmul/scan.sh)
 ```
-bash process-all-top.sh
+bash stage3.sh
 ```
 This step will process the folders in "original-logs", and create "generated-logs" folder. The processed files are noise-cleaned, formatted for further downstream processing. For example:
 
