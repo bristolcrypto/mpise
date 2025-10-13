@@ -1,3 +1,7 @@
+import warnings
+
+warnings.filterwarnings( 'ignore' )
+
 import argparse, matplotlib, matplotlib.pyplot as plt, numpy as np, sys
 
 plt.rcParams[ 'text.usetex' ] = True
@@ -75,7 +79,7 @@ def plot( data ) :
     if ( radix != int( argv.xlen ) ) :
       for ( x, y, p_y ) in zip( xs, ys, p( xs ) ) :
         if ( ( y < p_y ) and ( ( crossover == None ) or ( x < crossover ) ) ) :
-          crossover = x
+          print( 'found crossover: x={0:d}, y={1:d}, p_y={2:f}'.format( x, y, p_y ) ) ; crossover = x
 
     es_min = [ abs( y - e ) for ( _, _, e, _, y ) in data[ radix ] ]
     es_max = [ abs( y - e ) for ( _, _, _, e, y ) in data[ radix ] ]
