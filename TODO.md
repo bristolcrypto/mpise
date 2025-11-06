@@ -9,7 +9,7 @@
 2. relocation:
 
    1. [ ] relocate `https://github.com/scarv/mpise` to `https://github.com/bristolcrypto/mpise`
-   2. [ ] relocate `https://github.com/isa084/cva6_crypto_base` to `https://github.com/bristolcrypto/mpise-cva6`
+   2. [x] relocate `https://github.com/isa084/cva6_mpise` to `https://github.com/bristolcrypto/mpise-cva6`
    3. [ ] update instructions to reflect relocation
    4. [ ] test end-to-end use of repo.
 
