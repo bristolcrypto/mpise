@@ -1,2 +1,0 @@
-
-SRCS  = src/*.c src/asm/isa/*.S src/asm/ise/*.S

@@ -1,8 +1,0 @@
-MPISE_DESTRUCTIVE="0" MPISE_STATELESS="0" ARCH="rv32" bash process-all.sh
-MPISE_DESTRUCTIVE="0" MPISE_STATELESS="0" ARCH="rv64" bash process-all.sh
-MPISE_DESTRUCTIVE="0" MPISE_STATELESS="1" ARCH="rv32" bash process-all.sh
-MPISE_DESTRUCTIVE="0" MPISE_STATELESS="1" ARCH="rv64" bash process-all.sh
-MPISE_DESTRUCTIVE="1" MPISE_STATELESS="0" ARCH="rv32" bash process-all.sh
-MPISE_DESTRUCTIVE="1" MPISE_STATELESS="0" ARCH="rv64" bash process-all.sh
-MPISE_DESTRUCTIVE="1" MPISE_STATELESS="1" ARCH="rv32" bash process-all.sh
-MPISE_DESTRUCTIVE="1" MPISE_STATELESS="1" ARCH="rv64" bash process-all.sh
