@@ -29,7 +29,7 @@
 .equ CONSTC, 19
 
 // Register `rptr` holds the start address of array `r`
-#define rptr a0
+#define rptr t1
 // Register `aptr` holds the start address of array `a`
 #define aptr a1
 // Register `bptr` holds the start address of array `b`
@@ -48,7 +48,8 @@
 #define aw05 s7
 #define aw06 s8
 #define aw07 s9
-// Register `bw0j` holds one single word of operand `b`
+// Registers `bw00` to `bw0j` hold words of operand `b`
+#define bw00 s1
 #define bw0j a0
 // Registers `rw00` to `rw15` hold words of the product
 #define rw00 s10
@@ -125,6 +126,28 @@
 .endm
 
 
+// The macro `MADD_V4` is basically the same as `MADD_V3`, but includes the
+// loading of the word $b_j$ of the multiplier to `bjw` via base-address `bptr`
+// and offset `j`.
+
+.macro MADD_V4 rhi:req, rlo:req, aiw:req, bjw:req, d0w:req, c0w:req, j:req
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    maddlu  tmp0, \aiw, \bjw, \c0w
+    maddhu  tmp1, \aiw, \bjw, \c0w
+    lw      \bjw, \j(bptr)
+    add     \rlo, \d0w, tmp0
+    cacc    \rhi, \d0w, tmp0, tmp1
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      tmp0, \d0w
+    maddlu  tmp0, \aiw, \bjw
+    maddhu  \rhi, \aiw, \bjw
+    lw      \bjw, \j(bptr)
+    cacc    \rhi, \c0w, tmp0
+    add     \rlo, \c0w, tmp0
+#endif
+.endm
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //////////// MACROS FOR LOW-LEVEL OPERATIONS FOR MODULAR REDUCTION ////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -156,23 +179,24 @@
 
 
 // The macro `MROW_V1` multiplies the 8-word operand `aw00`-`aw07` by a single
-// word (held in `bw0j`) and puts the 9-word product in `p0w`-`p8w`. This macro
+// word (held in `bw00`) and puts the 9-word product in `p0w`-`p8w`. This macro
 // corresponds to the operation $r = a \cdot b_0$ performed by the very first
-// iteration of the outer loop of the operand-scanning method. The word $b_0$
-// of the multiplier is loaded to `bw0j` via base-address `bptr` and offset
-// `j`.
+// iteration of the outer loop of the operand-scanning method. The words $b_0$
+// and $b_j$` of the multiplier are loaded to `bw00` and `bw0j`, respectively,
+// via base-address `bptr` and offset `j`.
 
 .macro MROW_V1 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
                p1w:req, p0w:req, j:req
+    lw      bw00, 0(bptr)
     lw      bw0j, \j(bptr)
-    MADD_V1 \p1w, \p0w, aw00, bw0j
-    MADD_V2 \p2w, \p1w, aw01, bw0j, \p1w
-    MADD_V2 \p3w, \p2w, aw02, bw0j, \p2w
-    MADD_V2 \p4w, \p3w, aw03, bw0j, \p3w
-    MADD_V2 \p5w, \p4w, aw04, bw0j, \p4w
-    MADD_V2 \p6w, \p5w, aw05, bw0j, \p5w
-    MADD_V2 \p7w, \p6w, aw06, bw0j, \p6w
-    MADD_V2 \p8w, \p7w, aw07, bw0j, \p7w
+    MADD_V1 \p1w, \p0w, aw00, bw00
+    MADD_V2 \p2w, \p1w, aw01, bw00, \p1w
+    MADD_V2 \p3w, \p2w, aw02, bw00, \p2w
+    MADD_V2 \p4w, \p3w, aw03, bw00, \p3w
+    MADD_V2 \p5w, \p4w, aw04, bw00, \p4w
+    MADD_V2 \p6w, \p5w, aw05, bw00, \p5w
+    MADD_V2 \p7w, \p6w, aw06, bw00, \p6w
+    MADD_V2 \p8w, \p7w, aw07, bw00, \p7w
 .endm
 
 
@@ -186,7 +210,22 @@
 
 .macro MROW_V2 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
                p1w:req, p0w:req, j:req
-    lw      bw0j, \j(bptr)
+    MADD_V2 \p8w, \p0w, aw00, bw0j, \p0w
+    MADD_V3 \p8w, \p1w, aw01, bw0j, \p8w, \p1w
+    MADD_V3 \p8w, \p2w, aw02, bw0j, \p8w, \p2w
+    MADD_V3 \p8w, \p3w, aw03, bw0j, \p8w, \p3w
+    MADD_V3 \p8w, \p4w, aw04, bw0j, \p8w, \p4w
+    MADD_V3 \p8w, \p5w, aw05, bw0j, \p8w, \p5w
+    MADD_V3 \p8w, \p6w, aw06, bw0j, \p8w, \p6w
+    MADD_V4 \p8w, \p7w, aw07, bw0j, \p8w, \p7w, \j
+.endm
+
+
+// The macro `MROW_V3` is basically the same as `MROW_V2`, but does not include
+// the loading of a word of the multiplier.
+
+.macro MROW_V3 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
+               p1w:req, p0w:req
     MADD_V2 \p8w, \p0w, aw00, bw0j, \p0w
     MADD_V3 \p8w, \p1w, aw01, bw0j, \p8w, \p1w
     MADD_V3 \p8w, \p2w, aw02, bw0j, \p8w, \p2w
@@ -206,16 +245,19 @@
 // The macro `MULROWS` multiplies the 8-word operand $a$ (i.e., the eight words
 // `aw00`-`aw07`) by the 8-word operand $b$ (which is loaded word by word from
 // RAM) in a row-wise fashion. The 16-word product is put in `rw00`-`rw15`.
+// NOTE: The word $b_j$ of the multiplier loaded in `MROW_V1` and `MROW_V2` is
+// actually used in the next iteration of the outer loop. This loading of $b_j$
+// in advance can help to prevent pipeline stalls.
 
 .macro MULROWS
-    MROW_V1 rw08, rw07, rw06, rw05, rw04, rw03, rw02, rw01, rw00, 0
-    MROW_V2 rw09, rw08, rw07, rw06, rw05, rw04, rw03, rw02, rw01, 4
-    MROW_V2 rw10, rw09, rw08, rw07, rw06, rw05, rw04, rw03, rw02, 8
-    MROW_V2 rw11, rw10, rw09, rw08, rw07, rw06, rw05, rw04, rw03, 12
-    MROW_V2 rw12, rw11, rw10, rw09, rw08, rw07, rw06, rw05, rw04, 16
-    MROW_V2 rw13, rw12, rw11, rw10, rw09, rw08, rw07, rw06, rw05, 20
-    MROW_V2 rw14, rw13, rw12, rw11, rw10, rw09, rw08, rw07, rw06, 24
-    MROW_V2 rw15, rw14, rw13, rw12, rw11, rw10, rw09, rw08, rw07, 28
+    MROW_V1 rw08, rw07, rw06, rw05, rw04, rw03, rw02, rw01, rw00, 4
+    MROW_V2 rw09, rw08, rw07, rw06, rw05, rw04, rw03, rw02, rw01, 8
+    MROW_V2 rw10, rw09, rw08, rw07, rw06, rw05, rw04, rw03, rw02, 12
+    MROW_V2 rw11, rw10, rw09, rw08, rw07, rw06, rw05, rw04, rw03, 16
+    MROW_V2 rw12, rw11, rw10, rw09, rw08, rw07, rw06, rw05, rw04, 20
+    MROW_V2 rw13, rw12, rw11, rw10, rw09, rw08, rw07, rw06, rw05, 24
+    MROW_V2 rw14, rw13, rw12, rw11, rw10, rw09, rw08, rw07, rw06, 28
+    MROW_V3 rw15, rw14, rw13, rw12, rw11, rw10, rw09, rw08, rw07
 .endm
 
 
@@ -245,8 +287,8 @@
     MADD_V3 rw15, rw03, rw11, rcon, rw15, rw03
     MADD_V3 rw15, rw04, rw12, rcon, rw15, rw04
     MADD_V3 rw15, rw05, rw13, rcon, rw15, rw05
+    lw      rptr, 48(sp)  // popped from stack
     MADD_V3 rw15, rw06, rw14, rcon, rw15, rw06
-    lw      rptr, 48(sp)
     add     rw07, rw07, rw15
 .endm
 
@@ -256,8 +298,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `rptr`
-// on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `a0` on
+// the stack.
 // NOTE: The stack pointer should be 16-byte aligned!
 
 .macro PROLOGUE
@@ -274,7 +316,7 @@
     sw      s9, 36(sp)
     sw      s10, 40(sp)
     sw      s11, 44(sp)
-    sw      rptr, 48(sp)
+    sw      a0, 48(sp)
 .endm
 
 

@@ -28,7 +28,7 @@
 .equ CONSTC, 19
 
 // Register `rptr` holds the start address of array `r`
-#define rptr a0
+#define rptr t1
 // Register `aptr` holds the start address of array `a`
 #define aptr a1
 // Registers `tmp0` and `tmp1` hold temporary variables
@@ -78,8 +78,8 @@
 // NOTE: Register `rlo` has to be different from `aiw` and `bjw`.
 
 .macro MACC_V1 rhi:req, rlo:req, aiw:req, bjw:req
-    mul     \rlo, \aiw, \bjw
     mulhu   \rhi, \aiw, \bjw
+    mul     \rlo, \aiw, \bjw
 .endm
 
 
@@ -139,6 +139,43 @@
 .endm
 
 
+// The macro `MACC_V5` is the same as `MACC_V2`, except that the lower word of
+// the accumulator is written to `tmp1` instead of `rlo`.
+// NOTE: The purpose of this macro is to help prevent pipeline stalls.
+
+.macro MACC_V5 rhi:req, rlo:req, aiw:req, bjw:req
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    maddlu  tmp1, \aiw, \bjw, \rlo
+    maddhu  \rhi, \aiw, \bjw, \rlo
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      \rhi, \rlo
+    maddhu  \rhi, \aiw, \bjw
+    maddlu  \rlo, \aiw, \bjw
+#endif
+.endm
+
+
+// The macro `MACC_V6` is the same as `MACC_V3`, except that the lower word of
+// the accumulator is read from `tmp1` instead of `rlo`.
+// NOTE: The purpose of this macro is to help prevent pipeline stalls.
+
+.macro MACC_V6 rex:req, rhi:req, rlo:req, aiw:req, bjw:req
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    maddhu  tmp0, \aiw, \bjw, tmp1
+    maddlu  \rlo, \aiw, \bjw, tmp1
+    add     \rhi, \rhi, tmp0
+    sltu    \rex, \rhi, tmp0
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      tmp0, \rlo
+    maddhu  tmp0, \aiw, \bjw
+    maddlu  \rlo, \aiw, \bjw
+    add     \rhi, \rhi, tmp0
+    sltu    \rex, \rhi, tmp0
+#endif
+.endm
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //////////// MACROS FOR WORD-WISE DOUBLE-AND-ADD-SQUARE OPERATIONS ////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,10 +209,10 @@
 
 .macro DASQ_V2 cow:req, rhi:req, rlo:req, aiw:req, ciw:req
     srli    tmp0, \rlo, 31
-    slli    \rlo, \rlo, 1
+    slli    tmp1, \rlo, 1
 #if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
-    maddhu  tmp1, \aiw, \aiw, \rlo
-    maddlu  \rlo, \aiw, \aiw, \rlo
+    maddlu  \rlo, \aiw, \aiw, tmp1
+    maddhu  tmp1, \aiw, \aiw, tmp1
     cacc    tmp0, \rlo, \ciw, tmp0
     add     \rlo, \rlo, \ciw
     srli    \cow, \rhi, 31
@@ -319,8 +356,8 @@
 .macro MCOL_V2 rex:req, rhi:req, rlo:req, a0w:req, b0w:req, a1w:req, b1w:req, \
                acclen:req
     .if (\acclen == 32)
-    MACC_V2 \rhi, \rlo, \a0w, \b0w
-    MACC_V3 \rex, \rhi, \rlo, \a1w, \b1w
+    MACC_V5 \rhi, \rlo, \a0w, \b0w
+    MACC_V6 \rex, \rhi, \rlo, \a1w, \b1w
     .else  // acclen == 64
     MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w
     MACC_V4 \rex, \rhi, \rlo, \a1w, \b1w
@@ -426,8 +463,8 @@
     MADD_V3 rw15, rw03, rw11, rcon, rw15, rw03
     MADD_V3 rw15, rw04, rw12, rcon, rw15, rw04
     MADD_V3 rw15, rw05, rw13, rcon, rw15, rw05
+    lw      rptr, 48(sp)  // popped from stack
     MADD_V3 rw15, rw06, rw14, rcon, rw15, rw06
-    lw      rptr, 48(sp)
     add     rw07, rw07, rw15
 .endm
 
@@ -437,8 +474,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `rptr`
-// on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `a0` on
+// the stack.
 // NOTE: The stack pointer should be 16-byte aligned!
 
 .macro PROLOGUE
@@ -455,7 +492,7 @@
     sw      s9, 36(sp)
     sw      s10, 40(sp)
     sw      s11, 44(sp)
-    sw      rptr, 48(sp)
+    sw      a0, 48(sp)
 .endm
 
 
