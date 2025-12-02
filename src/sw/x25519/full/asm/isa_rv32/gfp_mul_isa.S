@@ -163,7 +163,7 @@
 
 
 // The macro `MROW_V1` multiplies the 8-word operand `aw00`-`aw07` by a single
-// word (held in `bw0j`) and puts the 9-word product in `p0w`-`p8w`. This macro
+// word (held in `bw00`) and puts the 9-word product in `p0w`-`p8w`. This macro
 // corresponds to the operation $r = a \cdot b_0$ performed by the very first
 // iteration of the outer loop of the operand-scanning method. The words $b_0$
 // and $b_j$` of the multiplier are loaded to `bw00` and `bw0j`, respectively,
@@ -229,7 +229,7 @@
 // The macro `MULROWS` multiplies the 8-word operand $a$ (i.e., the eight words
 // `aw00`-`aw07`) by the 8-word operand $b$ (which is loaded word by word from
 // RAM) in a row-wise fashion. The 16-word product is put in `rw00`-`rw15`.
-// NOTE: The word $b_j$ of the multiplier loaded in `MROW_V1` and `MROW_V1` is
+// NOTE: The word $b_j$ of the multiplier loaded in `MROW_V1` and `MROW_V2` is
 // actually used in the next iteration of the outer loop. This loading of $b_j$
 // in advance can help to prevent pipeline stalls.
 

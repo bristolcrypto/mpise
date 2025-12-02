@@ -25,7 +25,7 @@
 .equ CONSTC, 19
 
 // Register `rptr` holds the start address of array `r`
-#define rptr a0
+#define rptr t1
 // Register `aptr` holds the start address of array `a`
 #define aptr a1
 // Registers `tmp0` and `tmp1` hold temporary variables
@@ -75,8 +75,8 @@
 // NOTE: Register `rlo` has to be different from `aiw` and `bjw`.
 
 .macro MACC_V1 rhi:req, rlo:req, aiw:req, bjw:req
-    mul     \rlo, \aiw, \bjw
     mulhu   \rhi, \aiw, \bjw
+    mul     \rlo, \aiw, \bjw
 .endm
 
 
@@ -385,8 +385,8 @@
     MADD_V3 rw15, rw03, rw11, rcon, rw15, rw03
     MADD_V3 rw15, rw04, rw12, rcon, rw15, rw04
     MADD_V3 rw15, rw05, rw13, rcon, rw15, rw05
+    lw      rptr, 48(sp)  // popped from stack
     MADD_V3 rw15, rw06, rw14, rcon, rw15, rw06
-    lw      rptr, 48(sp)
     add     rw07, rw07, rw15
 .endm
 
@@ -396,8 +396,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `rptr`
-// on the stack.
+// The macro `PROLOGUE` pushes all 12 callee-saved registers along with `a0` on
+// the stack.
 // NOTE: The stack pointer should be 16-byte aligned!
 
 .macro PROLOGUE
@@ -414,7 +414,7 @@
     sw      s9, 36(sp)
     sw      s10, 40(sp)
     sw      s11, 44(sp)
-    sw      rptr, 48(sp)
+    sw      a0, 48(sp)
 .endm
 
 
