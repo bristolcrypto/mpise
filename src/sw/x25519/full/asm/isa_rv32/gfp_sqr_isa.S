@@ -362,7 +362,7 @@
 // The macro `MODREDP` reduces the 16-word operand `rw00`-`rw15` modulo the
 // prime $p = 2^{256} - 19$ to get an 8-word result. This reduction consists
 // of two steps: (i) the upper half `rw08`-`rw15` is multiplied by $2c = 38$
-// and the obtained 9-word product is added to the lower half `rw08`-`rw15`,
+// and the obtained 9-word product is added to the lower half `rw00`-`rw07`,
 // yielding a 9-word intermediate result `rw00`-`rw08`, (ii) the double-length
 // word in the `rw08:rw07` register-pair is split into a lower part of 31 bits
 // and an upper part, which is multiplied by $c = 19$ and the obtained product

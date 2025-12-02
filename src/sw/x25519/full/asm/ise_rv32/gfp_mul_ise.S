@@ -181,13 +181,12 @@
 // The macro `MROW_V1` multiplies the 8-word operand `aw00`-`aw07` by a single
 // word (held in `bw00`) and puts the 9-word product in `p0w`-`p8w`. This macro
 // corresponds to the operation $r = a \cdot b_0$ performed by the very first
-// iteration of the outer loop of the operand-scanning method. The words $b_0$
-// and $b_j$` of the multiplier are loaded to `bw00` and `bw0j`, respectively,
-// via base-address `bptr` and offset `j`.
+// iteration of the outer loop of the operand-scanning method. The word $b_j$`
+// of the multiplier is loaded to `bw0j` via base-address `bptr` and offset
+// `j`.
 
 .macro MROW_V1 p8w:req, p7w:req, p6w:req, p5w:req, p4w:req, p3w:req, p2w:req, \
                p1w:req, p0w:req, j:req
-    lw      bw00, 0(bptr)
     lw      bw0j, \j(bptr)
     MADD_V1 \p1w, \p0w, aw00, bw00
     MADD_V2 \p2w, \p1w, aw01, bw00, \p1w
@@ -264,7 +263,7 @@
 // The macro `MODREDP` reduces the 16-word operand `rw00`-`rw15` modulo the
 // prime $p = 2^{256} - 19$ to get an 8-word result. This reduction consists
 // of two steps: (i) the upper half `rw08`-`rw15` is multiplied by $2c = 38$
-// and the obtained 9-word product is added to the lower half `rw08`-`rw15`,
+// and the obtained 9-word product is added to the lower half `rw00`-`rw07`,
 // yielding a 9-word intermediate result `rw00`-`rw08`, (ii) the double-length
 // word in the `rw08:rw07` register-pair is split into a lower part of 31 bits
 // and an upper part, which is multiplied by $c = 19$ and the obtained product
@@ -341,9 +340,13 @@
 
 
 // The macro `LDM_OPA` loads the eight words of array `a` from RAM and puts
-// them in registers `aw00`-`aw07`.
+// them in registers `aw00`-`aw07`. The macro also loads the least-significant
+// word of operand `b` and puts it in register `bw00`.
+// NOTE: The loading of the least-significant word of `b` is included in this
+// macro to avoid a pipeline stall.
 
 .macro LDM_OPA
+    lw      bw00, 0(bptr)
     lw      aw00, 0(aptr)
     lw      aw01, 4(aptr)
     lw      aw02, 8(aptr)
