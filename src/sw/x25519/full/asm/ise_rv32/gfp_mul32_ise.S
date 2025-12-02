@@ -73,8 +73,8 @@
 // NOTE: Registers `rhi` and `rlo` have to be different from `aiw` and `bjw`.
 
 .macro MADD_V1 rhi:req, rlo:req, aiw:req, bjw:req
-    mul     \rlo, \aiw, \bjw
     mulhu   \rhi, \aiw, \bjw
+    mul     \rlo, \aiw, \bjw
 .endm
 
 
