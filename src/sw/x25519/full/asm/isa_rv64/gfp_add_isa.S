@@ -70,13 +70,14 @@
 
 // The macro `ADDW_V2` adds the word `aiw` and `biw` together with an incoming
 // carry in `cin` and puts the sum in the `shi:slo` register-pair.
+// NOTE: Register `slo` is (generally) the same as register `biw`.
 // NOTE: Register `slo` has to be different from `cin`.
 
 .macro ADDW_V2 shi:req, slo:req, aiw:req, biw:req, cin:req
-    add     \slo, \aiw, \biw
-    sltu    tmp0, \slo, \aiw
-    add     \slo, \slo, \cin
+    add     \slo, \biw, \cin
     sltu    \shi, \slo, \cin
+    add     \slo, \slo, \aiw
+    sltu    tmp0, \slo, \aiw
     add     \shi, \shi, tmp0
  .endm
 

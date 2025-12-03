@@ -80,6 +80,7 @@
 // double-length result is put in the `shi:slo` register-pair. This result can
 // be negative, whereby the upper word (in `shi`) is always in the range $[-2,
 // 1]$.
+// NOTE: Register `slo` is (generally) the same as register `biw`.
 // NOTE: Register `slo` has to be different from `cin`.
 
 .macro SUBW_V2 shi:req, slo:req, aiw:req, biw:req, cin:req
