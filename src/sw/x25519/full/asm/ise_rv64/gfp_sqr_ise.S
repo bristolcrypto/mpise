@@ -209,7 +209,7 @@
     cacc    \cow, \rhi, tmp1, \cow
     add     \rhi, \rhi, tmp1
 #elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
-    mv      tmp1, \rlo
+    mv      \rlo, tmp1
     maddlu  \rlo, \aiw, \aiw
     maddhu  tmp1, \aiw, \aiw
     cacc    tmp0, \rlo, \ciw

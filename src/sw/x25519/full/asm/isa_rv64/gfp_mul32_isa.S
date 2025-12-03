@@ -140,8 +140,8 @@
 gfp_mul32_isa:
     LDM_OPA
     MADD_V1 rw04, rw03, aw03, bw00
-    MULHIXC rw04, rw03, rw04, rw03
-    MADD_V2 rw01, rw00, aw00, bw00, rw04
+    MULHIXC rw00, rw03, rw04, rw03
+    MADD_V2 rw01, rw00, aw00, bw00, rw00
     MADD_V2 rw02, rw01, aw01, bw00, rw01
     MADD_V2 tmp1, rw02, aw02, bw00, rw02
     add     rw03, rw03, tmp1
