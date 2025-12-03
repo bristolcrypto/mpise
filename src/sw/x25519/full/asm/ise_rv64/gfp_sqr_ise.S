@@ -127,6 +127,42 @@
 .endm
 
 
+// The macro `MACC_V5` is the same as `MACC_V2`, except that the lower word of
+// the accumulator is written to `tmp1` instead of `rlo`.
+// NOTE: The purpose of this macro is to help prevent pipeline stalls.
+
+.macro MACC_V5 rhi:req, rlo:req, aiw:req, bjw:req
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    maddlu  tmp1, \aiw, \bjw, \rlo
+    maddhu  \rhi, \aiw, \bjw, \rlo
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      \rhi, \rlo
+    maddhu  \rhi, \aiw, \bjw
+    maddlu  \rlo, \aiw, \bjw
+#endif
+.endm
+
+
+// The macro `MACC_V6` is the same as `MACC_V3`, except that the lower word of
+// the accumulator is read from `tmp1` instead of `rlo`.
+// NOTE: The purpose of this macro is to help prevent pipeline stalls.
+
+.macro MACC_V6 rex:req, rhi:req, rlo:req, aiw:req, bjw:req
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    maddhu  tmp0, \aiw, \bjw, tmp1
+    maddlu  \rlo, \aiw, \bjw, tmp1
+    add     \rhi, \rhi, tmp0
+    sltu    \rex, \rhi, tmp0
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    mv      tmp0, \rlo
+    maddhu  tmp0, \aiw, \bjw
+    maddlu  \rlo, \aiw, \bjw
+    add     \rhi, \rhi, tmp0
+    sltu    \rex, \rhi, tmp0
+#endif
+.endm
+
+
 ///////////////////////////////////////////////////////////////////////////////
 //////////// MACROS FOR WORD-WISE DOUBLE-AND-ADD-SQUARE OPERATIONS ////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -307,8 +343,8 @@
 .macro MCOL_V2 rex:req, rhi:req, rlo:req, a0w:req, b0w:req, a1w:req, b1w:req, \
                acclen:req
     .if (\acclen == 64)
-    MACC_V2 \rhi, \rlo, \a0w, \b0w
-    MACC_V3 \rex, \rhi, \rlo, \a1w, \b1w
+    MACC_V5 \rhi, \rlo, \a0w, \b0w
+    MACC_V6 \rex, \rhi, \rlo, \a1w, \b1w
     .else  // acclen == 128
     MACC_V3 \rex, \rhi, \rlo, \a0w, \b0w
     MACC_V4 \rex, \rhi, \rlo, \a1w, \b1w
