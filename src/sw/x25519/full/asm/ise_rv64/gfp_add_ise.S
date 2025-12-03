@@ -1,119 +1,170 @@
+// Function prototype:
+// -------------------
 // void gfp_add_ise(uint64_t *r, const uint64_t *a, const uint64_t *b);
+//
+// Description:
+// ------------
+// The function `gfp_add_ise` computes the sum $r = a + b \bmod p$ of two
+// elements $a$ and $b$ of a pseudo-Mersenne prime field. The prime $p$ is the
+// 255-bit pseudo-Mersenne prime $p = 2^{255} - 19$. Operands $a$ and $b$ are
+// allowed to be larger than $p$. The result $r$ may not be fully reduced, but
+// $r$ is always less than $2p$.
+//
+// Parameters:
+// -----------
+// `r`: pointer to array for the four 64-bit words of the result $r$.
+// `a`: pointer to array containing the four 64-bit words of operand $a$.
+// `b`: pointer to array containing the four 64-bit words of operand $b$.
 
 
 #include "ise_al.h"
 
 
-// registers 
-
-// result `r`
-#define R0 a3
-#define R1 a4
-#define R2 a5 
-#define R3 a6
-#define R4 t0
-// operand `b` 
-#define B0 t0 
-#define B1 t1
-#define B2 t2
-#define B3 t3
-// operand `a`
-#define A0 t4 
-#define A1 t5 
-#define A2 t6 
-#define A3 a7
-// temporary
-#define T0 t1
-#define T1 t2
-// constant `m`
-#define M0 t3
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////// REGISTER NAMES AND CONSTANTS /////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 
-// prologue + epilogue 
+// Constant c of the pseudo-Mersenne prime: p = 2^k - c
+.equ CONSTC, 19
 
-.macro PROLOGUE
+// Register `rptr` holds the start address of array `r`
+#define rptr a0
+// Register `aptr` holds the start address of array `a`
+#define aptr a1
+// Register `bptr` holds the start address of array `b`
+#define bptr a2
+// Register `tmp0` holds intermediate/temporary results
+#define tmp0 a1
+// Register `rcon` holds the constant c of the PM-prime
+#define rcon a2
+// Register `cryw` holds the carry word of the addition
+#define cryw a3
+// Registers `aw00` to `aw03` hold words of operand `a`
+#define aw00 a4
+#define aw01 a5
+#define aw02 a6
+#define aw03 a7
+// Registers `bw00` to `bw03` hold words of operand `b`
+#define bw00 t0
+#define bw01 t1
+#define bw02 t2
+#define bw03 t3
+// Registers `rw00` to `rw03` hold words of the sum `r`
+#define rw00 t0
+#define rw01 t1
+#define rw02 t2
+#define rw03 t3
+
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////// MACROS FOR WORD-WISE ADDITION OPERATIONS //////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+
+// The macro `ADDW_V1` adds the word `aiw` and `biw` and puts the sum in the
+// `shi:slo` register-pair.
+
+.macro ADDW_V1 shi:req, slo:req, aiw:req, biw:req
+    add     \slo, \aiw, \biw
+    sltu    \shi, \slo, \aiw
 .endm
 
-.macro EPILOGUE
-  ret 
-.endm
 
-// load operand + store result 
+// The macro `ADDW_V2` adds the word `aiw` and `biw` together with an incoming
+// carry in `cin` and puts the sum in the `shi:slo` register-pair.
+// NOTE: Register `slo` is (generally) the same as register `biw`.
+// NOTE: Register `slo` has to be different from `cin`.
 
-.macro LOAD_A
-  ld    A0,  0(a1)
-  ld    A1,  8(a1)
-  ld    A2, 16(a1)
-  ld    A3, 24(a1)
-.endm 
-
-.macro LOAD_B
-  ld    B0,  0(a2)
-  ld    B1,  8(a2)
-  ld    B2, 16(a2)
-  ld    B3, 24(a2)
-.endm 
-
-.macro STORE_R
-  sd    T1,  0(a0)
-  sd    R1,  8(a0)
-  sd    R2, 16(a0)
-  sd    R3, 24(a0)
-.endm
-
-// integer addition
-
-.macro ADDITION 
-  add   R0, A0, B0 
-  sltu  B0, R0, A0
-  add   R1, A1, B0 
-  sltu  B0, R1, B0 
-  add   R1, R1, B1 
-  sltu  B1, R1, B1 
-  or    B0, B0, B1 
-  add   R2, A2, B0 
-  sltu  B0, R2, B0 
-  add   R2, R2, B2 
-  sltu  B1, R2, B2 
-  or    B0, B0, B1  
-  add   R3, A3, B0 
-  sltu  B0, R3, B0 
-  add   R3, R3, B3 
-  sltu  B1, R3, B3 
-  or    R4, B0, B1 
-.endm
-
-// final reduction 
-
-.macro FINAL_REDC
-  srli   T0, R3, 63
-  slli   R4, R4, 1
-  or     R4, R4, T0 
-  slli   R3, R3, 1
-  srli   R3, R3, 1
-  li     M0, 19
-#if defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
-  mv     T1, R0
+.macro ADDW_V2 shi:req, slo:req, aiw:req, biw:req, cin:req
+    add     \slo, \biw, \cin
+    sltu    \shi, \slo, \cin
+#if   defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 0 )
+    cacc    \shi, \slo, \aiw, \shi
+#elif defined( MPISE_DESTRUCTIVE ) && ( MPISE_DESTRUCTIVE == 1 )
+    cacc    \shi, \slo, \aiw
 #endif
-  maddlu T1, R4, M0, R0
-  sltu   T0, T1, T0 
-  add    R1, R1, T0 
-  sltu   T0, R1, T0 
-  add    R2, R2, T0 
-  sltu   T0, R2, T0 
-  add    R3, R3, T0 
+    add     \slo, \slo, \aiw
 .endm
 
 
-.section .text
+// The macro `MULHIXC` first splits the double-length word in `dhi:dlo` into a
+// 63-bit lower part and an upper part. The lower part is put in `rlo`, while
+// the upper part is multiplied by the constant $c$ (in register `rcon`) and
+// the single-word product is put in `rhi`.
+// NOTE: The bit-length of `dhi` can be up to $64 - \log_2(c) - 1$, e.g., for
+// $c = 19$, `dhi` can be up to 58 bits long.
 
+.macro MULHIXC rhi:req, rlo:req, dhi:req, dlo:req
+    li      rcon, CONSTC
+    srli    tmp0, \dlo, 63
+    slli    \rhi, \dhi, 1
+    add     \rhi, \rhi, tmp0
+    slli    \rlo, \dlo, 1
+    mul     \rhi, \rhi, rcon
+    srli    \rlo, \rlo, 1
+.endm
+
+
+// The macro `LDM_OPA` loads the four words of array `a` from RAM and puts
+// them in registers `aw00`-`aw03`.
+
+.macro LDM_OPA
+    ld      aw03, 24(aptr)
+    ld      aw02, 16(aptr)
+    ld      aw01, 8(aptr)
+    ld      aw00, 0(aptr)
+.endm
+
+
+// The macro `LDM_OPB` loads the four words of array `b` from RAM and puts
+// them in registers `bw00`-`bw03`.
+
+.macro LDM_OPB
+    ld      bw03, 24(bptr)
+    ld      bw02, 16(bptr)
+    ld      bw01, 8(bptr)
+    ld      bw00, 0(bptr)
+.endm
+
+
+// The macro `STM_RES` stores the four result-words, which are in registers
+// `rw00`-`rw03`, to array `r` in RAM.
+
+.macro STM_RES
+    sd      rw00, 0(rptr)
+    sd      rw01, 8(rptr)
+    sd      rw02, 16(rptr)
+    sd      rw03, 24(rptr)
+.endm
+
+
+///////////////////////////////////////////////////////////////////////////////
+//////////// SPEED-OPTIMIZED PRIME-FIELD ADDITION (FULLY UNROLLED) ////////////
+///////////////////////////////////////////////////////////////////////////////
+
+
+// This implementation of prime-field addition tightly integrates a normal
+// addition $a + b$ with a fast reduction modulo $p = 2^{255} - 19$. It aims
+// for high performance, which means the loop is fully unrolled. Each word of
+// the arrays `a` and `b` is loaded from RAM exactly once, and each word of
+// the result-array `r` is stored to RAM exactly once.
+
+.text
 .global gfp_add_ise
-
+.type gfp_add_ise,%function
+// .balign 8
 gfp_add_ise:
-  PROLOGUE
-  LOAD_A
-  LOAD_B
-  ADDITION
-  FINAL_REDC
-  STORE_R
-  EPILOGUE
+    LDM_OPA
+    LDM_OPB
+    ADDW_V1 cryw, rw03, aw03, bw03
+    MULHIXC cryw, rw03, cryw, rw03
+    ADDW_V2 cryw, rw00, aw00, bw00, cryw
+    ADDW_V2 cryw, rw01, aw01, bw01, cryw
+    ADDW_V2 cryw, rw02, aw02, bw02, cryw
+    add     rw03, rw03, cryw
+    STM_RES
+    ret
+
+
+.end
