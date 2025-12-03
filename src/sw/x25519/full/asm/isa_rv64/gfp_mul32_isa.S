@@ -33,7 +33,7 @@
 #define bw00 a2
 // Registers `tmp0` and `tmp1` hold temporary variables
 #define tmp0 a1
-#define tmp1 a2
+#define tmp1 a3
 // Register `rcon` holds the constant c of the PM-prime
 #define rcon a3
 // Registers `aw00` to `aw03` hold words of operand `a`
