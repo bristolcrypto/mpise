@@ -423,9 +423,9 @@ int main( int argc, char* argv[] )
   test_gfp_mul         (10, 2);                         // Run : 10, Warmup : 2
   test_gfp_mul32       (10, 2);                         // Run : 10, Warmup : 2
   test_gfp_sqr         (10, 2);                         // Run : 10, Warmup : 2
-  test_gfp_inv         ( 5, 2);                         // Run :  5, Warmup : 2
+  test_gfp_inv         (10, 2);                         // Run : 10, Warmup : 2
   test_curve_arith     (10, 2);                         // Run : 10, Warmup : 2
-  test_mon_varbase_mul ( 2, 2);                         // Run :  2, Warmup : 2
+  test_mon_varbase_mul (10, 2);                         // Run : 10, Warmup : 2
   #endif
 
   // test_point_mul();
