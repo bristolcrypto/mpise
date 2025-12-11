@@ -1,0 +1,20 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 0
+MPISE_STATELESS   := 1
+----
+ARCH              := rv32
+TYPE              := ise
+RADIX             := 28
+PLATFORM          := cva6-verilator
+VERSION           := hybrid
+<<<<
+bbl loader
+! 28, ise, 32, 0, 1, 8, 224, 10, 10, 467, 472, 467
+  result is correct!
+! 28, ise, 32, 0, 1, 12, 336, 10, 10, 836, 840, 836
+  result is correct!
+! 28, ise, 32, 0, 1, 16, 448, 10, 10, 1299, 1303, 1299
+  result is correct!

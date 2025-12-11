@@ -1,0 +1,44 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 0
+MPISE_STATELESS   := 0
+----
+ARCH              := rv32
+TYPE              := isa
+RADIX             := 32
+PLATFORM          := cva6-verilator
+VERSION           := hybrid
+<<<<
+bbl loader
+! 32, isa, 32, 0, 0, 8, 256, 10, 10, 764, 774, 765
+  result is correct!
+! 32, isa, 32, 0, 0, 12, 384, 10, 10, 1609, 1989, 1658
+  result is correct!
+! 32, isa, 32, 0, 0, 16, 512, 10, 10, 2763, 3252, 2813
+  result is correct!
+! 32, isa, 32, 0, 0, 20, 640, 10, 10, 4215, 4597, 4265
+  result is correct!
+! 32, isa, 32, 0, 0, 24, 768, 10, 10, 5979, 6460, 6088
+  result is correct!
+! 32, isa, 32, 0, 0, 28, 896, 10, 10, 8055, 8542, 8204
+  result is correct!
+! 32, isa, 32, 0, 0, 32, 1024, 10, 10, 10443, 10929, 10630
+  result is correct!
+! 32, isa, 32, 0, 0, 36, 1152, 10, 10, 13143, 13629, 13341
+  result is correct!
+! 32, isa, 32, 0, 0, 40, 1280, 10, 10, 16167, 16642, 16405
+  result is correct!
+! 32, isa, 32, 0, 0, 44, 1408, 10, 10, 19589, 19970, 19818
+  result is correct!
+! 32, isa, 32, 0, 0, 48, 1536, 10, 10, 23225, 23616, 23512
+  result is correct!
+! 32, isa, 32, 0, 0, 52, 1664, 10, 10, 27173, 27565, 27513
+  result is correct!
+! 32, isa, 32, 0, 0, 56, 1792, 10, 10, 31815, 32198, 31859
+  result is correct!
+! 32, isa, 32, 0, 0, 60, 1920, 10, 10, 36387, 36767, 36486
+  result is correct!
+! 32, isa, 32, 0, 0, 64, 2048, 10, 10, 41272, 41657, 41464
+  result is correct!

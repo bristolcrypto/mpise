@@ -1,0 +1,28 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 1
+MPISE_STATELESS   := 1
+----
+ARCH              := rv32
+TYPE              := ise
+RADIX             := 27
+PLATFORM          := cva6-verilator
+VERSION           := simple
+<<<<
+bbl loader
+! 27, ise, 32, 1, 1, 8, 216, 10, 10, 1020, 1026, 1020
+  result is correct!
+! 27, ise, 32, 1, 1, 12, 324, 10, 10, 2036, 2355, 2069
+  result is correct!
+! 27, ise, 32, 1, 1, 16, 432, 10, 10, 3404, 3722, 3437
+  result is correct!
+! 27, ise, 32, 1, 1, 20, 540, 10, 10, 5124, 5443, 5189
+  result is correct!
+! 27, ise, 32, 1, 1, 24, 648, 10, 10, 7196, 7513, 7261
+  result is correct!
+! 27, ise, 32, 1, 1, 28, 756, 10, 10, 9620, 9939, 9717
+  result is correct!
+! 27, ise, 32, 1, 1, 32, 864, 10, 10, 12396, 12713, 12525
+  result is correct!

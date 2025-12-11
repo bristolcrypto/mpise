@@ -1,0 +1,20 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 1
+MPISE_STATELESS   := 0
+----
+ARCH              := rv64
+TYPE              := isa
+RADIX             := 62
+PLATFORM          := cva6-verilator
+VERSION           := simple
+<<<<
+bbl loader
+! 62, isa, 64, 1, 0, 8, 496, 10, 10, 1218, 1220, 1218
+  result is correct!
+! 62, isa, 64, 1, 0, 12, 744, 10, 10, 2482, 2781, 2514
+  result is correct!
+! 62, isa, 64, 1, 0, 16, 992, 10, 10, 4194, 4491, 4225
+  result is correct!

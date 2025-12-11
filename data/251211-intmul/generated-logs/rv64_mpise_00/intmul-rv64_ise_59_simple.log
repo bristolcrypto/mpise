@@ -1,0 +1,28 @@
+>>>>
+====
+REPO_HOME         := auto-generated-text
+RISCV             := auto-generated-text
+MPISE_DESTRUCTIVE := 0
+MPISE_STATELESS   := 0
+----
+ARCH              := rv64
+TYPE              := ise
+RADIX             := 59
+PLATFORM          := cva6-verilator
+VERSION           := simple
+<<<<
+bbl loader
+! 59, ise, 64, 0, 0, 8, 472, 10, 10, 1006, 1010, 1006
+  result is correct!
+! 59, ise, 64, 0, 0, 12, 708, 10, 10, 2018, 2339, 2051
+  result is correct!
+! 59, ise, 64, 0, 0, 16, 944, 10, 10, 3382, 3701, 3414
+  result is correct!
+! 59, ise, 64, 0, 0, 20, 1180, 10, 10, 5098, 5419, 5163
+  result is correct!
+! 59, ise, 64, 0, 0, 24, 1416, 10, 10, 7166, 7487, 7231
+  result is correct!
+! 59, ise, 64, 0, 0, 28, 1652, 10, 10, 9586, 9905, 9683
+  result is correct!
+! 59, ise, 64, 0, 0, 32, 1888, 10, 10, 12358, 12677, 12488
+  result is correct!
