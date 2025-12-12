@@ -66,8 +66,8 @@
   export CVA6="${REPO_HOME}/build/cva6"
   ```
 
-- Clone the associated
-  [CVA6](https://github.com/bristolcrypto/mpise-cva6)
+- Clone the associated,
+  [CVA6](https://github.com/openhwgroup/cva6)-based
   core repo.
   into `${CVA6}`:
 
@@ -78,9 +78,8 @@
   git submodule update --init --recursive  
   ```
 
-  noting this is a fork of the
-  `https://github.com/openhwgroup/cva6.git`
-  repo.
+  noting this is a fork of
+  `https://github.com/openhwgroup/cva6.git`.
 
 - Build a multi-architecture 
   [tool-chain](https://github.com/riscv/riscv-gnu-toolchain)
