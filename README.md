@@ -28,7 +28,7 @@
 - Clone the repo.
 
   ```sh
-  git clone https://github.com/scarv/mpise.git ./mpise
+  git clone https://github.com/bristolcrypto/mpise.git ./mpise
   cd ./mpise
   git submodule update --init --recursive
   source ./bin/conf.sh
