@@ -79,7 +79,8 @@
   ```
 
   noting this is a fork of the
-  `https://github.com/openhwgroup/cva6.git`.
+  `https://github.com/openhwgroup/cva6.git`
+  repo.
 
 - Build a multi-architecture 
   [tool-chain](https://github.com/riscv/riscv-gnu-toolchain)
