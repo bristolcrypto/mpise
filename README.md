@@ -66,19 +66,19 @@
   export CVA6="${REPO_HOME}/build/cva6"
   ```
 
-- Clone the 
-  [CVA6]()
+- Clone the associated,
+  [CVA6](https://github.com/openhwgroup/cva6)-based
   core repo.
   into `${CVA6}`:
 
   ```sh     
-  git clone https://github.com/bristolcrypto/mpise-cva6 ${REPO_HOME}/build/cva6
+  git clone https://github.com/bristolcrypto/mpise-cva6.git ${REPO_HOME}/build/cva6
   cd ${REPO_HOME}/build/cva6
   git checkout mpise-full
   git submodule update --init --recursive  
   ```
 
-  noting this is a fork of the
+  noting this is a fork of
   `https://github.com/openhwgroup/cva6.git`.
 
 - Build a multi-architecture 

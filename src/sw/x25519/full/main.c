@@ -107,6 +107,11 @@ void test_mon_varbase_mul(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word rf[NWORDS], kf[NWORDS], xf[NWORDS];  // full-radix
   int i; 
+
+#if DEBUG
+  char resh[2*WBYTES*NWORDS+3];
+#endif
+
   // --------------------------------------------------------------------------
   
   static const char kh[] =  // scalar k for testing
