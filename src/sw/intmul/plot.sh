@@ -1,8 +1,6 @@
 #!/bin/bash 
 
-#export ARCHIVE="${REPO_HOME}/data/intmul-fpga-250627"
-#export ARCHIVE="${REPO_HOME}/data/intmul-verilator-250930"
- export ARCHIVE="${REPO_HOME}/data/intmul-verilator-251011"
+ export ARCHIVE="${REPO_HOME}/data/251211-intmul"
 
 plot() {
   # plot ISA-based results

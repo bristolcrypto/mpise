@@ -52,13 +52,13 @@ def plot( data ) :
     xticks = np.arange( 0, argv.scale_x_max, argv.scale_x_step )
     xlabels = [ '${0:d}$'.format( x ) for x in xticks ]
     ax.set_xlim( 0, argv.scale_x_max )
-    ax.set_xticks( xticks, labels = xlabels )
+    ax.set_xticks( xticks, labels = xlabels, fontsize = argv.output_font )
 
   if ( ( argv.scale_y_max != None ) and ( argv.scale_y_step != None ) ) :
     yticks = np.arange( 0, argv.scale_y_max, argv.scale_y_step )
     ylabels = [ '${0:d}$'.format( y ) for y in yticks ]
     ax.set_ylim( 0, argv.scale_y_max )
-    ax.set_yticks( yticks, labels = ylabels )
+    ax.set_yticks( yticks, labels = ylabels, fontsize = argv.output_font )
   
   p = None ; crossover = None
 
@@ -96,8 +96,16 @@ def plot( data ) :
   if ( argv.show_crossover and ( crossover != None ) ) :
     plt.axvline( crossover, color = 'black', linestyle = '--' )
   
-  ax.set( xlabel = 'Operand length (bits)', ylabel = 'Cycles', title = r'$\mbox{{type}} = \mbox{{{0:s}}}$, $\mbox{{\tt xlen}} = {1:s}$, $\mbox{{\tt version}} = {2:s}$'.format( argv.type.upper(), argv.xlen, argv.version ) )
-  ax.legend( loc = 'upper left' ) ; ax.grid( True )
+  if ( argv.show_title ) :
+    t = r'$\mbox{{type}} = \mbox{{{0:s}}}$, $\mbox{{\tt xlen}} = {1:s}$, $\mbox{{\tt version}} = {2:s}$'.format( argv.type.upper(), argv.xlen, argv.version )
+    ax.set_title ( t, fontsize = argv.output_font )
+
+  t = 'Operand length (bits)'
+  ax.set_xlabel( t, fontsize = argv.output_font )
+  t = 'Execution latency (cycles)'
+  ax.set_ylabel( t, fontsize = argv.output_font )
+
+  ax.legend( loc = 'upper left', fontsize = argv.output_font ) ; ax.grid( True )
   
 # -----------------------------------------------------------------------------
 
@@ -110,12 +118,14 @@ if ( __name__ == '__main__' ) :
 
   parser.add_argument( '--show-error',     action = 'store_true' )
   parser.add_argument( '--show-crossover', action = 'store_true' )
+  parser.add_argument( '--show-title',     action = 'store_true' )
 
   parser.add_argument( '--scale-x-max',    action = 'store', type = int, default = None )
   parser.add_argument( '--scale-x-step',   action = 'store', type = int, default = None )
   parser.add_argument( '--scale-y-max',    action = 'store', type = int, default = None )
   parser.add_argument( '--scale-y-step',   action = 'store', type = int, default = None )
 
+  parser.add_argument( '--output-font',    action = 'store', type = int, default =   20 )
   parser.add_argument( '--output-ht',      action = 'store', type = int, default =   10 )
   parser.add_argument( '--output-wd',      action = 'store', type = int, default =   12 )
 
