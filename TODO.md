@@ -3,12 +3,12 @@
 1. clean-up:
 
    1. [X] remove old/unused content, e.g., `${REPO_HOME}/old`, non-current entries in `${REPO_HOME}/data`, etc.
-   2. [ ] finalise source code, e.g., updates from Johann, fine-tuning of documentation, etc.
-   3. [ ] finalise experimental results, i.e., Isaar to rerun after 2. is complete
+   2. [x] finalise source code, e.g., updates from Johann, fine-tuning of documentation, etc.
+   3. [x] finalise experimental results, i.e., Isaar to rerun after 2. is complete
 
 2. relocation:
 
-   1. [ ] relocate `https://github.com/scarv/mpise` to `https://github.com/bristolcrypto/mpise`
+   1. [x] relocate `https://github.com/scarv/mpise` to `https://github.com/bristolcrypto/mpise`
    2. [X] relocate `https://github.com/isa084/cva6_mpise` to `https://github.com/bristolcrypto/mpise-cva6`
    3. [ ] update instructions to reflect relocation
    4. [ ] test end-to-end use of repo.
