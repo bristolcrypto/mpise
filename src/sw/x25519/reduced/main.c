@@ -7,6 +7,7 @@
 //#include "instrumentation.h"
 #include "test_gfp.h"
 
+
 // ------------ Instrumentation code ------------
 // Define two arrays to track clock cycles and
 // retired instructions for each iteration of a
@@ -17,6 +18,7 @@
 uint64_t rdtsc_debug[MAX_TRIALS];
 uint64_t instr_debug[MAX_TRIALS];
 #endif
+
 
 void test_gfp_arith(int iter, int num_warmup_iters)
 {
@@ -78,6 +80,17 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+#if DEBUG
+  gfp_canon(resr, resr);
+  mpi_red2full(resf, NWORDS, resr, NLIMBS);
+  int_to_hex(resh, resf, NWORDS);
+  printf("  r  = %s\n", resh);
+  static const char sqrh[] =  // expected result gfp_sqr
+    "0x72CC9B9B881D163356F62CB64EB19AF43B1FBDD115461FB51F494EEBDBDAA465";
+  if (strcmp(sqrh, resh) != 0) printf("  result r is wrong!!!\n");
+  memset(resf, 0, WBYTES*NWORDS);
+#endif
+  
   // --------------------------------------------------------------------------
   
   printf("\n=============================================================\n");
@@ -97,9 +110,9 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
-  static const char sqrh[] =  // expected result gfp_sqr
-    "0x72CC9B9B881D163356F62CB64EB19AF43B1FBDD115461FB51F494EEBDBDAA465";
-  if (strcmp(sqrh, resh) != 0) printf("  result r is wrong!!!\n");
+  static const char invh[] =  // expected result gfp_inv
+    "0x0156A6E8A59F1CE84CF3FE6BB3704486EE3CE441547929141DCF6BE16377749C";
+  if (strcmp(invh, resh) != 0) printf("  result r is wrong!!!\n");
   memset(resf, 0, WBYTES*NWORDS);
 #endif
   
@@ -185,9 +198,8 @@ void test_curve_arith(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
-  // Word rf[NWORDS], kf[NWORDS]; // Unused
-  Word xf[NWORDS];
   Word opf[NWORDS]; // full-radix
+  Limb xr[NLIMBS];  // reduced-radix
   ProPoint p, q;
   int i;
   
@@ -206,7 +218,6 @@ void test_curve_arith(int iter, int num_warmup_iters)
   static const char xdih[] =  // x-coordinate of basepoint
     "0x77AC9C65240CA1CC8B8CD5B50FC19DC6384F25E3EFBE47869EF14AD2E49B69C1";
   
-  
   hex_to_int(opf, xpih, NWORDS);
   mpi_full2red(p.x, NLIMBS, opf, NWORDS);
   hex_to_int(opf, zpih, NWORDS);
@@ -216,17 +227,17 @@ void test_curve_arith(int iter, int num_warmup_iters)
   hex_to_int(opf, zqih, NWORDS);
   mpi_full2red(q.z, NLIMBS, opf, NWORDS);
   hex_to_int(opf,  xdih, NWORDS);
-  mpi_full2red(xf, NLIMBS, opf, NWORDS);
+  mpi_full2red(xr, NLIMBS, opf, NWORDS);
   
   printf("\n=============================================================\n");
   printf("test_curve_arith - mon_ladder_step");
   printf("\n=============================================================\n");
-  LOAD_CACHE(mon_ladder_step(&p, &q, xf), num_warmup_iters);
+  LOAD_CACHE(mon_ladder_step(&p, &q, xr), num_warmup_iters);
 #if X25519_DEBUG
-  MEASURE_CYCLES_DEBUG(mon_ladder_step(&p, &q, xf), iter, rdtsc_debug, instr_debug);
+  MEASURE_CYCLES_DEBUG(mon_ladder_step(&p, &q, xr), iter, rdtsc_debug, instr_debug);
   print_performance_counters(rdtsc_debug, instr_debug, iter);
 #else
-  MEASURE_CYCLES(mon_ladder_step(&p, &q, xf), iter);
+  MEASURE_CYCLES(mon_ladder_step(&p, &q, xr), iter);
   printf(" #cycles = %" PRIu64 "\n", diff_cycles);
   printf(" #instr  = %" PRIu64 "\n", diff_instr);
 #endif
@@ -239,7 +250,7 @@ void test_curve_arith(int iter, int num_warmup_iters)
   mpi_full2red(q.x, NLIMBS, opf, NWORDS);
   hex_to_int(opf, zqih, NWORDS);
   mpi_full2red(q.z, NLIMBS, opf, NWORDS);
-  mon_ladder_step(&p, &q, xf);
+  mon_ladder_step(&p, &q, xr);
   // check X-coodinate of P
   gfp_canon(p.x, p.x);
   mpi_red2full(opf, NWORDS, p.x, NLIMBS);
@@ -275,17 +286,18 @@ void test_curve_arith(int iter, int num_warmup_iters)
 #endif 
 }
 
+
 void test_mon_varbase_mul(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
   Word rf[NWORDS], kf[NWORDS], xf[NWORDS];  // full-radix
   int i; 
-
+  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];
 #endif
-
+  
   // --------------------------------------------------------------------------
   
   static const char kh[] =  // scalar k for testing
@@ -316,6 +328,7 @@ void test_mon_varbase_mul(int iter, int num_warmup_iters)
   if (strcmp(rh, resh) != 0) printf("  result R is wrong!!!\n");
 #endif
 }
+
 
 void test_ecdh(void)
 {
@@ -397,29 +410,30 @@ void test_ecdh(void)
   else            printf("\x1b[31m not equal \x1b[0m\n");
 }
 
+
 int main( int argc, char* argv[] )
 {
   int num_iters, num_warmup_iters;
   if (argc != 3) {
       printf("Usage (for mon_varbase_mul): %s <an_integer> <another_integer>\n", argv[0]);
-      num_iters = 1000;
-      num_warmup_iters = 100;    
+      num_iters = 20;
+      num_warmup_iters = 10;    
   } else {
       num_iters = atoi(argv[1]);
       num_warmup_iters = atoi(argv[2]);
   }
   printf("Setting num_iters = %d , num_warmup_iters = %d\n", num_iters, num_warmup_iters);
-
+  
   #if defined( MPISE_ISE ) && defined( MPISE_STATELESS ) && ( MPISE_STATELESS == 0 )
   asm( "csrrwi x0, 0x801, " MPISE_RADIX_STR );
   #endif
-
+  
   #if defined( PLATFORM_SPIKE ) || defined( PLATFORM_CVA6_FPGA ) 
-  test_nop             (100, 10);                     // Warmup : 10,  Run : 100
-  test_gfp_arith       (100, 10);                     // Warmup : 10,  Run : 100
-  test_curve_arith     (200, 10);                     // Warmup : 10,  Run : 200
+  test_nop             (10, 10);                        // Warmup : 10, Run : 10
+  test_gfp_arith       (10, 10);                        // Warmup : 10, Run : 10
+  test_curve_arith     (20, 10);                        // Warmup : 10, Run : 20
   test_ecdh();
-  test_mon_varbase_mul (num_iters, num_warmup_iters); // Warmup : 100, Run : 1000
+  test_mon_varbase_mul (num_iters, num_warmup_iters);   // Warmup : 10, Run : 20
   #endif
   #if defined( PLATFORM_CVA6_VERILATOR )
   test_nop             (10, 2);                         // Run : 10, Warmup : 2
@@ -432,7 +446,7 @@ int main( int argc, char* argv[] )
   test_curve_arith     (10, 2);                         // Run : 10, Warmup : 2
   test_mon_varbase_mul (10, 2);                         // Run : 10, Warmup : 2
   #endif
-
+  
   // test_point_mul();
   
   return 0;
