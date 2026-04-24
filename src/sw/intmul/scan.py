@@ -98,7 +98,7 @@ def plot( data ) :
   
   if ( argv.show_title ) :
     t = r'$\mbox{{type}} = \mbox{{{0:s}}}$, $\mbox{{\tt xlen}} = {1:s}$, $\mbox{{\tt version}} = {2:s}$'.format( argv.type.upper(), argv.xlen, argv.version )
-    ax.set_title ( t, fontsize = argv.output_font )
+    ax.set_title( t, fontsize = argv.output_font )
 
   t = 'Operand length (bits)'
   ax.set_xlabel( t, fontsize = argv.output_font )
