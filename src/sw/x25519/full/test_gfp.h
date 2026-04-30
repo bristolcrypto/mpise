@@ -22,6 +22,7 @@ void test_nop(int iter, int num_warmup_iters)
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
   int i;
+  
   printf("\n=============================================================\n");
   printf("test_nop - nop_routine");
   printf("\n=============================================================\n");
@@ -43,7 +44,6 @@ void test_gfp_add(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
-  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -87,7 +87,6 @@ void test_gfp_sub(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
-  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -211,7 +210,6 @@ void test_gfp_mul(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
-  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -255,7 +253,6 @@ void test_gfp_mul32(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
-  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -299,7 +296,6 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
-  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -350,6 +346,8 @@ void test_gfp_arith(int iter, int num_warmup_iters)
 #endif
   
 #if DEBUG
+  mpi_print("op1f = ", op1f, NWORDS);
+  mpi_print("resf = ", resf, NWORDS);
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
   static const char sqrh[] =  // expected result gfp_sqr
