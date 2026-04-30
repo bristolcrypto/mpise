@@ -54,9 +54,4 @@ void mpi_print(const char *c, const Word *a, int len);
 void mpi_full2red(Limb *r, int rlen, const Word *a, int alen);
 void mpi_red2full(Word *r, int rlen, const Limb *a, int alen);
 
-// void mpi64_print(const char *c, const uint64_t *a, int len);
-// void mpi51_carry_prop(uint64_t *a);
-// void mpi_conv_64to51(uint64_t *r, const uint64_t *a);
-// void mpi_conv_51to64(uint64_t *r, const uint64_t *a);
-
 #endif
