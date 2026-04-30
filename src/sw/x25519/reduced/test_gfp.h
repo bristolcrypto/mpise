@@ -45,6 +45,7 @@ void test_gfp_inv(int iter, int num_warmup_iters)
   Limb op1r[NLIMBS], op2r[NLIMBS], resr[NLIMBS];  // reduced-radix
   Word op1f[NWORDS], op2f[NWORDS];                // full-radix
   int i;
+  
 #if DEBUG
   Word resf[NWORDS];
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
@@ -94,6 +95,7 @@ void test_gfp_sqr(int iter, int num_warmup_iters)
   Limb op1r[NLIMBS], op2r[NLIMBS], resr[NLIMBS];  // reduced-radix
   Word op1f[NWORDS], op2f[NWORDS];                // full-radix
   int i;
+  
 #if DEBUG
   Word resf[NWORDS];
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
@@ -143,6 +145,7 @@ void test_gfp_add(int iter, int num_warmup_iters)
   Limb op1r[NLIMBS], op2r[NLIMBS], resr[NLIMBS];  // reduced-radix
   Word op1f[NWORDS], op2f[NWORDS];                // full-radix
   int i;
+  
 #if DEBUG
   Word resf[NWORDS];
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
@@ -192,6 +195,7 @@ void test_gfp_sub(int iter, int num_warmup_iters)
   Limb op1r[NLIMBS], op2r[NLIMBS], resr[NLIMBS];  // reduced-radix
   Word op1f[NWORDS], op2f[NWORDS];                // full-radix
   int i;
+  
 #if DEBUG
   Word resf[NWORDS];
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
@@ -206,6 +210,7 @@ void test_gfp_sub(int iter, int num_warmup_iters)
   mpi_full2red(op1r, NLIMBS, op1f, NWORDS);
   hex_to_int(op2f, op2h, NWORDS);
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
+  
   // --------------------------------------------------------------------------
   
   printf("\n=============================================================\n");
@@ -240,6 +245,7 @@ void test_gfp_mul32(int iter, int num_warmup_iters)
   Limb op1r[NLIMBS], op2r[NLIMBS], resr[NLIMBS];  // reduced-radix
   Word op1f[NWORDS], op2f[NWORDS];                // full-radix
   int i;
+  
 #if DEBUG
   Word resf[NWORDS];
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
@@ -289,6 +295,7 @@ void test_gfp_mul (int iter, int num_warmup_iters)
   Limb op1r[NLIMBS], op2r[NLIMBS], resr[NLIMBS];  // reduced-radix
   Word op1f[NWORDS], op2f[NWORDS];                // full-radix
   int i;
+  
 #if DEBUG
   Word resf[NWORDS];
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
@@ -305,7 +312,7 @@ void test_gfp_mul (int iter, int num_warmup_iters)
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
   
   // --------------------------------------------------------------------------
-    
+  
   printf("\n=============================================================\n");
   printf("test_gfp_arith - gfp mul");
   printf("\n=============================================================\n");

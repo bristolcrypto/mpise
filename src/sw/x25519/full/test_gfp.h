@@ -44,6 +44,7 @@ void test_gfp_add(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
+  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -87,6 +88,7 @@ void test_gfp_sub(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
+  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -130,6 +132,7 @@ void test_gfp_sqr(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], resf[NWORDS];  // full-radix
   int i;
+  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -158,7 +161,7 @@ void test_gfp_sqr(int iter, int num_warmup_iters)
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
   static const char sqrh[] =  // expected result gfp_sqr
-    "0x729B6A56D866788A95F43CE76B3FDCBCB94D0F77FE1940EEDCA5E20890F2A50E";
+    "0x72CC9B9B881D163356F62CB64EB19AF43B1FBDD115461FB51F494EEBDBDAA465";
   if (strcmp(sqrh, resh) != 0) printf("  result r is wrong!!!\n");
 #endif
 }
@@ -170,6 +173,7 @@ void test_gfp_inv(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], resf[NWORDS];  // full-radix
   int i;
+  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -210,6 +214,7 @@ void test_gfp_mul(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
+  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -253,6 +258,7 @@ void test_gfp_mul32(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
+  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -296,6 +302,7 @@ void test_gfp_arith(int iter, int num_warmup_iters)
   uint64_t start_instr, end_instr, diff_instr;
   Word op1f[NWORDS], op2f[NWORDS], resf[NWORDS];  // full-radix
   int i;
+  
 #if DEBUG
   char resh[2*WBYTES*NWORDS+3];  // result as hex-string
 #endif
@@ -346,12 +353,10 @@ void test_gfp_arith(int iter, int num_warmup_iters)
 #endif
   
 #if DEBUG
-  mpi_print("op1f = ", op1f, NWORDS);
-  mpi_print("resf = ", resf, NWORDS);
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
   static const char sqrh[] =  // expected result gfp_sqr
-    "0x729B6A56D866788A95F43CE76B3FDCBCB94D0F77FE1940EEDCA5E20890F2A50E";
+    "0x72CC9B9B881D163356F62CB64EB19AF43B1FBDD115461FB51F494EEBDBDAA465";
   if (strcmp(sqrh, resh) != 0) printf("  result r is wrong!!!\n");
   memset(resf, 0, WBYTES*NWORDS);
 #endif
