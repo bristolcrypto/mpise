@@ -225,9 +225,9 @@ int main( int argc, char* argv[] )
 {
   int num_iters, num_warmup_iters;
   if (argc != 3) {
-      printf("Usage (for mon_varbase_mul and test_scott): %s <an_integer> <another_integer>\n", argv[0]);
-      num_iters = 1000;
-      num_warmup_iters = 100;    
+      printf("Usage (for mon_varbase_mul): %s <an_integer> <another_integer>\n", argv[0]);
+      num_iters = 20;
+      num_warmup_iters = 10;    
   } else {
       num_iters = atoi(argv[1]);
       num_warmup_iters = atoi(argv[2]);
