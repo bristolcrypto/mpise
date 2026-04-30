@@ -7,14 +7,14 @@
 
 #ifdef X25519_DEBUG
 // ------------ Instrumentation code ------------
-// Define two arrays to track clock cycles and
-// retired instructions for each iteration of a
-// test function. These arrays are defined once,
-// and reused multiple times throughout this file.
+// Define two arrays to track clock cycles and retired instructions for each
+// iteration of a test function. These arrays are defined once, and reused
+// multiple times throughout this file.
 // ----------------------------------------------
 extern uint64_t rdtsc_debug[MAX_TRIALS];
 extern uint64_t instr_debug[MAX_TRIALS];
 #endif
+
 
 // single nop subroutine
 void test_nop(int iter, int num_warmup_iters)
@@ -36,7 +36,8 @@ void test_nop(int iter, int num_warmup_iters)
 #endif
 }
 
-void test_gfp_inv (int iter, int num_warmup_iters)
+
+void test_gfp_inv(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
@@ -58,7 +59,9 @@ void test_gfp_inv (int iter, int num_warmup_iters)
   mpi_full2red(op1r, NLIMBS, op1f, NWORDS);
   hex_to_int(op2f, op2h, NWORDS);
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
+  
   // --------------------------------------------------------------------------
+  
   printf("\n=============================================================\n");
   printf("test_gfp_arith - gfp inv");
   printf("\n=============================================================\n");
@@ -71,21 +74,20 @@ void test_gfp_inv (int iter, int num_warmup_iters)
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+  
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
   int_to_hex(resh, resf, NWORDS);
   printf("  r  = %s\n", resh);
-  static const char sqrh[] =  // expected result gfp_sqr
-    "0x72CC9B9B881D163356F62CB64EB19AF43B1FBDD115461FB51F494EEBDBDAA465";
-  if (strcmp(sqrh, resh) != 0) printf("  result r is wrong!!!\n");
-  memset(resf, 0, WBYTES*NWORDS);
+  static const char invh[] =  // expected result gfp_inv
+    "0x0156A6E8A59F1CE84CF3FE6BB3704486EE3CE441547929141DCF6BE16377749C";
+  if (strcmp(invh, resh) != 0) printf("  result r is wrong!!!\n");
 #endif
-  
-  // --------------------------------------------------------------------------
-
 }
-void test_gfp_sqr (int iter, int num_warmup_iters)
+
+
+void test_gfp_sqr(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
@@ -107,6 +109,7 @@ void test_gfp_sqr (int iter, int num_warmup_iters)
   mpi_full2red(op1r, NLIMBS, op1f, NWORDS);
   hex_to_int(op2f, op2h, NWORDS);
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
+  
   // --------------------------------------------------------------------------
   
   printf("\n=============================================================\n");
@@ -121,10 +124,20 @@ void test_gfp_sqr (int iter, int num_warmup_iters)
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
 #endif
-  // --------------------------------------------------------------------------
-
+  
+#if DEBUG
+  gfp_canon(resr, resr);
+  mpi_red2full(resf, NWORDS, resr, NLIMBS);
+  int_to_hex(resh, resf, NWORDS);
+  printf("  r  = %s\n", resh);
+  static const char sqrh[] =  // expected result gfp_sqr
+    "0x72CC9B9B881D163356F62CB64EB19AF43B1FBDD115461FB51F494EEBDBDAA465";
+  if (strcmp(sqrh, resh) != 0) printf("  result r is wrong!!!\n");
+#endif
 }
-void test_gfp_add (int iter, int num_warmup_iters)
+
+
+void test_gfp_add(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
@@ -146,6 +159,7 @@ void test_gfp_add (int iter, int num_warmup_iters)
   mpi_full2red(op1r, NLIMBS, op1f, NWORDS);
   hex_to_int(op2f, op2h, NWORDS);
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
+  
   // --------------------------------------------------------------------------
   
   printf("\n=============================================================\n");
@@ -160,6 +174,7 @@ void test_gfp_add (int iter, int num_warmup_iters)
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+  
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
@@ -168,13 +183,11 @@ void test_gfp_add (int iter, int num_warmup_iters)
   static const char addh[] =  // expected result gfp_add
     "0x7777777888888887777777788888888777777778888888877777777888888887";
   if (strcmp(addh, resh) != 0) printf("  result r is wrong!!!\n");
-  memset(resf, 0, WBYTES*NWORDS);
 #endif
-  
-  // --------------------------------------------------------------------------
-
 }
-void test_gfp_sub (int iter, int num_warmup_iters)
+
+
+void test_gfp_sub(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
@@ -196,7 +209,6 @@ void test_gfp_sub (int iter, int num_warmup_iters)
   mpi_full2red(op1r, NLIMBS, op1f, NWORDS);
   hex_to_int(op2f, op2h, NWORDS);
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
-
   // --------------------------------------------------------------------------
   
   printf("\n=============================================================\n");
@@ -211,6 +223,7 @@ void test_gfp_sub (int iter, int num_warmup_iters)
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+  
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
@@ -219,10 +232,11 @@ void test_gfp_sub (int iter, int num_warmup_iters)
   static const char subh[] =  // expected result gfp_sub
     "0x0ACF13568ACF13568ACF13568ACF13568ACF13568ACF13568ACF13568ACF1344";
   if (strcmp(subh, resh) != 0) printf("  result r is wrong!!!\n");
-  memset(resf, 0, WBYTES*NWORDS);
 #endif
 }
-void test_gfp_mul32 (int iter, int num_warmup_iters)
+
+
+void test_gfp_mul32(int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
   uint64_t start_instr, end_instr, diff_instr;
@@ -244,9 +258,7 @@ void test_gfp_mul32 (int iter, int num_warmup_iters)
   mpi_full2red(op1r, NLIMBS, op1f, NWORDS);
   hex_to_int(op2f, op2h, NWORDS);
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
-
-  // --------------------------------------------------------------------------
-
+  
   // --------------------------------------------------------------------------
   
   printf("\n=============================================================\n");
@@ -270,9 +282,10 @@ void test_gfp_mul32 (int iter, int num_warmup_iters)
   static const char m32h[] =  // expected result gfp_mul32
     "0x3BBBBBBBBBB9C0CBBBBBBBBBBBB9C0CBBBBBBBBBBBB9C0CBBBBBBBBBBBBA0EEA";
   if (strcmp(m32h, resh) != 0) printf("  result r is wrong!!!\n");
-  memset(resf, 0, WBYTES*NWORDS);
 #endif
 }
+
+
 void test_gfp_mul (int iter, int num_warmup_iters)
 {
   uint64_t start_cycles, end_cycles, diff_cycles;
@@ -296,6 +309,8 @@ void test_gfp_mul (int iter, int num_warmup_iters)
   hex_to_int(op2f, op2h, NWORDS);
   mpi_full2red(op2r, NLIMBS, op2f, NWORDS);
   
+  // --------------------------------------------------------------------------
+    
   printf("\n=============================================================\n");
   printf("test_gfp_arith - gfp mul");
   printf("\n=============================================================\n");
@@ -308,6 +323,7 @@ void test_gfp_mul (int iter, int num_warmup_iters)
   printf("         #cycles = %" PRIu64 "\n", diff_cycles);
   printf("         #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+  
 #if DEBUG
   gfp_canon(resr, resr);
   mpi_red2full(resf, NWORDS, resr, NLIMBS);
