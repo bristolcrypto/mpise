@@ -13,7 +13,7 @@ extern void X25519_KEY_PAIR(char *SK,char *PK);
 extern int X25519_SHARED_SECRET(char *SK,char *PK,char *SS);
 
 #define mon_mul_varbase(rf, kf, xf) \
-  X25519_SHARED_SECRET((Word *) (kf), (Word *) (xf), (Word *) (rf)) 
+  X25519_SHARED_SECRET((char *) (kf), (char *) (xf), (char *) (rf)) 
 
 
 // ------------ Instrumentation code ------------
@@ -25,6 +25,29 @@ extern int X25519_SHARED_SECRET(char *SK,char *PK,char *SS);
 uint64_t rdtsc_debug[MAX_TRIALS];
 uint64_t instr_debug[MAX_TRIALS];
 #endif
+
+
+// single nop subroutine
+void test_nop(int iter, int num_warmup_iters)
+{
+  uint64_t start_cycles, end_cycles, diff_cycles;
+  uint64_t start_instr, end_instr, diff_instr;
+  int i;
+  
+  printf("\n=============================================================\n");
+  printf("test_nop - nop_routine");
+  printf("\n=============================================================\n");
+  LOAD_CACHE(nop_routine(), num_warmup_iters);
+#if X25519_DEBUG
+  MEASURE_CYCLES_DEBUG(nop_routine(), iter, rdtsc_debug, instr_debug);
+  print_performance_counters(rdtsc_debug, instr_debug, iter);
+#else
+  MEASURE_CYCLES(nop_routine(), iter);
+  printf("         #cycles = %" PRIu64 "\n", diff_cycles);
+  printf("         #instr  = %" PRIu64 "\n", diff_instr);
+#endif
+}
+
 
 /*
 void test_curve_arith(int iter, int num_warmup_iters)
