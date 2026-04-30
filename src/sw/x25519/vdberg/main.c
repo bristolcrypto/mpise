@@ -10,7 +10,8 @@
 
 // Wrappers for van den Berg's scalar-mul function
 extern int crypto_scalarmult(unsigned char *q, const unsigned char *n, \
-  const unsigned char *p)
+  const unsigned char *p);
+int crypto_scalarmult_base(unsigned char *q, const unsigned char *n);
 #define mon_mul_varbase(rf, kf, xf) \
   crypto_scalarmult((char *) (rf), (char *) (kf), (char *) (xf)) 
 
