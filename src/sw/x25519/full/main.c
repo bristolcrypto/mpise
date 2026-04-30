@@ -7,24 +7,17 @@
 //#include "instrumentation.h"
 #include "test_gfp.h"
 
-#if (MPISE_XLEN==32)
-#include "scott_x25519_32.h"
-#endif
-
-#if (MPISE_XLEN==64)
-#include "scott_x25519_64.h"
-#endif
 
 // ------------ Instrumentation code ------------
-// Define two arrays to track clock cycles and
-// retired instructions for each iteration of a
-// test function. These arrays are defined once,
-// and reused multiple times throughout this file.
+// Define two arrays to track clock cycles and retired instructions for each
+// iteration of a test function. These arrays are defined once, and reused
+// multiple times throughout this file.
 // ----------------------------------------------
 #if X25519_DEBUG
 uint64_t rdtsc_debug[MAX_TRIALS];
 uint64_t instr_debug[MAX_TRIALS];
 #endif
+
 
 void test_curve_arith(int iter, int num_warmup_iters)
 {
@@ -68,6 +61,7 @@ void test_curve_arith(int iter, int num_warmup_iters)
   printf(" #cycles = %" PRIu64 "\n", diff_cycles);
   printf(" #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+  
 #if DEBUG
   hex_to_int(p.x, xpih, NWORDS);
   hex_to_int(p.z, zpih, NWORDS);
@@ -100,6 +94,7 @@ void test_curve_arith(int iter, int num_warmup_iters)
   if (strcmp(zqoh, resh) != 0) printf("  result Zq is wrong!!!\n");
 #endif 
 }
+
 
 void test_mon_varbase_mul(int iter, int num_warmup_iters)
 {
@@ -134,6 +129,7 @@ void test_mon_varbase_mul(int iter, int num_warmup_iters)
   printf(" #cycles = %" PRIu64 "\n", diff_cycles);
   printf(" #instr  = %" PRIu64 "\n", diff_instr);
 #endif
+  
 #if DEBUG
   int_to_hex(resh, rf, NWORDS);
   printf("  R  = %s\n", resh);
@@ -142,6 +138,7 @@ void test_mon_varbase_mul(int iter, int num_warmup_iters)
   if (strcmp(rh, resh) != 0) printf("  result R is wrong!!!\n");
 #endif
 }
+
 
 void test_ecdh(void)
 {
@@ -224,50 +221,6 @@ void test_ecdh(void)
 }
 
 
-
-// prototype of mike scott's x25519 implementation
-extern int X25519_SHARED_SECRET(char *SK, char *PK, char *SS);
-
-void test_scott(int iter, int num_warmup_iters)
-{
-  uint64_t start_cycles, end_cycles, diff_cycles;
-  uint64_t start_instr, end_instr, diff_instr;
-  Word rf[NWORDS], kf[NWORDS], xf[NWORDS];  // full-radix
-  int i;
-  
-#if DEBUG
-  char resh[2*WBYTES*NWORDS+3];
-#endif
-  
-  static const char kh[] =  // scalar k for testing
-    "0xC49A44BA44226A50185AFCC10A4C1462DD5E46824B15163B9D7C52F06BE346A5";
-  static const char xh[] =  // x-coordinate for testing
-    "0x4C1CABD0A603A9103B35B326EC2466727C5FB124A4C19435DB3030586768DBE6";
-  
-  hex_to_int(kf, kh, NWORDS);
-  hex_to_int(xf, xh, NWORDS);
-  printf("\n=============================================================\n");  
-  printf("test_scott - X25519_SHARED_SECRET");
-  printf("\n=============================================================\n");
-  LOAD_CACHE(X25519_SHARED_SECRET((char *) kf, (char *) xf, (char *) rf), num_warmup_iters);
-#if X25519_DEBUG
-  MEASURE_CYCLES_DEBUG(X25519_SHARED_SECRET((char *) kf, (char *) xf, (char *) rf), iter, rdtsc_debug, instr_debug);
-  print_performance_counters(rdtsc_debug, instr_debug, iter);
-#else
-  MEASURE_CYCLES(X25519_SHARED_SECRET((char *) kf, (char *) xf, (char *) rf), iter);
-  printf(" #cycles = %" PRIu64 "\n", diff_cycles);
-  printf(" #instr  = %" PRIu64 "\n", diff_instr);
-#endif
-  
-#if DEBUG
-  int_to_hex(resh, rf, NWORDS);
-  printf("  R  = %s\n", resh);
-  static const char rh[] =  // expected result for R
-    "0x5285A2775507B454F7711C4903CFEC324F088DF24DEA948E90C6E99D3755DAC3";
-  if (strcmp(rh, resh) != 0) printf("  result R is wrong!!!\n");
-#endif
-}
-
 int main( int argc, char* argv[] )
 {
   int num_iters, num_warmup_iters;
@@ -286,11 +239,11 @@ int main( int argc, char* argv[] )
   #endif
 
   #if defined( PLATFORM_SPIKE ) || defined( PLATFORM_CVA6_FPGA ) 
-  test_nop             (100, 10);                     // Warmup : 10,  Run : 100
-  test_gfp_arith       (100, 10);                     // Warmup : 10,  Run : 100
-  test_curve_arith     (200, 10);                     // Warmup : 10,  Run : 200
+  test_nop             (10, 10);                        // Warmup : 10, Run : 10
+  test_gfp_arith       (10, 10);                        // Warmup : 10, Run : 10
+  test_curve_arith     (20, 10);                        // Warmup : 10, Run : 20
   test_ecdh();
-  test_mon_varbase_mul (num_iters, num_warmup_iters); // Warmup : 100, Run : 1000
+  test_mon_varbase_mul (num_iters, num_warmup_iters);   // Warmup : 10, Run : 20
   #endif
   #if defined( PLATFORM_CVA6_VERILATOR )
   test_nop             (10, 2);                         // Run : 10, Warmup : 2
@@ -303,8 +256,7 @@ int main( int argc, char* argv[] )
   test_curve_arith     (10, 2);                         // Run : 10, Warmup : 2
   test_mon_varbase_mul (10, 2);                         // Run : 10, Warmup : 2
   #endif
-
-  //test_scott(num_iters, num_warmup_iters);           // Warmup : 100, Run : 1000
+  
   // test_point_mul();
   
   return 0;
