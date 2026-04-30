@@ -13,7 +13,8 @@ extern int crypto_scalarmult(unsigned char *q, const unsigned char *n, \
   const unsigned char *p);
 int crypto_scalarmult_base(unsigned char *q, const unsigned char *n);
 #define mon_mul_varbase(rf, kf, xf) \
-  crypto_scalarmult((char *) (rf), (char *) (kf), (char *) (xf)) 
+  crypto_scalarmult((unsigned char *) (rf), (const unsigned char *) (kf), \
+  (const unsigned char *) (xf)) 
 
 
 // ------------ Instrumentation code ------------
