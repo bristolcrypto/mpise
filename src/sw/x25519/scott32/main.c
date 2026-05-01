@@ -11,6 +11,8 @@
 // Wrappers for Scott's scalar-mul functions
 extern void X25519_KEY_PAIR(char *SK,char *PK);
 extern int X25519_SHARED_SECRET(char *SK,char *PK,char *SS);
+extern void X25519_KEY_PAIR_noinline(char *SK,char *PK);
+extern int X25519_SHARED_SECRET_noinline(char *SK,char *PK,char *SS);
 
 #define mon_mul_varbase(rf, kf, xf) \
   X25519_SHARED_SECRET((char *) (kf), (char *) (xf), (char *) (rf)) 
