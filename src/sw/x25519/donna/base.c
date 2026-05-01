@@ -1,4 +1,5 @@
 // #include "crypto_scalarmult.h"
+#include <stdint.h>
 extern int crypto_scalarmult(uint8_t *mypublic, const uint8_t *secret, const uint8_t *basepoint);
 
 static const unsigned char basepoint[32] = {9};
