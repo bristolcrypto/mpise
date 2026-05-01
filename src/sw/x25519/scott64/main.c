@@ -8,13 +8,12 @@
 //#include "test_gfp.h"
 
 
-// Wrappers for van den Berg's scalar-mul function
-extern int crypto_scalarmult(unsigned char *q, const unsigned char *n, \
-  const unsigned char *p);
-extern int crypto_scalarmult_base(unsigned char *q, const unsigned char *n);
+// Wrappers for Scott's scalar-mul functions
+extern void X25519_KEY_PAIR(char *SK,char *PK);
+extern int X25519_SHARED_SECRET(char *SK,char *PK,char *SS);
+
 #define mon_mul_varbase(rf, kf, xf) \
-  crypto_scalarmult((unsigned char *) (rf), (const unsigned char *) (kf), \
-  (const unsigned char *) (xf)) 
+  X25519_SHARED_SECRET((char *) (kf), (char *) (xf), (char *) (rf)) 
 
 
 // ------------ Instrumentation code ------------
